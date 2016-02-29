@@ -1,0 +1,57 @@
+<div class="chatBoxInner">
+              <div class="box_hd">
+                    <div class="title_wrap">
+                        
+                        <a class="phone_return" ng-click="back()"><span class="backArrow"><</span>返回</a>
+                        <div class="title">
+                            <a class="title_name">好友信息</a>
+                            <!--<span class="title_count ">(16)</span>
+                            <i class="Presence Presence&#45;&#45;stacked Presence&#45;&#45;chatBox"></i>-->
+                        </div>
+                        <!-- <a class="editBtn" href="javascript:void 0" ng-click="save()">确认</a> -->
+                    </div>
+                </div>
+<div id="functionBox">
+    <div class="userInfo">
+        <div class="userData clearfix">
+            <div class="photo">
+                <!-- <img class="img" src="assets/img/barBg.png" alt=""> -->
+                <div id="portrait" class="portrait">{{user.firstchar}}</div>
+            </div>
+            <div class="info">
+                <h3 class="userName">
+                    <span class="userName_text">{{user.nickName}}
+                      <!-- <i class="Presence Presence--user offline"></i> -->
+                    </span>
+                </h3>
+                <!-- <p class="userId">ID : <span>{{user.id}}</span></p> -->
+                <!-- <p class="isBlack">已加入黑名单</p> -->
+            </div>
+        </div>
+        <div class="userFunPannel clearfix">
+            <ul class="clearfix ">
+                <li class="clearfix" ng-show="!isself">
+                    <div class="left">
+                        <p><span>加入黑名单</span></p>
+                    </div>
+                    <div class="right">
+                      <!-- <input type="checkbox" class="js-switch isBlackBtn" ng-model="inBlackList" ios-switcher  /> -->
+                      <switch id="enabled" name="enabled" ng-model="user.inBlackList" ng-change="switchchange"  class="green"></switch>
+                    </div>
+                </li>
+                <li class="clearfix" ng-show="isfriend">
+                    <div class="left">
+                        <p>
+                          <a href="javascript:void 0">
+                          <span class="redColor" ng-click="removeFriend()">删除好友</span>
+                          </a>
+                        </p>
+                    </div>
+                    <div class="right hide"><input type="checkbox" class="js-switch" checked /></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+</div>

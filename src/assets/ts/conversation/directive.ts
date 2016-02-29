@@ -1,0 +1,268 @@
+/// <reference path="../../../../typings/angularjs/angular.d.ts"/>
+/// <reference path="../model/util.ts"/>
+
+var conversationDire = angular.module("webim.conversation.directive", ["webim.main.server", "webim.conversation.server"]);
+
+conversationDire.directive("conversationItem", ["$timeout", function($timeout: angular.ITimeoutService) {
+    return {
+        restrict: "EA",
+        templateUrl: 'assets/template/messagetemplate.html',
+        scope: {
+            item: "="
+        }, link: function(scope: any, ele: angular.IRootElementService, attrs: any) {
+            if (scope.item.senderUserId) {
+                $timeout(function() {
+                    angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.senderUserId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+                }, 50);
+            }
+        }
+    }
+}]);
+
+conversationDire.directive('contenteditableDire', function() {
+    return {
+        restrict: 'A', // only activate on element attribute
+        require: '?ngModel', // get a hold of NgModelController
+        link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
+            function replacemy(e: string) {
+                return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
+            }
+            var domElement = <any>element[0];
+
+            scope.$watch(function() {
+                return ngModel.$modelValue;
+            }, function(newVal: string) {
+                if (document.activeElement === domElement) {
+                    return;
+                }
+                if (newVal === '' || newVal === attrs["placeholder"]) {
+                    domElement.innerHTML = attrs["placeholder"];
+                    domElement.style.color = "#a9a9a9";
+                }
+            });
+
+            element.bind('focus', function() {
+                if (domElement.innerHTML == attrs["placeholder"]) {
+                    domElement.innerHTML = '';
+                    domElement.style.color = '';
+                }
+            });
+            element.bind('blur', function() {
+                if (domElement.innerHTML === '') {
+                    domElement.innerHTML = attrs["placeholder"];
+                    domElement.style.color = "#a9a9a9";
+                }
+            });
+
+
+            if (!ngModel) return; // do nothing if no ng-model
+
+            element.bind("paste", function(e: any) {
+                var that = this, ohtml = that.innerHTML;
+                timeoutid && clearTimeout(timeoutid);
+                var timeoutid = setTimeout(function() {
+                    that.innerHTML = replacemy(that.innerHTML);
+                    ngModel.$setViewValue(that.innerHTML);
+                    timeoutid = null;
+                }, 50);
+            });
+
+
+            // Specify how UI should be updated
+            ngModel.$render = function() {
+                element.html(ngModel.$viewValue || '');
+            };
+
+            // Listen for change events to enable binding
+            webimutil.Helper.browser.msie ? element.bind("keyup paste", read) : element.bind("input", read);
+            // element.on('blur keyup change', function() {
+            //     scope.$apply(read);
+            // });
+            //read(); // initialize
+
+            // Write data to the model
+            function read() {
+                var html = element.html();
+                html = html.replace(/^<br>$/i, "");
+                html = html.replace(/<br>/gi, "\n");
+                html = replacemy(html);
+                // When we clear the content editable the browser leaves a <br> behind
+                // If strip-br attribute is provided then we strip this out
+                if (attrs["stripBr"] && html == '<br>') {
+                    html = '';
+                }
+                ngModel.$setViewValue(html);
+            }
+        }
+    };
+});
+
+conversationDire.directive("preplaceholderasdfrs", [function() {
+    return {
+
+    }
+}])
+
+conversationDire.directive("ctrlEnterKeys", ["$timeout", "mainDataServer", "conversationServer", function($timeout: angular.ITimeoutService, mainDataServer: any, conversationServer: any) {
+    return {
+        restrict: "A",
+        require: '?ngModel',
+        scope: {
+            fun: "&",
+            ctrlenter: "=",
+            content: "="
+        },
+        link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
+            scope.ctrlenter = scope.ctrlenter || false;
+            element.bind("keypress", function(e: any) {
+                if (scope.ctrlenter) {
+                    if (e.ctrlKey === true && e.keyCode === 13 || e.keyCode === 10) {
+                        scope.fun();
+                        scope.$parent.$apply();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (e.ctrlKey === false && e.shiftKey === false && (e.keyCode === 13 || e.keyCode === 10)) {
+                        scope.fun();
+                        scope.$parent.$apply();
+                        e.preventDefault();
+                    } else if (e.ctrlKey === true && e.keyCode === 13 || e.keyCode === 10) {
+                        //ctrl+enter 换行
+                    }
+                }
+            })
+        }
+    }
+}]);
+
+conversationDire.directive("emoji", [function() {
+    return {
+        restrict: "E",
+        scope: {
+            item: "=",
+            content: "="
+        },
+        template: "",
+        link: function(scope: any, ele: angular.IRootElementService, attr: angular.IAttributes) {
+
+
+            ele.append(scope.item);
+            ele.on("click", function() {
+                scope.$parent.currentConversation.draftMsg = scope.$parent.currentConversation.draftMsg.replace(/\n$/, "");
+                scope.$parent.currentConversation.draftMsg = scope.$parent.currentConversation.draftMsg + scope.item.children[0].getAttribute("name");
+                scope.$parent.$apply();
+                var obj = document.getElementById("message-content");
+                webimutil.Helper.getFocus(obj);
+            })
+        }
+    }
+}]);
+
+conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angular.ITimeoutService) {
+    return {
+        restrict: "E",
+        scope: { item: "=" },
+        template: '<div class="">' +
+        '<div class="Message-audio">' +
+        '<span class="Message-entry" style="">' +
+        '<span class="audioBox clearfix " ng-class="{\'animate\':isplaying}" ng-click="play()"><i></i><i></i><i></i></span><span class="audioTimer">{{item.duration}}”</span><span class="audioState" ng-show="item.isUnReade"></span>' +
+        '</span>' +
+        '</div>' +
+        '</div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+            scope.item.duration = parseInt(scope.item.duration || scope.item.content.length / 1024);
+
+            scope.play = function() {
+                RongIMLib.RongIMVoice.stop();
+                if (scope.isplaying) {
+                    scope.item.isUnReade = false;
+                    RongIMLib.RongIMVoice.play(scope.item.content, scope.item.duration);
+                    scope.isplaying = true;
+                    if (scope.timeoutid) {
+                        $timeout.cancel(scope.timeoutid);
+                    }
+                    scope.timeoutid = $timeout(function() {
+                        scope.isplaying = false;
+                    }, scope.item.duration);
+                } else {
+                    scope.isplaying = false;
+                    $timeout.cancel(scope.timeoutid);
+                }
+            }
+
+        }
+    }
+}]);
+
+conversationDire.directive("imageMessage", [function() {
+    return {
+        restrict: "E",
+        scope: { item: "=" },
+        template: '<div class="">' +
+        '<div class="Message-img">' +
+        '<span id="{{\'rebox_\'+$id}}" ng-click="showBigImage()"   class="Message-entry gallery" style="">' +
+        '<!-- <p>发给您一张示意图</p> -->' +
+        // '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" data-image="{{item.imageUri}}" alt=""/>' +
+        '<a href="{{item.imageUri||\'../../static/images/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
+        '</span>' +
+        '</div>' +
+        '</div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+            var img = new Image();
+            img.src = scope.item.imageUri;
+            setTimeout(function() {
+                $('#rebox_' + scope.$id).rebox({ selector: 'a' });
+            })
+            img.onload = function() {
+
+                scope.$apply(function() {
+                    scope.item.content = scope.item.imageUri
+                });
+            }
+            scope.showBigImage = function() {
+
+            }
+        }
+    }
+}])
+
+conversationDire.directive("bigImage", [function() {
+    return {
+        restrict: "E",
+        scope: { show: "=", imagesrc: "=" },
+        template: '<div class="bigimage-background">' +
+        '<div class="bigimage">' +
+        '<img src="imagesrc"></img>' +
+        '</div>' +
+        '</div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+
+        }
+    }
+}]);
+
+conversationDire.directive("dateMessage", [function() {
+    return {
+        restrict: "E",
+        scope: { date: "=" },
+        template: '<div class="Messages-date"><b style="cursor: default;">{{date|historyTime}}</b></div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+        }
+    }
+}]);
+conversationDire.directive("getHistoryMessage", [function() {
+    return {
+        restrict: "E",
+        scope: { myclick: "&" },
+        template: '<div class="Messages-getHistory"><b ng-click="myclick()" class="" style="cursor: pointer;">查看历史消息</b></div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+        }
+    }
+}]);
+conversationDire.directive("getMoreMessage", [function() {
+    return {
+        restrict: "E",
+        scope: { myclick: "&" },
+        template: '<div class="Messages-getHistory"><b ng-click="myclick()" class="" style="cursor: pointer;">获取更多历史消息</b></div>'
+    }
+}]);
