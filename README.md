@@ -46,7 +46,8 @@ grunt connect
 
 ### 在浏览器中打开
 
-[http://localhost:8181](http://localhost:8181)
+[http://localhost:8181](http://localhost:8181)  
+执行grunt build前将main.ts文件中的provider appconfig 中getBaseUrl和getAppKey改为自己应用的值
 
 ## Coding Guidelines
 
