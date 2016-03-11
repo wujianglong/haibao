@@ -218,7 +218,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
         RongIMSDKServer.init(appconfig.getAppKey());
 
-
+        console.log("getToken");
         mainServer.user.getToken().success(function(data: any) {
             if (data.code == "200") {
                 RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
@@ -236,7 +236,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             } else {
                 $state.go("account.signin");
             }
+            console.log("getToken success");
         }).error(function(e) {
+            console.log("getToken error");
             $state.go("account.signin");
         });
 

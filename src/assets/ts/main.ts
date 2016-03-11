@@ -11,7 +11,6 @@ var webimApp = angular.module("webim", ["ui.router", "ui.event", "uiSwitch", "ng
     "webim.account"], function() {
     });
 
-var __sealtalk_config: any;
 webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvider",
     function($provide: angular.auto.IProvideService, $stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider, $httpProvider: angular.IHttpProvider) {
         var baseUrl = window["__sealtalk_config"]["serverUrl"];

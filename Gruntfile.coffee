@@ -47,6 +47,10 @@ module.exports = (grunt) ->
       build:
         files: [
           {
+            src:'./src/app.config.js',
+            dest:'./build/app.config.js'
+          }
+          {
             expand: true
             cwd: './src/assets'
             src: [
@@ -96,6 +100,10 @@ module.exports = (grunt) ->
         ]
       release:
         files: [
+          {
+            src:'./src/app.config.js',
+            dest:'./dist/app.config.js'
+          }
           {
             expand: true
             cwd: './src/assets'
@@ -149,10 +157,6 @@ module.exports = (grunt) ->
       release:
         files:[
           {
-            src:['./src/app.config','./temp/main.temp.js']
-            dest:'./temp/main.js'
-          }
-          {
             src:[
               './bower_components/angular-ui-router/release/angular-ui-router.min.js'
               './bower_components/angular-ui-event/dist/event.min.js'
@@ -182,10 +186,6 @@ module.exports = (grunt) ->
         ]
       build:
         files:[
-          {
-            src:['./src/app.config','./temp/main.temp.js']
-            dest:'./build/assets/js/main.min.js'
-          }
           {
             src:[
               './bower_components/angular-ui-router/release/angular-ui-router.min.js'
@@ -271,7 +271,7 @@ module.exports = (grunt) ->
           suppressImplicitAnyIndexErrors: false
           target: 'es5'
         src: './src/assets/ts/**/*.ts'
-        dest:'./temp/main.temp.js'
+        dest:'./build/assets/js/main.min.js'
       release:
         options:
           module: 'amd'
@@ -281,7 +281,7 @@ module.exports = (grunt) ->
           suppressImplicitAnyIndexErrors: false
           target: 'es5'
         src: './src/assets/ts/**/*.ts'
-        dest: './temp/main.temp.js'
+        dest: './temp/main.js'
 
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
