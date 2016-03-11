@@ -29,6 +29,7 @@ userinfo.controller("userinfoController", ["$scope", "$state", "mainServer", "ma
             if ($scope.modifyName.$valid) {
                 mainServer.user.setNickName($scope.newName).success(function() {
                     mainDataServer.loginUser.nickName = $scope.newName;
+                    mainDataServer.loginUser.firstchar = webimutil.ChineseCharacter.getPortraitChar($scope.newName);
                 })
                 $scope.editable = false;
             }

@@ -12,29 +12,28 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.conversationMessageList = <any>[];
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
-            // var detail = <any>msgsdk.getDetail();
             var detail = <any>msgsdk.content.message.content
             var comment = "", members = <any>[]
             switch (detail.operation) {
                 case "Add":
-                    comment = "加入群组";
+                    comment = " 加入群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Quit":
-                    comment = "退出群组"
+                    comment = " 退出群组"
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Kicked":
-                    comment = "被踢出群组";
+                    comment = " 被踢出群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Rename":
                     break;
                 case "Create":
-                    comment = detail.data.data.operatorNickname + "创建了群组";
+                    comment = detail.data.data.operatorNickname + " 创建了群组";
                     break;
                 case "Dismiss":
-                    comment = detail.data.data.operatorNickname + "解散了群组";
+                    comment = detail.data.data.operatorNickname + " 解散了群组";
                     break;
                 default:
                     console.log("未知群组通知");
@@ -114,6 +113,10 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         function unshiftHistoryMessages(id: string, type: string, item: any) {
             var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
+            if (arr[0] && item.messageUId && item.messageUId === arr[0].messageUId) {
+                return;
+            }
+
             if (arr[0] && arr[0].sendTime && arr[0].panelType != webimmodel.PanelType.Time && item.sendTime) {
                 if (compareDateIsAddSpan(arr[0].sendTime, item.sendTime)) {
                     arr.unshift(new webimmodel.TimePanl(arr[0].sendTime));

@@ -1,6 +1,8 @@
 <div class="chatBox">
+  <div class="chatBoxInner client">
     <!--header-->
     <div class="box_hd">
+      <div class="clientHd"></div>
         <div class="title_wrap">
             <a class="phone_return"  ng-show="$parent.showState.isPhone" ng-click="back()"><span class="backArrow"><</span>返回</a>
 
@@ -41,24 +43,16 @@
                     </div>
                 </div>
             </div>
-            <div class="progress-wrapper ng-isolate-scope ng-hide"><span class="progress-text ng-binding">正在上传: 0 % (0.0 B)</span>
+            <div class="progress-wrapper ng-isolate-scope" ng-show="uploadStatus.show"><span class="progress-text ng-binding">正在上传: {{uploadStatus.progress}}</span>
                 <div class="progress">
-                    <div class="progress-bar" style="width: 0%;"></div>
+                    <div class="progress-bar" ng-style="{width:uploadStatus.progress}"></div>
                 </div>
-                <a class="progress-cancel">取消</a>
+                <a class="progress-cancel" ng-click="uploadStatus.cancle()">取消</a>
             </div>
-            <!-- <span class="MessageForm-status ng-binding ng-scope ng-hide" style="">正在输入……</span>
-            <span class="MessageForm-status ng-hide">正在重新连接……</span> -->
-            <!-- <div id="RongIMexpressionWrap" ng-show="showemoji">
-              <emoji ng-repeat="item in emojiList" item="item" content="msgvalue"></emoji>
-            </div> -->
+            <!-- <span class="MessageForm-status ng-binding ng-scope " style="">正在输入……</span>
+            <span class="MessageForm-status ">正在重新连接……</span> -->
         </div>
-        <!-- <div class="MessageForm-appearance">
-            <textarea id="messageInput" ng-focus="showemoji=fase" ng-model="msgvalue" send-msg-key placeholder="请输入文字..."> </textarea>
-
-        </div> -->
         <div class="MessageForm-appearance active">
-            <!-- <textarea id="message-content" ng-focus="showemoji=fase" ng-model="currentConversation.draftMsg" ctrl-enter-keys fun="sendBtn()" ctrlenter="false" placeholder="请输入文字..."></textarea> -->
             <pre  id="message-content" style='background-color: rgba(0,0,0,0);
             font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
                 white-space: pre-wrap;'
@@ -67,5 +61,5 @@
             <a class="sendBtn" href="javascript:void 0" ng-click="sendBtn()">发送</a>
         </div>
     </div>
-
+  </div>
 </div>

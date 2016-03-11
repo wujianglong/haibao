@@ -20,7 +20,7 @@ module.exports = (grunt) ->
         ]
       map:
         src: [
-          './build/assets/js/main.js.map'
+          './build/assets/js/main.min.js.map'
         ]
       temp:
         src:[
@@ -149,14 +149,17 @@ module.exports = (grunt) ->
       release:
         files:[
           {
+            src:['./src/app.config','./temp/main.temp.js']
+            dest:'./temp/main.js'
+          }
+          {
             src:[
               './bower_components/angular-ui-router/release/angular-ui-router.min.js'
               './bower_components/angular-ui-event/dist/event.min.js'
               './bower_components/angular-ui-switch/angular-ui-switch.min.js'
               './bower_components/angular-shims-placeholder/dist/angular-shims-placeholder.min.js'
             ]
-            # dest:'./dist/assets/js/angular-widget.min.js'
-            dest:'./temp/angular-widget.js'
+            dest:'./dist/assets/js/angular-widget.min.js'
           }
           {
             src:[
@@ -179,6 +182,10 @@ module.exports = (grunt) ->
         ]
       build:
         files:[
+          {
+            src:['./src/app.config','./temp/main.temp.js']
+            dest:'./build/assets/js/main.min.js'
+          }
           {
             src:[
               './bower_components/angular-ui-router/release/angular-ui-router.min.js'
@@ -225,10 +232,6 @@ module.exports = (grunt) ->
             dest: './dist/assets/js/main.min.js'
           }
           {
-            src:'./temp/angular-widget.js'
-            dest:'./dist/assets/js/angular-widget.min.js'
-          }
-          {
             src:'./temp/other.js'
             dest:'./dist/assets/js/other.min.js'
           }
@@ -249,6 +252,7 @@ module.exports = (grunt) ->
         tasks: [
           'clean:build'
           'copy:build'
+          'concat:build'
           'typescript:build'
           'clean:map'
         ]
@@ -267,7 +271,7 @@ module.exports = (grunt) ->
           suppressImplicitAnyIndexErrors: false
           target: 'es5'
         src: './src/assets/ts/**/*.ts'
-        dest: './build/assets/js/main.min.js'
+        dest:'./temp/main.temp.js'
       release:
         options:
           module: 'amd'
@@ -277,8 +281,7 @@ module.exports = (grunt) ->
           suppressImplicitAnyIndexErrors: false
           target: 'es5'
         src: './src/assets/ts/**/*.ts'
-        dest: './temp/main.js'
-        # dest: './dist/assets/js/main.js'
+        dest: './temp/main.temp.js'
 
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'

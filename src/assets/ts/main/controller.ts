@@ -6,9 +6,10 @@
 var mainCtr = angular.module("webim.main.controller", ["webim.main.server", "webim.conversation.server"]);
 
 
-mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
+mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout", "$http",
     "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "appconfig",
     function($scope: any, $state: angular.ui.IStateService, $window: angular.IWindowService, $timeout: angular.ITimeoutService,
+        $http: angular.IHttpService,
         mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, appconfig: any) {
 
         if (!mainDataServer.loginUser.id) {
@@ -223,20 +224,19 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                 RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
                     console.log("connect success:" + userId);
                     RongIMSDKServer.getConversationList().then(function() {
-                        console.log("sync conversationlist");
                         mainDataServer.conversation.updateConversations();
                     });
                 }, function(error) {
-                    //token 错误。
+                    if (error.tokenError) {
+                        //token 错误。
+                    }
                     //其他错误
                     //TODO:逻辑未处理
                 });
             } else {
-                console.error("server token 获取失败");
                 $state.go("account.signin");
             }
         }).error(function(e) {
-            console.error("server token 获取失败");
             $state.go("account.signin");
         });
 
@@ -278,6 +278,11 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     //网络不可用
                     case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
                         console.log('网络不可用');
+                        checkNetwork({
+                            onSuccess: function() {
+                                reconnectServer();
+                            }
+                        })
                         break;
                 }
             }
@@ -303,6 +308,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     RongIMSDKServer.removeConversation(webimmodel.conversationType.Private, "").then(function() {
                         refreshconversationList();
                     });
+                    return;
                 }
 
                 if ($state.is("main.chat") && !document.hidden) {
@@ -341,8 +347,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 mainServer.user.getInfo(contact.sourceUserId).success(function(rep) {
                                     item.name = rep.result.nickname;
                                     item.portraitUri = rep.result.portraitUri;
+                                    item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
                                 }).error(function() {
-                                    console.log("获取用户信息失败");
                                 })
                             }
                             mainDataServer.notification.addNotification(item);
@@ -508,7 +514,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
                         break;
                     default:
-                        console.log(data.messageType + "：未处理")
+                        // console.log(data.messageType + "：未处理")
                         break;
                 }
 
@@ -533,6 +539,44 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             } else {
                 $scope.$broadcast("msglistchange");
             }
+        }
+
+
+
+        var reconnectTimes = 0, timeInterval = 20;
+        function reconnectServer() {
+            setTimeout(function() {
+                RongIMSDKServer.reconnect({
+                    onSuccess: function() {
+                        reconnectTimes = 0;
+                        console.log("reconnectSuccess");
+                        RongIMSDKServer.getConversationList().then(function() {
+                            mainDataServer.conversation.updateConversations();
+                        });
+                    },
+                    onError: function() {
+                        if (reconnectTimes <= 5) {
+                            reconnectServer();
+                            reconnectTimes += 1;
+                        } else {
+                            reconnectTimes = 0;
+                            console.log("网络正常重连失败！！！");
+                        }
+                    }
+                });
+            }, timeInterval * reconnectTimes * 1000);
+        }
+
+        function checkNetwork(callback: any) {
+            $http.get("index.html", {
+                params: { t: Math.random() }
+            }).success(function() {
+                callback && callback.onSuccess && callback.onSuccess();
+            }).error(function() {
+                setTimeout(function() {
+                    checkNetwork(callback);
+                }, 5000);
+            });
         }
 
 

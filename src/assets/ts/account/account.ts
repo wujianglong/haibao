@@ -32,7 +32,7 @@ account.controller("signinController", ["$scope", "$state", "mainServer", "mainD
                 // var carr = RongIMSDKServer.conversationList();
                 // carr.splice(0, carr.length);
             } catch (e) {
-                console.log("not init");
+
             }
 
         }
@@ -54,13 +54,12 @@ account.controller("signinController", ["$scope", "$state", "mainServer", "mainD
                         //用户或密码错误
                         $scope.userorpwdIsError = true;
                     } else {
-                        console.log(rep);
+                      
                     }
                 }).error(function(error, code) {
                     if (code == 400) {
                         webimutil.Helper.alertMessage.error("无效的手机号", 2);
                     }
-                    console.log(error);
                 });
             }
         }
@@ -93,7 +92,6 @@ account.controller("signupController", ["$scope", "$interval", "$state", "mainSe
                                 $state.go("account.signin");
                             }).error(function(e) {
                                 webimutil.Helper.alertMessage.error("注册失败", 2);
-                                console.log(e);
                             })
                     } else {
                         //短信验证码错误
@@ -107,7 +105,6 @@ account.controller("signupController", ["$scope", "$interval", "$state", "mainSe
                         // webimutil.Helper.alertMessage.error("验证过期刷新重试！");
                         $scope.codeIsError = true;
                     } else {
-                        console.log(error);
                         $scope.codeIsError = true;
                     }
                 });
@@ -140,7 +137,7 @@ account.controller("forgotpasswordController", ["$scope", "$state", "mainServer"
                         $scope.codeIsError = true;
                     }
                 }).error(function(e) {
-                    console.log(e);
+
                 })
             }
         }
@@ -317,7 +314,6 @@ account.directive("sendCodeButton", ["$interval", "mainServer", function($interv
                         if (code == 400) {
                             webimutil.Helper.alertMessage.error("无效手机号", 2);
                         }
-                        console.log(error);
                     })
                 }
             }

@@ -150,7 +150,8 @@ module webimmodel {
             sendTime: item.sentTime ? (new Date(item.sentTime)) : null,
             targetId: item.targetId,
             senderUserName: "",
-            senderUserImgSrc: ""
+            senderUserImgSrc: "",
+            messageUId: item.messageUId
         };
         return msg;
     }
@@ -175,6 +176,8 @@ module webimmodel {
         senderUserName: string;
         senderUserImgSrc: string;
 
+        messageUId: string
+
 
         constructor(type: PanelType, item: {
             content: string;
@@ -193,6 +196,7 @@ module webimmodel {
             targetId: string;
             senderUserName: string;
             senderUserImgSrc: string;
+            messageUId: string;
         }) {
             super(type);
             this.content = item.content;
@@ -212,6 +216,7 @@ module webimmodel {
 
             this.senderUserName = item.senderUserName;
             this.senderUserImgSrc = item.senderUserImgSrc;
+            this.messageUId = item.messageUId;
         }
 
         static convertCommonMsg = convertCommonMsg;
@@ -345,9 +350,34 @@ module webimmodel {
             } else if (msgtype == MessageType.VoiceMessage) {
                 msgContent = "[语音]";
             } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage) {
-                // msgContent = "[通知消息]";
-                msgContent = "";
-            } else {
+                msgContent = "[通知消息]";
+            } else if (msg.objectName == "RC:GrpNtf") {
+                var data = msg.content.message.content.data.data
+                switch (msg.content.message.content.operation) {
+                    case "Add":
+                        msgContent = data.targetUserDisplayNames.join("、") + " 加入了群组";
+                        break;
+                    case "Quit":
+                        msgContent = data.operatorNickname + " 退出了群组";
+                        break;
+                    case "Kicked":
+                        //operatorNickname
+                        msgContent = data.targetUserDisplayNames.join("、") + " 被剔出群组";
+                        break;
+                    case "Rename":
+                        msgContent = data.operatorNickname + " 修改了群名称";
+                        break;
+                    case "Create":
+                        msgContent = data.operatorNickname + " 创建了群组";
+                        break;
+                    case "Dismiss":
+                        msgContent = data.operatorNickname + " 解散了群组 " + data.targetGroupName;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else {
                 msgContent = msg.content ? msg.content.content : "";
 
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
@@ -382,6 +412,7 @@ module webimmodel {
 
             senderUserName: string;
             senderUserImgSrc: string;
+            messageUId: string;
         }) {
             super(PanelType.Text, item);
         }
@@ -411,6 +442,8 @@ module webimmodel {
             senderUserImgSrc: string;
 
             imageUri: string;
+
+            messageUId: string;
         }) {
             super(PanelType.Image, item);
             this.imageUri = item.imageUri;
@@ -441,6 +474,7 @@ module webimmodel {
 
             duration: number;
             isUnReade: boolean;
+            messageUId: string;
         }) {
             super(PanelType.Voice, item);
             this.duration = item.duration;
@@ -474,6 +508,7 @@ module webimmodel {
             latitude: number;
             longitude: number;
             poi: string;
+            messageUId: string;
         }) {
             super(PanelType.Location, item);
             this.latitude = item.latitude;
@@ -507,6 +542,7 @@ module webimmodel {
 
             title: string;
             imageUri: string;
+            messageUId: string;
         }) {
             super(PanelType.RichContent, item);
             this.title = item.title;
@@ -547,6 +583,7 @@ module webimmodel {
             targetUserId: string;
             message: string;
             noticeType: number;
+            messageUId: string;
         }) {
             super(PanelType.Other, item);
             this.operation = item.operation;
@@ -584,6 +621,7 @@ module webimmodel {
             name: string;
             data: any;
             noticeType: number;
+            messageUId: string;
         }) {
             super(PanelType.Other, item);
             this.data = item.data;
@@ -611,6 +649,7 @@ module webimmodel {
 
             senderUserName: string;
             senderUserImgSrc: string;
+            messageUId: string;
         }) {
             super(PanelType.InformationNotification, item);
         }
@@ -635,6 +674,7 @@ module webimmodel {
 
             senderUserName: string;
             senderUserImgSrc: string;
+            messageUId: string;
         }) {
             super(PanelType.Other, item);
         }
@@ -737,6 +777,7 @@ module webimmodel {
         }
     }
     export class Friend extends Contact {
+        displayName: string
         constructor(item: {
             id: string;
             name: string;

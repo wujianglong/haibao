@@ -11,18 +11,20 @@ var webimApp = angular.module("webim", ["ui.router", "ui.event", "uiSwitch", "ng
     "webim.account"], function() {
     });
 
+var __sealtalk_config: any;
 webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvider",
     function($provide: angular.auto.IProvideService, $stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider, $httpProvider: angular.IHttpProvider) {
-
+        var baseUrl = window["__sealtalk_config"]["serverUrl"];
+        var appkey = window["__sealtalk_config"]["appkey"]
 
         $provide.provider("appconfig", function() {
             this.$get = function() {
                 return {
                     getBaseUrl: function() {
-                        return "***";
+                        return baseUrl;
                     },
                     getAppKey: function() {
-                        return "***"
+                        return appkey;
                     }
                 }
             }
@@ -163,9 +165,54 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
             controller: 'resetpasswordController'
         })
 
-    }])
+    }]);
 
-webimApp.run(["RongIMSDKServer", "$state", function(RongIMSDKServer: RongIMSDKServer, $state: angular.ui.IStateService) {
+
+function cancelScollStyle() {
+    //取消滚动条弹性
+    function getDirection(ev: any) {
+        return ev.originalEvent.detail ? ev.originalEvent.detail > 0 : ev.originalEvent.wheelDelta < 0;
+    }
+    function bindScroll(ev: any) {
+        var _top = $(this).scrollTop();
+        var direction = getDirection(ev);
+        var viewHeight = $(this).outerHeight();
+        var height = $(this)[0].scrollHeight;
+
+        if (_top == 0) {
+            if (!direction) {
+                ev.preventDefault();
+            } else if ((viewHeight + _top) < height) {
+                ev.stopPropagation();
+            } else {
+                ev.preventDefault();
+            }
+        } else {
+            if ((viewHeight + _top) < height) {
+                ev.stopPropagation();
+            } else {
+                if (direction) {
+                    ev.preventDefault();
+                } else {
+                    ev.stopPropagation();
+                }
+            }
+        }
+    }
+    var listScroll = ["body", "#functionBox", "#chatArea", "#Messages", ".noticeBarList", ".main", ".noticeBarList", ".chatArea", ".communicateList"];
+    var len = listScroll.length;
+
+
+    for (var i = 0; i < len; i++) {
+        if (listScroll[i] == 'body') {
+            $("body").on('mousewheel', bindScroll);
+        }
+        $(document.body).on('mousewheel', listScroll[i], bindScroll);
+    }
+}
+
+webimApp.run(["RongIMSDKServer", "$state", "$rootScope", function(RongIMSDKServer: RongIMSDKServer, $state: angular.ui.IStateService, $rootScope: angular.IRootScopeService) {
+
 
     webimutil.NotificationHelper.requestPermission();
 
@@ -175,6 +222,11 @@ webimApp.run(["RongIMSDKServer", "$state", function(RongIMSDKServer: RongIMSDKSe
     window._open_account_settings = function() {
         $state.go("main.userinfo");
     }
+
+    $rootScope.$on('$stateChangeSuccess',
+        function(event, toState, toParams, fromState, fromParams) {
+            cancelScollStyle();
+        });
 }])
 
 webimApp.filter('trustHtml', ["$sce", function($sce: angular.ISCEService) {

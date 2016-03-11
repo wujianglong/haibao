@@ -24,7 +24,7 @@ declare module RongIMLib {
 }
 
 interface JQuery {
-    rebox(target: any): void
+    rebox(target: any): JQuery
 }
 
 interface Window {

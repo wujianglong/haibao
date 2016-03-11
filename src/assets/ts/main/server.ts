@@ -341,7 +341,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 addgroup = true;
                             } else {
                                 //TODO:添加最后一条消息的发送人
-                                if (conversationitem.lastMsg) {
+                                if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
                                     var member = mainDataServer.contactsList.getGroupMember(group.id, list[i].latestMessage.senderUserId);
                                     if (member) {
                                         conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
@@ -351,10 +351,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                                 conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
                                             });
                                         } (list[i].latestMessage.senderUserId, conversationitem))
-
                                     }
                                 }
-
                             }
                             list[i].conversationTitle = group ? group.name : "未知群组";
                             conversationitem.title = group ? group.name : "未知群组";
@@ -372,18 +370,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 list[i].conversationTitle = friendinfo.name;
                                 conversationitem.title = friendinfo.name;
                                 conversationitem.firstchar = friendinfo.firstchar;
-                            } else {
+                            } else if (list[i].targetId) {
                                 (function(id: string, conv: webimmodel.Conversation) {
                                     mainServer.user.getInfo(id).success(function(rep) {
                                         // list[i].conversationTitle = rep.result.nickname;
                                         conv.title = rep.result.nickname + "(非好友)";
                                         conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                                     }).error(function() {
-                                        console.log("updateConversations:获取用户信息错误！");
                                         conv.title = "非系统用户";
                                     });
                                 })(list[i].targetId || list[i].senderUserId, conversationitem)
-
                             }
 
                             break;
@@ -426,10 +422,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
                                 })
                             }).error(function(err) {
-                                console.log("无此群" + err);
-                                // RongIMSDKServer.removeConversation(RongIMLib.ConversationType.GROUP, item.targetId).then(function() {
-                                //
-                                // });
+                                RongIMSDKServer.removeConversation(RongIMLib.ConversationType.GROUP, item.targetId).then(function() {
+
+                                });
                             });
                         })(conversationitem);
                     }
@@ -461,7 +456,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             item.title = rep.result.nickname + "(非好友)";
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                         }).error(function() {
-                            console.log("createConversation:获取用户信息错误！");
+
                         });
                     }
                     break;
@@ -582,11 +577,12 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 for (var i = 0, len = this.subgroupList.length; i < len; i++) {
                     if (this.subgroupList[i].title == f) {
                         this.subgroupList[i].list.push(friend);
-                        return;
+                        return friend;
                     }
                 }
                 this.subgroupList.push(new webimmodel.Subgroup(f, [friend]));
                 this.subgroupList.sort(function(a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
+                return friend;
             }
         },
         removeFriend: function(friendId: string) {
@@ -657,7 +653,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     }
                 }
             } else {
-                console.log("not exist group" + groupId);
+
             }
 
             return null;
@@ -673,7 +669,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 item.memberList.push(member);
                 item.fact = item.memberList.length;
             } else {
-                console.log(item, groupId, member);
+
             }
         },
         removeGroupMember: function(groupId: string, memberid: string) {
@@ -941,7 +937,6 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, null, num, {
             onSuccess: function(data, has) {
-                console.log(has);
                 defer.resolve({
                     data: data,
                     has: has
@@ -987,6 +982,7 @@ interface RongIMSDKServer {
     getHistoryMessages(type: number, targetId: string, num: number): angular.IPromise<{ data: RongIMLib.Message[], has: boolean }>
     disconnect(): void
     logout(): void
+    reconnect(callback?: any): void
 }
 
 interface mainDataServer {
@@ -1008,7 +1004,7 @@ interface mainDataServer {
         getGroupById(id: string): webimmodel.Group
         getFriendById(id: string): webimmodel.Friend
         // getSubgroupFriendById(id: string): webimmodel.Friend
-        addFriend(friend: webimmodel.Friend): void
+        addFriend(friend: webimmodel.Friend): webimmodel.Friend
         removeFriend(id: string): boolean
         addGroup(group: webimmodel.Group): void
         removeGroup(id: string): boolean;

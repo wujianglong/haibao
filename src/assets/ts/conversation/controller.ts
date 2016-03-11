@@ -120,7 +120,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             var msg = RongIMLib.TextMessage.obtain(con);
 
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
-                console.log("send success!");
+
             }, function(error) {
                 console.log(error);
             });
@@ -206,8 +206,19 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             uploadFileInit();
         }
 
+        $scope.uploadStatus = {
+            show: false,
+            progress: 0,
+            cancle: function() {
+                qiniuuploader.stop && qiniuuploader.stop();
+                $scope.uploadStatus.show = false;
+                $scope.uploadStatus.progress = 0;
+                qiniuuploader.files.pop();
+            }
+        }
+        var qiniuuploader: any;
         function uploadFileInit() {
-            var qiniuuploader = Qiniu.uploader({
+            qiniuuploader = Qiniu.uploader({
                 // runtimes: 'html5,flash,html4',
                 runtimes: 'html5,html4',
                 browse_button: 'upload-file',
@@ -227,17 +238,37 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     prevent_duplicates: false
                 },
                 multi_selection: false,
-                auto_start: true,
+                // auto_start: true,
                 init: {
                     'FilesAdded': function(up: any, files: any) {
+
+                        if ($scope.uploadStatus.show) {
+                            webimutil.Helper.alertMessage.error("正在上传请稍后", 2);
+                            // up.removeFile(file);
+                            for (var i = 0, len = files.length; i < len; i++) {
+                                up.removeFile(files[0]);
+                            }
+                        } else {
+                            qiniuuploader.start();
+                        }
                     },
                     'BeforeUpload': function(up: any, file: any) {
+                        $scope.uploadStatus.show = true;
+                        $scope.$apply();
                     },
                     'UploadProgress': function(up: any, file: any) {
+                        console.log(file.name + file.percent);
+                        $scope.uploadStatus.progress = file.percent + "%";
+                        setTimeout(function() {
+                            $scope.$apply();
+                        })
                     },
                     'UploadComplete': function() {
                     },
                     'FileUploaded': function(up: any, file: any, info: any) {
+                        $scope.uploadStatus.show = false;
+                        $scope.uploadStatus.progress = 0;
+                        $scope.$apply();
                         !function(info: any) {
                             var info = JSON.parse(info);
                             webimutil.ImageHelper.getThumbnail(file.getNative(), 60000, function(obj: any, data: any) {
@@ -260,6 +291,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
                     },
                     'Error': function(up: any, err: any, errTip: any) {
+                        $scope.uploadStatus.show = false;
+                        webimutil.Helper.alertMessage.error("上传图片出错！", 2);
+
                     }
                     // ,
                     // 'Key': function(up: any, file: any) {

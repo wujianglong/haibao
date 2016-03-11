@@ -10,8 +10,8 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
             setPortrait();
         });
         function setPortrait() {
-            if ($scope.user.id) {
-                angular.element(document.getElementById("portrait")).css("background-color", webimutil.Helper.portraitColors[$scope.user.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+            if (userid) {
+                angular.element(document.getElementById("portrait")).css("background-color", webimutil.Helper.portraitColors[userid.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
             }
         }
 
@@ -31,10 +31,23 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
         $scope.user = new webimmodel.UserInfo();
 
         if (friend) {
-            $scope.user.id = friend.id;
-            $scope.user.nickName = friend.name;
-            $scope.user.portraitUri = friend.imgSrc;
-            $scope.user.firstchar = friend.firstchar;
+            // $scope.user.id = friend.id;
+            // $scope.user.nickName = friend.name;
+            // $scope.user.portraitUri = friend.imgSrc;
+            // $scope.user.firstchar = friend.firstchar;
+            //更新好友信息
+            mainDataServer.contactsList.removeFriend(userid);
+            mainServer.friend.getProfile(userid).success(function(data) {
+                var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.portraitUri });
+                f.displayName = data.result.displayName;
+                f = mainDataServer.contactsList.addFriend(f);
+
+                $scope.user.id = f.id;
+                $scope.user.nickName = f.name;
+                $scope.user.portraitUri = f.imgSrc;
+                $scope.user.firstchar = f.firstchar;
+            })
+
         } else if (member) {
             $scope.user.id = member.id;
             $scope.user.nickName = member.name;
@@ -54,10 +67,8 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
                 $scope.user.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.data.result.nickname);
                 setPortrait();
             })
-
-            // webimutil.Helper.alertMessage.error("陌生人不做显示", 2);
-            // goback();
         }
+
 
         $scope.edit = function() {
             $state.go("main.editfriendinfo", { userid: userid, groupid: groupid, targetid: targetid, conversationtype: conversationtype });

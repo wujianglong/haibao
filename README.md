@@ -47,7 +47,7 @@ grunt connect
 ### 在浏览器中打开
 
 [http://localhost:8181](http://localhost:8181)  
-执行grunt build前将main.ts文件中的provider appconfig 中getBaseUrl和getAppKey改为自己应用的值
+执行grunt build前将app.config文件中的serverUrl和appkey改为自己应用的值
 
 ## Coding Guidelines
 
@@ -57,7 +57,7 @@ https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 ## 站点部署说明
 
 ```
-1.修改/src/assets/ts/main.ts文件中的provider appconfig 中getBaseUrl和getAppKey的返回值（BaseUrl为后台Server地址，AppKey为从融云注册的应用key）
+1.修改/src/assets/app.config 中serverUrl和appkey的值（ServerUrl为后台Server地址，AppKey为从融云注册的应用key）
 2.项目根目录执行命令 grunt release
 3.将dist目录下的文件以静态文件形式部署在服务器上。程序入口页面index.html。
 ```

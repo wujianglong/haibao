@@ -22,14 +22,13 @@
      </div>
      <div class="Message-body">
          <div ng-switch="item.panelType">
-           <div class="" ng-switch-when="1">
+           <!-- <div class="" ng-switch-when="1">
                <div class="Message-text">
-                 <!-- <span class="Message-entry" ng-bind-html="item.content|trustHtml">
-               </span> -->
                  <pre class="Message-entry" ng-bind-html="item.content|trustHtml">
                  </pre>
                <br></span></div>
-           </div>
+           </div> -->
+           <text-message item="item" ng-switch-when="1"></text-message>
            <image-message item="item" ng-switch-when="2"></image-message>
            <voice-message item="item" ng-switch-when="3"></voice-message>
            <div class=""  ng-switch-when="4">

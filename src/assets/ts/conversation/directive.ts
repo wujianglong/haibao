@@ -142,9 +142,9 @@ conversationDire.directive("emoji", [function() {
             item: "=",
             content: "="
         },
-        template: "",
+        template: '<div style="display:inline-block"></div>',
+        replace: true,
         link: function(scope: any, ele: angular.IRootElementService, attr: angular.IAttributes) {
-
 
             ele.append(scope.item);
             ele.on("click", function() {
@@ -165,7 +165,9 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
         template: '<div class="">' +
         '<div class="Message-audio">' +
         '<span class="Message-entry" style="">' +
-        '<span class="audioBox clearfix " ng-class="{\'animate\':isplaying}" ng-click="play()"><i></i><i></i><i></i></span><span class="audioTimer">{{item.duration}}”</span><span class="audioState" ng-show="item.isUnReade"></span>' +
+        // '<span class="audioBox clearfix " ng-class="{\'animate\':isplaying}" ng-click="play()"><i></i><i></i><i></i></span>'+
+        '<span class="audioBox clearfix"  ng-class="{\'animate\':isplaying}" ng-click="play()"><i></i><i></i><i></i><i></i></span>' +
+        '<span class="audioTimer">{{item.duration}}”</span><span class="audioState" ng-show="item.isUnReade"></span>' +
         '</span>' +
         '</div>' +
         '</div>',
@@ -174,7 +176,7 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
 
             scope.play = function() {
                 RongIMLib.RongIMVoice.stop();
-                if (scope.isplaying) {
+                if (!scope.isplaying) {
                     scope.item.isUnReade = false;
                     RongIMLib.RongIMVoice.play(scope.item.content, scope.item.duration);
                     scope.isplaying = true;
@@ -183,7 +185,7 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
                     }
                     scope.timeoutid = $timeout(function() {
                         scope.isplaying = false;
-                    }, scope.item.duration);
+                    }, scope.item.duration * 1000);
                 } else {
                     scope.isplaying = false;
                     $timeout.cancel(scope.timeoutid);
@@ -193,6 +195,33 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
         }
     }
 }]);
+
+conversationDire.directive("textMessage", [function() {
+    return {
+        restrict: "E",
+        scope: {
+            item: "="
+        },
+        template: '<div class="">' +
+        '<div class="Message-text">' +
+        '<pre class="Message-entry" ng-bind-html="content|trustHtml">' +
+        '</pre>' +
+        '<br></span></div>' +
+        '</div>',
+        replace: true,
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+            var reg=/(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/
+            // var reg = /(((ht|f)tp(s?))\:\/\/)?(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk)(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/g
+            scope.content = scope.item.content.replace(reg, function(str: any, $1: any) {
+                if ($1) {
+                    return '<a target="_blank" style="text-decoration:underline;" href="' + str + '">' + str + '</a>';
+                } else {
+                    return '<a target="_blank" style="text-decoration:underline;" href="//' + str + '">' + str + '</a>';
+                }
+            });
+        }
+    }
+}])
 
 conversationDire.directive("imageMessage", [function() {
     return {
@@ -211,8 +240,21 @@ conversationDire.directive("imageMessage", [function() {
             var img = new Image();
             img.src = scope.item.imageUri;
             setTimeout(function() {
-                $('#rebox_' + scope.$id).rebox({ selector: 'a' });
+                $('#rebox_' + scope.$id).rebox({ selector: 'a' }).bind("rebox:open", function() {
+                    //jQuery rebox 点击空白关闭
+                    var rebox = <any>document.getElementsByClassName("rebox")[0];
+                    rebox.onclick = function(e: any) {
+                        if (e.target.tagName.toLowerCase() != "img") {
+                            var rebox_close = <any>document.getElementsByClassName("rebox-close")[0];
+                            rebox_close.click();
+                            rebox = null; rebox_close = null;
+                        }
+                    }
+                });
             })
+
+
+
             img.onload = function() {
 
                 scope.$apply(function() {

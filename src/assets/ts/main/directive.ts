@@ -45,7 +45,6 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.targetId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
 
             ele.bind("click", function() {
-                console.log(scope.item.targetId, scope.item.targetType);
 
                 if (scope.item.targetType == webimmodel.conversationType.System) {
                     $state.go("main.notification");
@@ -206,7 +205,7 @@ mainDire.directive("searchInput", ["$timeout", function($timeout: angular.ITimeo
 mainDire.directive("inputWrap", [function() {
     return {
         restrict: "E",
-        scope: { message: "=", maxlength: "=" },
+        scope: { message: "=", maxlength: "=", loadedfocus: "@" },
         template: '<div class="input-wrap">' +
         '<div class="textarea-wrap" style="height: 140px;">' +
         '<div class="textarea-bg" style="display: block;" ng-show="showplaceholder">' +
@@ -220,6 +219,12 @@ mainDire.directive("inputWrap", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attrs: angular.IAttributes) {
             scope.showplaceholder = true;
             scope.maxlength = scope.maxlength || 64;
+
+            if (scope.loadedfocus) {
+                angular.element(ele).find("textarea")[0].focus();
+                scope.showplaceholder = false;
+            }
+
             ele.find("textarea").bind("focus", function() {
                 scope.showplaceholder = false;
                 scope.$apply();
