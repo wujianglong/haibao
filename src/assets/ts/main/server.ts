@@ -220,6 +220,16 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     method: "get",
                     url: serverBaseUrl + "/friendship/" + id + "/profile",
                 });
+            },
+            setDisplayName: function(friendId: string, displayName: string) {
+                return $http({
+                    method: "POST",
+                    url: serverBaseUrl + "/friendship/set_display_name",
+                    data: {
+                        friendId: friendId,
+                        displayName: displayName
+                    }
+                })
             }
         },
         group: {
@@ -1057,6 +1067,7 @@ interface mainServer {
         ignore(friendId: string): angular.IHttpPromise<any>
         getProfile(id: string): angular.IHttpPromise<any>
         delete(friendId: string): angular.IHttpPromise<any>
+        setDisplayName(friendId: string, displayName: string): angular.IHttpPromise<any>
     }
     group: {
         create(name: string, memberIds: string[]): angular.IHttpPromise<any>
