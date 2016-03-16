@@ -324,12 +324,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 mainDataServer.conversation.totalUnreadCount = data;
             });
 
-
-
             RongIMSDKServer.getConversationList().then(function(list) {
-
-
-
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
@@ -611,6 +606,26 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
+        updateOrAddFriend: function(friend: webimmodel.Friend) {
+            var obj = webimutil.ChineseCharacter.convertToABC(friend.name);
+            var f = webimutil.ChineseCharacter.getPortraitChar(friend.name);
+            friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+            var oldFriend = this.quickGetFriend(friend.id, f);
+            if (!oldFriend) {
+                for (var i = 0, len = this.subgroupList.length; i < len; i++) {
+                    if (this.subgroupList[i].title == f) {
+                        this.subgroupList[i].list.push(friend);
+                        return friend;
+                    }
+                }
+                this.subgroupList.push(new webimmodel.Subgroup(f, [friend]));
+                this.subgroupList.sort(function(a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
+                return friend;
+            } else {
+                angular.extend(oldFriend, friend);
+                return oldFriend;
+            }
+        },
         addGroup: function(group: webimmodel.Group) {
             if (!contactsList.getGroupById(group.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(group.name);
@@ -843,19 +858,6 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         RongIMLib.RongIMClient.reconnect(callback);
     }
 
-    RongIMSDKServer.clearMessagesUnreadStatus = function(type: number, targetid: string) {
-        var defer = $q.defer();
-        RongIMLib.RongIMClient.getInstance().clearMessagesUnreadStatus(type, targetid, {
-            onSuccess: function(data) {
-                defer.resolve(data);
-            },
-            onError: function(error) {
-                defer.reject(error);
-            }
-        });
-        return defer.promise;
-    }
-
     RongIMSDKServer.clearUnreadCount = function(type: number, targetid: string) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().clearUnreadCount(type, targetid, {
@@ -978,7 +980,6 @@ interface RongIMSDKServer {
     setConnectionStatusListener(listener: any): void
     setOnReceiveMessageListener(listener: any): void
     removeConversation(type: number, targetId: string): angular.IPromise<boolean>
-    clearMessagesUnreadStatus(type: number, targetid: string): angular.IPromise<boolean>
     clearUnreadCount(type: number, targetid: string): angular.IPromise<boolean>
     getTotalUnreadCount(): angular.IPromise<number>
     sendMessage(conver: number, targetId: string, content: any): angular.IPromise<RongIMLib.Message>
@@ -1001,7 +1002,7 @@ interface mainDataServer {
         totalUnreadCount: number
         conversations: webimmodel.Conversation[]
         currentConversation: webimmodel.Conversation,
-        updateConversations(): void
+        updateConversations(): angular.IPromise<any>
         createConversation(targetType: number, targetId: string): webimmodel.Conversation
         getConversation(type: number, id: string): webimmodel.Conversation
         setDraft(type: string, id: string, msg: string): boolean
@@ -1016,6 +1017,7 @@ interface mainDataServer {
         // getSubgroupFriendById(id: string): webimmodel.Friend
         addFriend(friend: webimmodel.Friend): webimmodel.Friend
         removeFriend(id: string): boolean
+        updateOrAddFriend(friend: webimmodel.Friend): webimmodel.Friend
         addGroup(group: webimmodel.Group): void
         removeGroup(id: string): boolean;
         find(str: string, arr: webimmodel.Contact[]): webimmodel.Contact[]

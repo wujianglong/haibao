@@ -5,8 +5,8 @@
   <get-history-message ng-switch-when="105" myclick="$parent.$parent.$parent.getHistoryMessage()" ></get-history-message>
   <div ng-switch-when="9" class="sys-tips"><span>{{item.content}}</span></div>
 
- <div ng-switch-default class="Message" ng-if="item.panelType>0">
-     <div class="Messages-unreadLine"></div>
+  <div ng-switch-when="1" class="Message">
+    <div class="Messages-unreadLine"></div>
      <div>
          <div class="Message-header ">
            <div class="img u-isActionable Message-avatar avatar portrait"  ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)">
@@ -20,42 +20,14 @@
              </div>
          </div>
      </div>
-     <div class="Message-body">
-         <div ng-switch="item.panelType">
-           <!-- <div class="" ng-switch-when="1">
-               <div class="Message-text">
-                 <pre class="Message-entry" ng-bind-html="item.content|trustHtml">
-                 </pre>
-               <br></span></div>
-           </div> -->
-           <text-message item="item" ng-switch-when="1"></text-message>
-           <image-message item="item" ng-switch-when="2"></image-message>
-           <voice-message item="item" ng-switch-when="3"></voice-message>
-           <div class=""  ng-switch-when="4">
-               <div class="Message-image-text">
-                   <span class="Message-entry" style="">
-                       <div class="image-textBox">
-                           <h4>{{item.title}}</h4>
-                           <div class="cont clearfix">
-                               <img ng-src="{{item.imageUri||'../../static/images/barBg.png'}}" alt=""/>
-                               <div>{{item.content}}</div>
-                           </div>
-                       </div>
-                   </span>
-               </div>
-           </div>
-             <div class="" ng-switch-when="8">
-                 <div class="Message-map">
-                   <span class="Message-entry" style="">
-                       <div class="mapBox">
-                           <img ng-src="{{item.content||'../../static/images/barBg.png'}}" alt=""/>
-                           <span>{{item.poi}}</span>
-                       </div>
-                   </span>
-                 </div>
-             </div>
-
+     <div class="Message-body" >
+         <div  ng-switch="item.messageType">
+           <text-message item="item.content" ng-switch-when="TextMessage"></text-message>
+           <image-message item="item.content" ng-switch-when="ImageMessage"></image-message>
+           <voice-message item="item.content" ng-switch-when="VoiceMessage"></voice-message>
+           <richContent-message item="item.content" ng-switch-when="RichContentMessage"></richContent-message>
+           <location-message  item="item.content" ng-switch-when="LocationMessage"></location-message>
          </div>
      </div>
-</div>
+  </div>
 </div>

@@ -656,13 +656,8 @@ declare module RongIMLib {
          */
         getDeltaTime(): number;
         clearMessages(conversationType: ConversationType, targetId: string, callback: ResultCallback<boolean>): void;
-        /**TODO 清楚本地存储的未读消息，目前清空内存中的未读消息
-         * [clearMessagesUnreadStatus 清空指定会话未读消息]
-         * @param  {ConversationType}        conversationType [会话类型]
-         * @param  {string}                  targetId         [用户id]
-         * @param  {ResultCallback<boolean>} callback         [返回值，参数回调]
-         */
-        clearMessagesUnreadStatus(conversationType: ConversationType, targetId: string, callback: ResultCallback<boolean>): void;
+
+
         /**TODO
          * [deleteMessages 删除消息记录。]
          * @param  {ConversationType}        conversationType [description]

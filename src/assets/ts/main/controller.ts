@@ -84,6 +84,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }
         });
 
+        //窗口获得焦点时清除当前未读消息
+        window.onfocus = function() {
+            if ($state.is("main.chat")) {
+                RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetType);
+                mainDataServer.conversation.updateConversations();
+            }
+        }
+
 
         //页面加载时、控制页面的一些样式
         $scope.$on("$viewContentLoaded", function() {
@@ -339,7 +347,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 portraitUri: contact.senderUserImgSrc,
                                 content: contact.content,
                                 status: webimmodel.FriendStatus.Requested + "",
-                                timestamp: contact.sendTime.getTime()
+                                timestamp: contact.sentTime.getTime()
                             });
                             if (!item.name) {
                                 //没获取到名称去服务器获取
@@ -527,8 +535,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             var hislist = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] || []
             if (hislist.length == 0) {
                 hislist.push(new webimmodel.GetHistoryPanel());
-                if (msg.sendTime.toLocaleDateString() != (new Date()).toLocaleDateString())
-                    hislist.push(new webimmodel.TimePanl(msg.sendTime));
+                if (msg.sentTime.toLocaleDateString() != (new Date()).toLocaleDateString())
+                    hislist.push(new webimmodel.TimePanl(msg.sentTime));
             }
             conversationServer.addHistoryMessages(msg.targetId, msg.conversationType, msg);
             if (msg.messageType == webimmodel.MessageType.ImageMessage) {

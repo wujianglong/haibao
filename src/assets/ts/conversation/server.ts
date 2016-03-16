@@ -96,7 +96,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     }
                     var addtime = conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0];
                     if (addtime && addtime.panelType != webimmodel.PanelType.Time) {
-                        unshiftHistoryMessages(currentConversationTargetId, conver, new webimmodel.TimePanl(conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0].sendTime));
+                        unshiftHistoryMessages(currentConversationTargetId, conver, new webimmodel.TimePanl(conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0].sentTime));
                     }
 
                     d.resolve(has);
@@ -117,9 +117,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                 return;
             }
 
-            if (arr[0] && arr[0].sendTime && arr[0].panelType != webimmodel.PanelType.Time && item.sendTime) {
-                if (compareDateIsAddSpan(arr[0].sendTime, item.sendTime)) {
-                    arr.unshift(new webimmodel.TimePanl(arr[0].sendTime));
+            if (arr[0] && arr[0].sentTime && arr[0].panelType != webimmodel.PanelType.Time && item.sentTime) {
+                if (compareDateIsAddSpan(arr[0].sentTime, item.sentTime)) {
+                    arr.unshift(new webimmodel.TimePanl(arr[0].sentTime));
                 }
             }
             messageAddUserInfo(item);
@@ -139,9 +139,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function addHistoryMessages(id: string, type: string, item: webimmodel.Message) {
             var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
 
-            if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sendTime && item.sendTime) {
-                if (compareDateIsAddSpan(arr[arr.length - 1].sendTime, item.sendTime)) {
-                    arr.push(new webimmodel.TimePanl(item.sendTime));
+            if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
+                if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
+                    arr.push(new webimmodel.TimePanl(item.sentTime));
                 }
             }
             messageAddUserInfo(item);
@@ -155,7 +155,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
 
             var user: webimmodel.Contact;
-            if (item.direction == 1) {
+            if (item.messageDirection == 1) {
                 item.senderUserName = mainDataServer.loginUser.nickName;
                 // item.senderUserImgSrc = mainDataServer.loginUser.portraitUri;
                 item.senderUserImgSrc = mainDataServer.loginUser.firstchar;

@@ -36,12 +36,12 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
             // $scope.user.portraitUri = friend.imgSrc;
             // $scope.user.firstchar = friend.firstchar;
             //更新好友信息
-            mainDataServer.contactsList.removeFriend(userid);
+            // mainDataServer.contactsList.removeFriend(userid);
             mainServer.friend.getProfile(userid).success(function(data) {
                 var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.portraitUri });
                 f.displayName = data.result.displayName;
-                f = mainDataServer.contactsList.addFriend(f);
-
+                // f = mainDataServer.contactsList.addFriend(f);
+                f = mainDataServer.contactsList.updateOrAddFriend(f);
                 $scope.user.id = f.id;
                 $scope.user.nickName = f.name;
                 $scope.user.portraitUri = f.imgSrc;

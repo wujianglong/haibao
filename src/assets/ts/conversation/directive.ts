@@ -21,8 +21,8 @@ conversationDire.directive("conversationItem", ["$timeout", function($timeout: a
 
 conversationDire.directive('contenteditableDire', function() {
     return {
-        restrict: 'A', // only activate on element attribute
-        require: '?ngModel', // get a hold of NgModelController
+        restrict: 'A',
+        require: '?ngModel',
         link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
             function replacemy(e: string) {
                 return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
@@ -55,7 +55,7 @@ conversationDire.directive('contenteditableDire', function() {
             });
 
 
-            if (!ngModel) return; // do nothing if no ng-model
+            if (!ngModel) return;
 
             element.bind("paste", function(e: any) {
                 var that = this, ohtml = that.innerHTML;
@@ -67,20 +67,12 @@ conversationDire.directive('contenteditableDire', function() {
                 }, 50);
             });
 
-
-            // Specify how UI should be updated
             ngModel.$render = function() {
                 element.html(ngModel.$viewValue || '');
             };
 
-            // Listen for change events to enable binding
             webimutil.Helper.browser.msie ? element.bind("keyup paste", read) : element.bind("input", read);
-            // element.on('blur keyup change', function() {
-            //     scope.$apply(read);
-            // });
-            //read(); // initialize
 
-            // Write data to the model
             function read() {
                 var html = element.html();
                 html = html.replace(/^<br>$/i, "");
@@ -210,14 +202,14 @@ conversationDire.directive("textMessage", [function() {
         '</div>',
         replace: true,
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
-            var EMailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g
+            var EMailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/gi
             var EMailArr = <string[]>[];
             scope.content = scope.item.content.replace(EMailReg, function(str: any) {
                 EMailArr.push(str);
                 return '[email`' + (EMailArr.length - 1) + ']';
             });
 
-            var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/g
+            var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/gi
 
             scope.content = scope.content.replace(URLReg, function(str: any, $1: any) {
                 if ($1) {
@@ -293,6 +285,47 @@ conversationDire.directive("bigImage", [function() {
         }
     }
 }]);
+
+conversationDire.directive("richContentMessage", [function() {
+    return {
+        restrict: "E",
+        scope: {
+            item: "="
+        },
+        template: '   <div class="" >' +
+        '<div class="Message-image-text">' +
+        '<span class="Message-entry" style="">' +
+        '<div class="image-textBox">' +
+        '<h4>{{item.title}}</h4>' +
+        '<div class="cont clearfix">' +
+        '<img ng-src="{{item.imageUri||\'../../static/images/barBg.png\'}}" alt=""/>' +
+        '<div>{{item.content}}</div>' +
+        '</div>' +
+        '</div>' +
+        '</span>' +
+        '</div>' +
+        '</div>'
+    }
+}]);
+
+conversationDire.directive("locationMessage", [function() {
+    return {
+        restrict: "E",
+        scope: {
+            item: "="
+        },
+        template: ' <div class="">' +
+        '<div class="Message-map">' +
+        '<span class="Message-entry" style="">' +
+        '<div class="mapBox">' +
+        '<img ng-src="{{item.content||\'../../static / images / barBg.png\'}" alt=""/>' +
+        '<span>{{item.poi}}</span>' +
+        '</div>' +
+        '</span>' +
+        '</div>' +
+        '</div>'
+    }
+}])
 
 conversationDire.directive("dateMessage", [function() {
     return {
