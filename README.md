@@ -48,7 +48,7 @@ grunt connect
 
 [http://localhost:8181](http://localhost:8181)  
 执行grunt build前将app.config文件中的serverUrl和appkey改为自己应用的值
-SDK使用高版本typescript语法写的可能编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为1.6.2 然后执行一下 npm install
+SDK使用高版本typescript语法写的可能编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为1.6.2 然后在grunt-typescript执行一下 npm install
 
 ## Coding Guidelines
 

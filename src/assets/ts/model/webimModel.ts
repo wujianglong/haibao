@@ -238,7 +238,7 @@ module webimmodel {
                     break;
                 case MessageType.InformationNotificationMessage:
                     var info = new InformationNotificationMessage();
-                    info.content = SDKmsg.content.content;
+                    info.content = SDKmsg.content.message;
 
                     msg.content = info;
                     break;
@@ -250,7 +250,7 @@ module webimmodel {
                     contact.targetUserId = SDKmsg.content.targetUserId;
                     contact.message = SDKmsg.content.content;
 
-                    switch (content.operation) {
+                    switch (contact.operation) {
                         case "Request":
                             contact.noticeType = NoticePanelType.ApplyFriend;
                             break;
@@ -314,14 +314,14 @@ module webimmodel {
                 var data = msg.content.message.content.data.data
                 switch (msg.content.message.content.operation) {
                     case "Add":
-                        msgContent = data.targetUserDisplayNames.join("、") + " 加入了群组";
+                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
                         break;
                     case "Quit":
                         msgContent = data.operatorNickname + " 退出了群组";
                         break;
                     case "Kicked":
-                        //operatorNickname
-                        msgContent = data.targetUserDisplayNames.join("、") + " 被剔出群组";
+                        //由于之前数据问题
+                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被剔出群组") : "移除群组";
                         break;
                     case "Rename":
                         msgContent = data.operatorNickname + " 修改了群名称";

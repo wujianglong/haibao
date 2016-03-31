@@ -329,7 +329,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             //已在其他端接收过，不做处理。
                             break;
                         }
-                        var contact = <webimmodel.ContactNotificationMessage>msg;
+                        var contact = <webimmodel.ContactNotificationMessage>msg.content;
                         RongIMSDKServer.removeConversation(msg.conversationType, msg.targetId).then(function() {
                             refreshconversationList();
                         });
@@ -347,7 +347,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 portraitUri: contact.senderUserImgSrc,
                                 content: contact.content,
                                 status: webimmodel.FriendStatus.Requested + "",
-                                timestamp: contact.sentTime.getTime()
+                                timestamp: (msg.sentTime && msg.sentTime.getTime())
                             });
                             if (!item.name) {
                                 //没获取到名称去服务器获取

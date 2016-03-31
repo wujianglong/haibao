@@ -2436,7 +2436,7 @@ input::-ms-clear{display:none;}
     height: 9px;
     background: url(../img/arrow.png);
 }
-.expressionWrap>div{
+.expressionWrap div{
     margin: 3px 3px;
     cursor: pointer;
 }
