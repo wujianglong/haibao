@@ -1879,7 +1879,7 @@ input::-ms-clear{display:none;}
 
 #functionBox .searchArea div {
     width: 100%;
-    padding: 0 20px;
+    /*padding: 0 20px;*/
 }
 
 #functionBox .searchArea div label {
