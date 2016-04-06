@@ -12,6 +12,7 @@ module webimmodel {
         public unReadNum: number;
         public draftMsg: string;
         public firstchar: string;
+        public imgSrc: string;
         constructor(item?: {
             title: string,
             targetId: string,
@@ -164,6 +165,7 @@ module webimmodel {
 
         senderUserName: string
         senderUserImgSrc: string
+        imgSrc: string
 
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);

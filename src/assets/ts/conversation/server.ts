@@ -157,7 +157,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             var user: webimmodel.Contact;
             if (item.messageDirection == 1) {
                 item.senderUserName = mainDataServer.loginUser.nickName;
-                // item.senderUserImgSrc = mainDataServer.loginUser.portraitUri;
+                item.imgSrc = mainDataServer.loginUser.portraitUri;
                 item.senderUserImgSrc = mainDataServer.loginUser.firstchar;
             } else {
                 switch (item.conversationType) {
@@ -180,11 +180,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                 if (user) {
                     item.senderUserName = user.name;
                     item.senderUserImgSrc = user.firstchar;
+                    item.imgSrc = user.imgSrc
                 } else {
                     mainServer.user.getInfo(item.senderUserId).success(function(rep) {
                         if (rep.code == 200) {
                             item.senderUserName = rep.result.nickname;
                             item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                            item.imgSrc = rep.result.portraitUri
                         }
                     }).error(function() {
                         //之前可能清过库没有这个用户TODO：删掉

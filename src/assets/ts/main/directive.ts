@@ -24,8 +24,8 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         '</p>' +
         '</div>' +
         '<div class="photo">' +
-        // '<img class="img" src="assets/img/barBg.png" alt="">' +
-        '<div class="portrait">{{item.firstchar}}</div>' +
+        '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
+        '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
         '<i class="Presence Presence--stacked Presence--mainBox" ng-show="{{item.targetType==4}}"></i>' +
         '</div>' +
         '<div class="info">' +
@@ -98,8 +98,8 @@ mainDire.directive("groupitem", ["$state", function($state: angular.ui.IStateSer
         // '<div class="noticeBarList">' +
         '<div class="notice_item ">' +
         '<div class="photo">' +
-        // '<img class="img" src="assets/img/barBg.png" alt="">' +
-        '<div class="portrait">{{item.firstchar}}</div>' +
+        '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
+        '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
         '</div>' +
         '<div class="info">' +
         '<h3 class="nickname">' +
@@ -131,8 +131,8 @@ mainDire.directive("frienditem", ["$state", function($state: angular.ui.IStateSe
         replace: true,
         template: '<div class="members_item " >' +
         '<div class="photo">' +
-        // '<img class="img" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
-        '<div class="portrait">{{item.firstchar}}</div>' +
+        '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
+        '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
         '</div>' +
         '<div class="info">' +
         '<h3 class="nickname">' +

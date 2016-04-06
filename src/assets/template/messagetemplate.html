@@ -9,11 +9,11 @@
     <div class="Messages-unreadLine"></div>
      <div>
          <div class="Message-header ">
-           <div class="img u-isActionable Message-avatar avatar portrait"  ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)">
+           <div class="img u-isActionable Message-avatar avatar portrait"  ng-show="!item.imgSrc" ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)">
              {{item.senderUserImgSrc}}
            </div>
-           <!-- <img class="img u-isActionable Message-avatar avatar" ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)"
-             ng-src="{{item.senderUserImgSrc||'assets/img/barBg.png'}}" alt=""> -->
+           <img class="img u-isActionable Message-avatar avatar" ng-show="item.imgSrc" ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)"
+             ng-src="{{item.imgSrc||'assets/img/barBg.png'}}" alt="">
              <div class="Message-author clearfix">
                  <a class="author u-isActionable"  ng-click="$parent.$parent.$parent.touserinfo(item.senderUserId)">{{item.senderUserName}}</a>
                  <!-- <span class="time " title="2015 年 8 月 6 日">{{item.sendTime|date:'HH:mm:ss'}}</span> -->

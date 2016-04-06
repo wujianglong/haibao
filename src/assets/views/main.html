@@ -4,11 +4,11 @@
               <div class="bar LeftNav">
                   <div class="LeftNav-item" title="我的" ui-sref="main.userinfo">
                       <div class="user">
-                        <div id="loginuser" class="portrait">
+                        <div id="loginuser" class="portrait" ng-show="!mainData.loginUser.portraitUri">
                           {{mainData.loginUser.firstchar}}
                         </div>
-                        <!-- <img class="userPic Avatar--22"
-                                             src="https://dn-linedesigner.qbox.me/images/w1.png?imageView2/1/w/72/h/72"> -->
+                        <img class="userPic Avatar--22"  ng-show="mainData.loginUser.portraitUri"
+                                             ng-src="{{mainData.loginUser.portraitUri||'assets/img/barBg.png'}}">
                           <!-- <i class="Presence Presence--stacked Presence--toolbar"></i> -->
                       </div>
                   </div>

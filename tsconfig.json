@@ -23,7 +23,6 @@
     "!./node_modules/**/*"
   ],
   "files": [
-    "./bower_components/angular-ui-router/api/angular-ui-router.d.ts",
     "./src/assets/lib/RongIMLib.d.ts",
     "./src/assets/lib/window.d.ts",
     "./src/assets/ts/account/account.ts",

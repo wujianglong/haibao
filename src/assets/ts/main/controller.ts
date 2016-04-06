@@ -25,7 +25,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             if (rep.code == 200) {
                 mainDataServer.loginUser.nickName = rep.result.nickname
                 mainDataServer.loginUser.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-
+                mainDataServer.loginUser.portraitUri = rep.result.portraitUri
                 angular.element(document.getElementById("loginuser")).css("background-color", webimutil.Helper.portraitColors[mainDataServer.loginUser.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
             } else {
                 console.log("get user info error")

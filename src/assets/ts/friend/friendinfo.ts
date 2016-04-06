@@ -38,7 +38,7 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
             //更新好友信息
             // mainDataServer.contactsList.removeFriend(userid);
             mainServer.friend.getProfile(userid).success(function(data) {
-                var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.portraitUri });
+                var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.user.portraitUri });
                 f.displayName = data.result.displayName;
                 // f = mainDataServer.contactsList.addFriend(f);
                 f = mainDataServer.contactsList.updateOrAddFriend(f);

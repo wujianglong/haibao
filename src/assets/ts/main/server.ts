@@ -362,6 +362,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             list[i].conversationTitle = group ? group.name : "未知群组";
                             conversationitem.title = group ? group.name : "未知群组";
                             conversationitem.firstchar = group ? group.firstchar : "";
+                            conversationitem.imgSrc = group ? group.imgSrc : "";
                             break;
                         case RongIMLib.ConversationType.PRIVATE:
                             if (list[i].latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
@@ -375,6 +376,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 list[i].conversationTitle = friendinfo.name;
                                 conversationitem.title = friendinfo.name;
                                 conversationitem.firstchar = friendinfo.firstchar;
+                                conversationitem.imgSrc = friendinfo.imgSrc;
                             } else if (list[i].targetId) {
                                 (function(id: string, conv: webimmodel.Conversation) {
                                     mainServer.user.getInfo(id).success(function(rep) {
