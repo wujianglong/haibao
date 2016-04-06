@@ -1,7 +1,7 @@
 <div class="chatBoxInner">
               <div class="box_hd">
                     <div class="title_wrap">
-                        
+
                         <a class="phone_return" ng-click="back()"><span class="backArrow"><</span>返回</a>
                         <div class="title">
                             <a class="title_name">群资料</a>
@@ -17,8 +17,8 @@
   <div class="groupInfo">
       <div class="groupData clearfix">
           <div class="photo">
-              <!-- <img class="img" src="assets/img/barBg.png" alt=""> -->
-              <div id="portrait" class="portrait">{{groupInfo.firstchar}}</div>
+              <img class="img" ng-show="groupInfo.imgSrc" ng-src="{{groupInfo.imgSrc||'assets/img/barBg.png'}}" alt="">
+              <div id="portrait" ng-show="!groupInfo.imgSrc" class="portrait">{{groupInfo.firstchar}}</div>
           </div>
           <div class="info">
               <h3 class="groupName">
