@@ -621,9 +621,12 @@ module webimutil {
         }
         static getPortraitChar(name: string) {
             var f: any;
-            if (name) {
-                f = ChineseCharacter.convertToABC(name.charAt(0)).pinyin.charAt(0).toUpperCase();
-                f = /[A-Z]/ig.test(f) ? f : "~";
+            // if (name) {
+            //     f = ChineseCharacter.convertToABC(name.charAt(0)).pinyin.charAt(0).toUpperCase();
+            //     f = /[A-Z]/ig.test(f) ? f : "~";
+            // }
+            if(name.length){
+              f = name.substr(0, 1)
             }
             return f;
         }

@@ -50,6 +50,10 @@ grunt connect
 执行grunt build前将app.config文件中的serverUrl和appkey改为自己应用的值
 SDK使用高版本typescript语法写的可能编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为1.6.2 然后在grunt-typescript执行一下 npm install
 
+### mac环境下开发
+
+mac环境下开发需修改typings目录的访问权限,否则build会报错.操作方法:右键菜单-显示简介-去掉右下角小锁-应用到包含的项目
+
 ## Coding Guidelines
 
 https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
