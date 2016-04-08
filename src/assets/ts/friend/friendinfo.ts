@@ -40,6 +40,7 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
             mainServer.friend.getProfile(userid).success(function(data) {
                 var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.user.portraitUri });
                 f.displayName = data.result.displayName;
+                f.mobile = data.result.user.phone;
                 // f = mainDataServer.contactsList.addFriend(f);
                 f = mainDataServer.contactsList.updateOrAddFriend(f);
                 $scope.user.id = f.id;

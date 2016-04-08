@@ -521,6 +521,7 @@ module webimmodel {
     }
     export class Friend extends Contact {
         displayName: string
+        mobile: string
         constructor(item: {
             id: string;
             name: string;

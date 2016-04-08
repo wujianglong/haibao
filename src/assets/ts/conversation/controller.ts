@@ -194,18 +194,28 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
 
 
-        if (!conversationServer.uploadFileToken) {
-            mainServer.user.getImageToken().success(function(rep) {
-                //qiniu上传
-                conversationServer.uploadFileToken = rep.result.token;
-                uploadFileInit();
-            }).error(function() {
-                webimutil.Helper.alertMessage.error("图片上传初始化失败", 2);
-            });
-        } else {
-            uploadFileInit();
-        }
+        // if (!conversationServer.uploadFileToken) {
+        //     mainServer.user.getImageToken().success(function(rep) {
+        //         //qiniu上传
+        //         conversationServer.uploadFileToken = rep.result.token;
+        //         uploadFileInit();
+        //     }).error(function() {
+        //         webimutil.Helper.alertMessage.error("图片上传初始化失败", 2);
+        //     });
+        // } else {
+        //     uploadFileInit();
+        // }
 
+        conversationServer.initUpload = function(){
+          mainServer.user.getImageToken().success(function(rep) {
+              //qiniu上传
+              conversationServer.uploadFileToken = rep.result.token;
+              uploadFileInit();
+          }).error(function() {
+              webimutil.Helper.alertMessage.error("图片上传初始化失败", 2);
+          });
+        }
+        conversationServer.initUpload();
         $scope.uploadStatus = {
             show: false,
             progress: 0,

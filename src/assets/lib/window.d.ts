@@ -17,8 +17,9 @@ declare module RongIMLib {
     }
     class RongIMVoice {
         static init(): void
+        static preLoaded(data: string): void
         static play(data: string, duration: number): void
-        static stop(): void
+        static stop(data: string): void
         static onprogress(): void
     }
 }
