@@ -386,7 +386,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                     case webimmodel.MessageType.VoiceMessage:
                         msg.isUnReade = true;
-                        RongIMLib.RongIMVoice.preLoaded(msg.content.content);
                     case webimmodel.MessageType.TextMessage:
                     case webimmodel.MessageType.LocationMessage:
                     case webimmodel.MessageType.ImageMessage:

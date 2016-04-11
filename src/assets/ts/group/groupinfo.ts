@@ -43,11 +43,15 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
                     mainDataServer.contactsList.removeGroup(groupid);
 
                     RongIMSDKServer.removeConversation(webimmodel.conversationType.Group, groupid).then(function() {
-                        $scope.$emit("conversationChange");
+                        setTimeout(function () {
+                            $scope.$emit("conversationChange");
+                        }, 200);
                         $state.go("main");
                         webimutil.Helper.alertMessage.success("退出成功", 2);
                     }, function() {
-                        $scope.$emit("conversationChange");
+                        setTimeout(function () {
+                            $scope.$emit("conversationChange");
+                        }, 200);
                         $state.go("main");
                         webimutil.Helper.alertMessage.success("退出成功删除会话失败", 2);
                     });
@@ -88,11 +92,15 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
                 if (rep.code == 200) {
                     mainDataServer.contactsList.removeGroup(groupid);
                     RongIMSDKServer.removeConversation(webimmodel.conversationType.Group, groupid).then(function() {
-                        $scope.$emit("conversationChange");
+                        setTimeout(function () {
+                            $scope.$emit("conversationChange");
+                        }, 200);
                         $state.go("main");
                         webimutil.Helper.alertMessage.success("解散成功", 2);
                     }, function() {
-                        $scope.$emit("conversationChange");
+                        setTimeout(function () {
+                            $scope.$emit("conversationChange");
+                        }, 200);
                         $state.go("main");
                         webimutil.Helper.alertMessage.success("解散成功删除会话失败", 2);
                     });

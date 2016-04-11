@@ -165,7 +165,7 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             scope.item.duration = parseInt(scope.item.duration || scope.item.content.length / 1024);
-
+            RongIMLib.RongIMVoice.preLoaded(scope.item.content);
             scope.play = function() {
                 RongIMLib.RongIMVoice.stop(scope.item.content);
                 if (!scope.isplaying) {

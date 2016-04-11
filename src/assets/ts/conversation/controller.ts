@@ -41,8 +41,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         // RongIMSDKServer.clearMessagesUnreadStatus(targetType, targetId);
         RongIMSDKServer.clearUnreadCount(targetType, targetId);
-        $scope.$emit("conversationChange");
-
+        setTimeout(function () {
+            $scope.$emit("conversationChange");
+        }, 200);
 
 
 
@@ -129,8 +130,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             //添加消息到历史消息并清空发送消息框
             conversationServer.addHistoryMessages(targetId, targetType, webimmodel.Message.convertMsg(msgouter));
-            $scope.$emit("msglistchange");
-            $scope.$emit("conversationChange");
+            setTimeout(function () {
+                $scope.$emit("msglistchange");
+                $scope.$emit("conversationChange");
+            }, 200);
             $scope.currentConversation.draftMsg = "";
 
             var obj = document.getElementById("message-content");
@@ -286,9 +289,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
                                 var content = packmysend(im, webimmodel.MessageType.ImageMessage);
                                 RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, im).then(function() {
-
+                                  setTimeout(function () {
+                                      $scope.$emit("msglistchange");
+                                      $scope.$emit("conversationChange");
+                                  }, 200);
                                 }, function() {
-
+                                  setTimeout(function () {
+                                      $scope.$emit("msglistchange");
+                                      $scope.$emit("conversationChange");
+                                  }, 200);
                                 })
                                 conversationServer.addHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType,
                                     webimmodel.Message.convertMsg(content));

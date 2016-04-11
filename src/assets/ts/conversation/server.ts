@@ -74,10 +74,6 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 break;
                             case webimmodel.MessageType.TextMessage:
                             case webimmodel.MessageType.VoiceMessage:
-                                var item = webimmodel.Message.convertMsg(msgsdk);
-                                if (item) {
-                                   RongIMLib.RongIMVoice.preLoaded(item.content.content);
-                                }
                             case webimmodel.MessageType.LocationMessage:
                             case webimmodel.MessageType.ImageMessage:
                             case webimmodel.MessageType.RichContentMessage:

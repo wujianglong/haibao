@@ -435,7 +435,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             });
                         })(conversationitem);
                     }
-
+                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE) continue;
                     mainDataServer.conversation.conversations.push(conversationitem);
                 }
 
