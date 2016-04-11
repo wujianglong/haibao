@@ -35,7 +35,7 @@ module webimmodel {
             }
         }
 
-        static convertTowebim(item: RongIMLib.Conversation) {
+        static convertToWebIM(item: RongIMLib.Conversation) {
             var lasttime: Date;
             if (item.latestMessage && item.sentTime) {
                 lasttime = new Date(item.sentTime);
@@ -109,6 +109,7 @@ module webimmodel {
         VoiceMessage: "VoiceMessage",
         RichContentMessage: "RichContentMessage",
         HandshakeMessage: "HandshakeMessage",
+        HandShakeResponseMessage: "HandShakeResponseMessage",
         UnknownMessage: "UnknownMessage",
         SuspendMessage: "SuspendMessage",
         LocationMessage: "LocationMessage",

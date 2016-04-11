@@ -328,15 +328,15 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
-                    var conversationitem = webimmodel.Conversation.convertTowebim(list[i]);
+                    var conversationitem = webimmodel.Conversation.convertToWebIM(list[i]);
 
                     switch (list[i].conversationType) {
                         case RongIMLib.ConversationType.CHATROOM:
                             conversationitem.title = "聊天室" + list[i].targetId;
                             break;
-                        case RongIMLib.ConversationType.CUSTOMER_SERVICE:
-                            conversationitem.title = "客服";
-                            break;
+                        // case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+                        //     conversationitem.title = "客服";
+                        //     break;
                         case RongIMLib.ConversationType.DISCUSSION:
                             conversationitem.title = "讨论组" + list[i].targetId;
                             break;
