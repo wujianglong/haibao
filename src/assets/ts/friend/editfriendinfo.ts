@@ -45,17 +45,19 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
         // }
         $scope.isself = isself;
         $scope.isfriend = friend ? true : false;
-        
+
         if (friend) {
             $scope.user.id = friend.id;
             $scope.user.nickName = friend.name;
             $scope.user.portraitUri = friend.imgSrc;
             $scope.user.firstchar = friend.firstchar;
+            $scope.user.displayName = friend.displayName;
         } else if (member) {
             $scope.user.id = member.id;
             $scope.user.nickName = member.name;
             $scope.user.portraitUri = member.imgSrc;
             $scope.user.firstchar = member.firstchar;
+            // $scope.user.displayName = member.displayName;
         } else if (isself) {
             $scope.user.id = mainDataServer.loginUser.id;
             $scope.user.nickName = mainDataServer.loginUser.nickName;
@@ -68,6 +70,8 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
                 $scope.user.portraitUri = rep.data.result.portraitUri;
 
                 $scope.user.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.data.result.nickname);
+
+                $scope.user.displayName = rep.data.result.displayName;
                 setPortrait();
             })
 
@@ -127,6 +131,16 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
 
         $scope.back = function() {
             $state.go("main.friendinfo", { userid: userid, groupid: groupid, targetid: targetid, conversationtype: conversationtype })
+        }
+
+        $scope.save = function() {
+            if ($scope.modifyName.$valid) {
+                mainServer.friend.setDisplayName($scope.user.id, $scope.user.displayName).success(function() {
+                    $scope.back();
+                })
+                $scope.editable = false;
+            }
+
         }
 
     }]);

@@ -153,7 +153,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.FriendStatus.Agreed:
                         mainDataServer.contactsList.addFriend(new webimmodel.Friend({
                             id: arr[i].user.id,
-                            name: arr[i].user.nickname,
+                            name: arr[i].displayName || arr[i].user.nickname,
                             imgSrc: arr[i].user.portraitUri,
                         }));
                         break;

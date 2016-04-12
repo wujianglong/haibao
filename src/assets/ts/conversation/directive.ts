@@ -29,28 +29,37 @@ conversationDire.directive('contenteditableDire', function() {
             }
             var domElement = <any>element[0];
 
-            scope.$watch(function() {
-                return ngModel.$modelValue;
-            }, function(newVal: string) {
-                if (document.activeElement === domElement) {
-                    return;
-                }
-                if (newVal === '' || newVal === attrs["placeholder"]) {
-                    domElement.innerHTML = attrs["placeholder"];
-                    domElement.style.color = "#a9a9a9";
-                }
-            });
+            // scope.$watch(function() {
+            //     return ngModel.$modelValue;
+            // }, function(newVal: string) {
+            //     if (document.activeElement === domElement) {
+            //         return;
+            //     }
+            //     if (newVal === '' || newVal === attrs["placeholder"]) {
+            //         domElement.innerHTML = attrs["placeholder"];
+            //         domElement.style.color = "#a9a9a9";
+            //     }
+            // });
+            //
+            // element.bind('focus', function() {
+            //     if (domElement.innerHTML == attrs["placeholder"]) {
+            //         domElement.innerHTML = '';
+            //         domElement.style.color = '';
+            //     }
+            // });
+            // element.bind('blur', function() {
+            //     if (domElement.innerHTML === '') {
+            //         domElement.innerHTML = attrs["placeholder"];
+            //         domElement.style.color = "#a9a9a9";
+            //     }
+            // });
 
-            element.bind('focus', function() {
-                if (domElement.innerHTML == attrs["placeholder"]) {
-                    domElement.innerHTML = '';
-                    domElement.style.color = '';
+            element.bind('input propertychange', function () {
+                if (domElement.innerHTML == attrs["placeholder"] || domElement.innerHTML === '' || domElement.innerHTML == '<br>') {
+                  element.empty();
                 }
-            });
-            element.bind('blur', function() {
-                if (domElement.innerHTML === '') {
-                    domElement.innerHTML = attrs["placeholder"];
-                    domElement.style.color = "#a9a9a9";
+                else{
+                  domElement.style.color = "";
                 }
             });
 

@@ -8,6 +8,7 @@
                             <!--<span class="title_count ">(16)</span>
                             <i class="Presence Presence&#45;&#45;stacked Presence&#45;&#45;chatBox"></i>-->
                         </div>
+                        <a class="editBtn" href="javascript:void 0" ng-click="save()">保存</a>
                         <!-- <a class="editBtn" href="javascript:void 0" ng-click="save()">确认</a> -->
                     </div>
                 </div>
@@ -27,6 +28,19 @@
                 <!-- <p class="userId">ID : <span>{{user.id}}</span></p> -->
                 <!-- <p class="isBlack">已加入黑名单</p> -->
             </div>
+<!-- 待修改 -->
+            <div class="editName clearfix" style="">
+             <form name="modifyName" novalidate="novalidate">
+             <div class="clearfix">
+             <div class="col-xs-3">
+             <input type="text" class="form-control" name="userName" id="editName" required  ng-minlength="1" ng-maxlength="32" ng-model="user.displayName">
+             </div>
+             <span class="error-block" ng-show="modifyName.userName.$dirty&&modifyName.userName.$error.required">用户名不能为空</span>
+             <span class="error-block" ng-show="modifyName.userName.$dirty&&(modifyName.userName.$error.minlength||modifyName.userName.$error.maxlength)">昵称长度1-32</span>
+             </div>
+             </form>
+            </div>
+
         </div>
         <div class="userFunPannel clearfix">
             <ul class="clearfix ">

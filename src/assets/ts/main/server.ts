@@ -373,8 +373,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             }
                             var friendinfo = mainDataServer.contactsList.getFriendById(list[i].targetId || list[i].senderUserId)
                             if (friendinfo) {
-                                list[i].conversationTitle = friendinfo.name;
-                                conversationitem.title = friendinfo.name;
+                                list[i].conversationTitle = friendinfo.displayName || friendinfo.name;
+                                conversationitem.title = friendinfo.displayName || friendinfo.name;
                                 conversationitem.firstchar = friendinfo.firstchar;
                                 conversationitem.imgSrc = friendinfo.imgSrc;
                             } else if (list[i].targetId) {
@@ -417,7 +417,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                     for (var j = 0, len = members.length; j < len; j++) {
                                         var member = new webimmodel.Member({
                                             id: members[j].user.id,
-                                            name: members[j].user.nickname,
+                                            name: members[j].user.displayName || members[j].user.nickname,
                                             imgSrc: members[j].user.portraitUri,
                                             role: members[j].role
                                         });
@@ -456,7 +456,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 case webimmodel.conversationType.Private:
                     var friendinfo = mainDataServer.contactsList.getFriendById(targetId)
                     if (friendinfo) {
-                        item.title = friendinfo.name;
+                        item.title = friendinfo.displayName || friendinfo.name;
                         item.firstchar = friendinfo.firstchar;
                     } else {
                         mainServer.user.getInfo(targetId).success(function(rep) {
@@ -580,6 +580,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             var obj = webimutil.ChineseCharacter.convertToABC(friend.name);
             var f = webimutil.ChineseCharacter.getPortraitChar(friend.name);
             friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+            f = webimutil.ChineseCharacter.getPortraitChar2(friend.name);
             if (!this.quickGetFriend(friend.id, f)) {
                 for (var i = 0, len = this.subgroupList.length; i < len; i++) {
                     if (this.subgroupList[i].title == f) {
@@ -612,6 +613,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             var obj = webimutil.ChineseCharacter.convertToABC(friend.name);
             var f = webimutil.ChineseCharacter.getPortraitChar(friend.name);
             friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+            f = webimutil.ChineseCharacter.getPortraitChar2(friend.name);
             var oldFriend = this.quickGetFriend(friend.id, f);
             if (!oldFriend) {
                 for (var i = 0, len = this.subgroupList.length; i < len; i++) {
@@ -1051,7 +1053,7 @@ interface mainServer {
         signup(nickname: string, password: string, token: string): angular.IHttpPromise<any>
         signin(phone: string, region: string, password: string): angular.IHttpPromise<any>
         logout(): angular.IHttpPromise<any>
-        getInfo(id: string): angular.IHttpPromise<{ result: { id: string, nickname: string, portraitUri: string }, code: number }>
+        getInfo(id: string): angular.IHttpPromise<{ result: { id: string, nickname: string, portraitUri: string, displayName: string }, code: number }>
         getUserByPhone(region: string, phone: string): angular.IHttpPromise<any>
         setNickName(nickname: string): angular.IHttpPromise<any>
         resetPassword(password: string, token: string): angular.IHttpPromise<any>
