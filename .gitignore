@@ -6,3 +6,4 @@ temp
 typings
 .tscache
 *.log
+src/test.html
