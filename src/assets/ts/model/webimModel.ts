@@ -499,6 +499,7 @@ module webimmodel {
         pinyin: string;
         everychar: string;
         firstchar: string;
+        displayName: string;
 
         constructor(item?: {
             id: string;
@@ -569,6 +570,7 @@ module webimmodel {
         name: string;
         imgSrc: string;
         role: string;
+        displayName: string;
         // pinyin: string;
         // first: string;
         constructor(item: {

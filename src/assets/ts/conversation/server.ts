@@ -178,7 +178,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                         console.log("暂不支持此会话类型");
                 }
                 if (user) {
-                    item.senderUserName = user.name;
+                    item.senderUserName = user.displayName || user.name;
                     item.senderUserImgSrc = user.firstchar;
                     item.imgSrc = user.imgSrc
                 } else {

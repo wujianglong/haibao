@@ -417,7 +417,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                     for (var j = 0, len = members.length; j < len; j++) {
                                         var member = new webimmodel.Member({
                                             id: members[j].user.id,
-                                            name: members[j].user.displayName || members[j].user.nickname,
+                                            name: members[j].displayName || members[j].user.nickname,
                                             imgSrc: members[j].user.portraitUri,
                                             role: members[j].role
                                         });
@@ -610,10 +610,10 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             return false;
         },
         updateOrAddFriend: function(friend: webimmodel.Friend) {
-            var obj = webimutil.ChineseCharacter.convertToABC(friend.name);
-            var f = webimutil.ChineseCharacter.getPortraitChar(friend.name);
+            var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
+            var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
             friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-            f = webimutil.ChineseCharacter.getPortraitChar2(friend.name);
+            f = webimutil.ChineseCharacter.getPortraitChar2(friend.displayName || friend.name);
             var oldFriend = this.quickGetFriend(friend.id, f);
             if (!oldFriend) {
                 for (var i = 0, len = this.subgroupList.length; i < len; i++) {

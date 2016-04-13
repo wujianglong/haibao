@@ -136,7 +136,7 @@ mainDire.directive("frienditem", ["$state", function($state: angular.ui.IStateSe
         '</div>' +
         '<div class="info">' +
         '<h3 class="nickname">' +
-        '<span class="nickname_text">{{item.name}}</span>' +
+        '<span class="nickname_text">{{item.displayName||item.name}}</span>' +
         '</h3>' +
         '</div>' +
         '<div class="botDivider"></div>' +
