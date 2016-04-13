@@ -320,8 +320,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         updateConversations: function() {
             //更新未读总数
             var defer = $q.defer();
+            var totalUnreadCount = 0;
             RongIMSDKServer.getTotalUnreadCount().then(function(data) {
-                mainDataServer.conversation.totalUnreadCount = data;
+                totalUnreadCount = data;
             });
 
             RongIMSDKServer.getConversationList().then(function(list) {
@@ -392,6 +393,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             break;
                         case RongIMLib.ConversationType.SYSTEM:
                             list[i].conversationTitle = "系统消息";
+                            break;
+                        case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+                            if(list[i].unreadMessageCount){
+                              mainDataServer.conversation.totalUnreadCount = totalUnreadCount - list[i].unreadMessageCount;
+                            }
                             break;
                     }
 

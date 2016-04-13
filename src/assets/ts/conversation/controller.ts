@@ -15,8 +15,8 @@ function adjustScrollbars() {
     ele.scrollTop = ele.scrollHeight;
 }
 
-conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer",
-    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer) {
+conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http",
+    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService) {
 
         var targetId = $state.params["targetId"];
         var targetType = Number($state.params["targetType"]);
@@ -322,6 +322,26 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     // }
                 }
             });
+        }
+
+        function uploadBase64(file: string,callback: any){
+           var req = {
+               method: 'POST',
+               url: 'http://up.qiniu.com/putb64/-1',
+               headers: {
+                 'Content-Type': 'application/octet-stream',
+                 'Authorization': "UpToken " + conversationServer.uploadFileToken
+               },
+               data: file
+          };
+
+          $http(req).success(function () {
+              callback && callback.onSuccess && callback.onSuccess();
+          }).error(function () {
+              // setTimeout(function () {
+              //     checkNetwork(callback);
+              // }, 5000);
+          });
         }
 
         setTimeout(function() {

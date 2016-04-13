@@ -41,9 +41,11 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attrs: any, ngModel: any) {
             scope.isCurrentConversation = scope.item.targetType == mainDataServer.conversation.currentConversation.targetType && scope.item.targetId == mainDataServer.conversation.currentConversation.targetId;
-
-            angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.targetId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-
+            if(!scope.item.targetId){
+              scope.item.imgSrc='assets/img/barBg.png';
+            }else{
+              angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.targetId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+            }
             ele.bind("click", function() {
 
                 if (scope.item.targetType == webimmodel.conversationType.System) {
@@ -226,8 +228,8 @@ mainDire.directive("inputWrap", [function() {
             }
 
             ele.find("textarea").bind("focus", function() {
-                scope.showplaceholder = false;
-                scope.$apply();
+                // scope.showplaceholder = false;
+                // scope.$apply();
             });
 
             ele.find("textarea").bind("blur", function() {
@@ -235,6 +237,16 @@ mainDire.directive("inputWrap", [function() {
                     scope.showplaceholder = true;
                 }
                 scope.$apply();
+            });
+
+            ele.find("textarea").bind('input propertychange', function () {
+              if (!scope.message || !scope.message.length) {
+                  scope.showplaceholder = true;
+              }
+              else{
+                 scope.showplaceholder = false;
+              }
+              scope.$apply();
             });
 
             scope.message = scope.message || "";
