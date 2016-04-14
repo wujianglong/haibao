@@ -136,7 +136,13 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
         $scope.save = function() {
             if ($scope.modifyName.$valid) {
                 mainServer.friend.setDisplayName($scope.user.id, $scope.user.displayName).success(function() {
-                    $scope.back();
+                  var friend = mainDataServer.contactsList.getFriendById($scope.user.id);
+                  var friendOld = webimutil.Helper.cloneObject(friend);
+                  mainDataServer.conversation.getConversation(1, $scope.user.id).title = $scope.user.displayName;
+                  friend.displayName = $scope.user.displayName;
+                  mainDataServer.contactsList.updateOrAddFriend(friend);
+                  mainDataServer.contactsList.removeFriendFromSubgroup(friendOld);
+                  $scope.back();
                 })
                 $scope.editable = false;
             }

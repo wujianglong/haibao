@@ -622,7 +622,7 @@ module webimutil {
         static getPortraitChar(name: string) {
             var f: any;
             if(name.length){
-              f = name.substr(0, 1)
+              f = name.substr(0, 1).toUpperCase();
             }
             return f;
         }

@@ -58,6 +58,14 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
                 } else {
                     $state.transitionTo("main.friendinfo", $match);
                 }
+            }]).when("/main/editfriendinfo/:userid/:groupid/:targetid/:conversationtype", ["$state", "$match", "mainDataServer", function ($state: angular.ui.IStateService, $match: any, mainDataServer: mainDataServer) {
+                if (!mainDataServer.loginUser.nickName) {
+                    $state.go("main");
+                    return;
+                }
+                else {
+                    $state.transitionTo("main.editfriendinfo", $match);
+                }
             }]).when("/main/groupinfo/:groupid/:conversationtype", ["$state", "$match", "mainDataServer", function($state: angular.ui.IStateService, $match: any, mainDataServer: mainDataServer) {
                 if (!mainDataServer.loginUser.nickName) {
                     $state.go("main");

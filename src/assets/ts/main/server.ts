@@ -615,6 +615,27 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
+        removeFriendFromSubgroup: function(friend: webimmodel.Friend) {
+              var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
+              var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
+              friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+              f = webimutil.ChineseCharacter.getPortraitChar2(friend.displayName || friend.name);
+              for (var i = 0, len = this.subgroupList.length; i < len; i++) {
+                  if (this.subgroupList[i].title == f) {
+                      for (var j = 0, lenj = this.subgroupList[i].list.length; j < lenj; j++) {
+                          if (this.subgroupList[i].list[j].id == friend.id) {
+                              this.subgroupList[i].list.splice(j, 1);
+                              break;
+                          }
+                      }
+                      if (this.subgroupList[i].list.length)
+                          break;
+                      this.subgroupList.splice(i, 1);
+                      break;
+                  }
+              }
+
+        },
         updateOrAddFriend: function(friend: webimmodel.Friend) {
             var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
             var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
@@ -1028,6 +1049,7 @@ interface mainDataServer {
         addFriend(friend: webimmodel.Friend): webimmodel.Friend
         removeFriend(id: string): boolean
         updateOrAddFriend(friend: webimmodel.Friend): webimmodel.Friend
+        removeFriendFromSubgroup(friend: webimmodel.Friend): void
         addGroup(group: webimmodel.Group): void
         removeGroup(id: string): boolean;
         find(str: string, arr: webimmodel.Contact[]): webimmodel.Contact[]

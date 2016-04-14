@@ -224,7 +224,7 @@ mainDire.directive("inputWrap", [function() {
 
             if (scope.loadedfocus) {
                 angular.element(ele).find("textarea")[0].focus();
-                scope.showplaceholder = false;
+                scope.showplaceholder = true;
             }
 
             ele.find("textarea").bind("focus", function() {
