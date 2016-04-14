@@ -138,10 +138,15 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
                 mainServer.friend.setDisplayName($scope.user.id, $scope.user.displayName).success(function() {
                   var friend = mainDataServer.contactsList.getFriendById($scope.user.id);
                   var friendOld = webimutil.Helper.cloneObject(friend);
-                  mainDataServer.conversation.getConversation(1, $scope.user.id).title = $scope.user.displayName;
-                  friend.displayName = $scope.user.displayName;
-                  mainDataServer.contactsList.updateOrAddFriend(friend);
-                  mainDataServer.contactsList.removeFriendFromSubgroup(friendOld);
+                  var curCon = mainDataServer.conversation.getConversation(1, $scope.user.id);
+                  if(curCon){
+                     curCon.title = $scope.user.displayName;
+                  }
+                  if(friend){
+                     friend.displayName = $scope.user.displayName;
+                     mainDataServer.contactsList.updateOrAddFriend(friend);
+                     mainDataServer.contactsList.removeFriendFromSubgroup(friendOld);
+                  }
                   $scope.back();
                 })
                 $scope.editable = false;
