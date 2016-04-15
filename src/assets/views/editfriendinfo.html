@@ -33,7 +33,7 @@
              <form name="modifyName" novalidate="novalidate">
              <div class="clearfix">
              <div class="col-xs-3">
-             <input type="text" class="form-control" name="userName" ng-show="!isself" id="editName"  ng-minlength="1" ng-maxlength="32" ng-model="user.displayName">
+             <input type="text" class="form-control" name="userName" ng-show="!isself && isfriend" id="editName"  ng-minlength="1" ng-maxlength="32" ng-model="user.displayName">
              </div>
              <span class="error-block" ng-show="modifyName.userName.$dirty&&(modifyName.userName.$error.minlength||modifyName.userName.$error.maxlength)">昵称长度1-32</span>
              </div>
