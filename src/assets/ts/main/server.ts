@@ -320,9 +320,10 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         updateConversations: function() {
             //更新未读总数
             var defer = $q.defer();
-            var totalUnreadCount = 0;
+            var allUnreadCount = 0;
+            var haveCUSTOMER_SERVICE = false;
             RongIMSDKServer.getTotalUnreadCount().then(function(data) {
-                totalUnreadCount = data;
+                allUnreadCount = data;
             });
 
             RongIMSDKServer.getConversationList().then(function(list) {
@@ -395,8 +396,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             list[i].conversationTitle = "系统消息";
                             break;
                         case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+                            haveCUSTOMER_SERVICE = true;
                             if(list[i].unreadMessageCount){
-                              mainDataServer.conversation.totalUnreadCount = totalUnreadCount - list[i].unreadMessageCount;
+                              mainDataServer.conversation.totalUnreadCount = allUnreadCount - list[i].unreadMessageCount;
                             }
                             break;
                     }
@@ -444,7 +446,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE) continue;
                     mainDataServer.conversation.conversations.push(conversationitem);
                 }
-
+                if(!haveCUSTOMER_SERVICE){
+                   mainDataServer.conversation.totalUnreadCount = allUnreadCount;
+                }
                 defer.resolve();
             }, function() {
                 defer.reject();
@@ -864,6 +868,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
                         break;
                     case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
                         info = '在黑名单中，无法向对方发送消息';
+                        //TODO:addmessage() 您的消息已经发出,但被对方拒收
                         break;
                     case RongIMLib.ErrorCode.NOT_IN_DISCUSSION:
                         info = '不在讨论组中';

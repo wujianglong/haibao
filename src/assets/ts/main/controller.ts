@@ -501,6 +501,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     break;
                                 case "Dismiss":
                                     var groupid = data.targetId;
+                                    //TODO: 解散群组后,群组已从联系人列表中删除,所以此时无法获取信息
+                                    var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
                                     var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + mainDataServer.contactsList.getGroupById(groupid).name + '"' + '已解散');
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {

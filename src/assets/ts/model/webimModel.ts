@@ -289,6 +289,7 @@ module webimmodel {
                         var groupnot = new webimmodel.InformationNotificationMessage();
                         groupnot.content = SDKmsg.content.message;
                         msg.content = groupnot;
+                        msg.panelType = webimmodel.PanelType.InformationNotification;
                     } else {
                         console.log("has unknown message type " + SDKmsg.messageType)
                     }

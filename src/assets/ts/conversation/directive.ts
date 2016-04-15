@@ -197,6 +197,19 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
     }
 }]);
 
+// conversationDire.directive("unknownMessage", [function () {
+//         return {
+//             restrict: "E",
+//             scope: {
+//                 item: "="
+//             },
+//             template: '<div class="Messages-getHistory"><b>{{item.content}}</b></div>',
+//             replace: true,
+//             link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+//             }
+//         };
+//     }]);
+
 conversationDire.directive("textMessage", [function() {
     return {
         restrict: "E",

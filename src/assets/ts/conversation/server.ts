@@ -39,13 +39,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     console.log("未知群组通知");
             }
 
-            item.content = comment;
+            item.content  = comment;
             for (var i = 0, len = members.length; i < len; i++) {
                 mainServer.user.getInfo(members[i]).success(function(rep) {
-                    if (item.content === comment) {
-                        item.content = rep.result.nickname + item.content;
+                    if (item.content  === comment) {
+                        item.content  = rep.result.nickname + item.content ;
                     } else {
-                        item.content = rep.result.nickname + "、" + item.content;
+                        item.content  = rep.result.nickname + "、" + item.content ;
                     }
                 })
             }
