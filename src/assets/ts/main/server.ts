@@ -396,9 +396,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             list[i].conversationTitle = "系统消息";
                             break;
                         case RongIMLib.ConversationType.CUSTOMER_SERVICE:
-                            haveCUSTOMER_SERVICE = true;
                             if(list[i].unreadMessageCount){
-                              mainDataServer.conversation.totalUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+                                haveCUSTOMER_SERVICE = true;
+                                mainDataServer.conversation.totalUnreadCount = allUnreadCount - list[i].unreadMessageCount;
                             }
                             break;
                     }
