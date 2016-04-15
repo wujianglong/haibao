@@ -355,10 +355,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     item.name = rep.result.nickname;
                                     item.portraitUri = rep.result.portraitUri;
                                     item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
+                                    mainDataServer.notification.addNotification(item);
                                 }).error(function() {
                                 })
+                            }else{
+                                mainDataServer.notification.addNotification(item);
                             }
-                            mainDataServer.notification.addNotification(item);
                         } else if (contact.operation == "AcceptResponse") {
                             //对方已同意
                             //好友列表里添加好友or同步好友列表

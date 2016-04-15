@@ -124,8 +124,11 @@ addfirendCtr.directive("addfirenditem", ["$state", "mainDataServer",
                         webimutil.Helper.alertMessage.error("此人已经是你的好友！", 2);
                         return;
                     }
-                    scope.isself = mainDataServer.loginUser.id == scope.item.id;
                     $state.go("main.applyfriend", { userId: scope.item.id, userName: scope.item.nickName });
+                }
+                scope.isself = mainDataServer.loginUser.id == scope.item.id;
+                if(scope.isself){
+                  angular.element(ele[0].getElementsByClassName("info")[0]).css("border", "none");
                 }
             }
         }
