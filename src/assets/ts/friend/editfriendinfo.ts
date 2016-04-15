@@ -104,6 +104,10 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
             if (loading)
                 return;
             loading = true;
+            mainServer.friend.setDisplayName($scope.user.id, "").success(function() {
+            }).error(function() {
+                console.log("删除好友昵称失败");
+            })
             mainServer.friend.delete($scope.user.id).success(function() {
                 RongIMSDKServer.removeConversation(webimmodel.conversationType.Private, $scope.user.id).then(function() {
                     loading = false;
@@ -113,6 +117,7 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
                 }, function() {
                     console.log("删除失败");
                 });
+
             }).error(function() {
                 loading = false;
                 webimutil.Helper.alertMessage.error("删除失败", 2);

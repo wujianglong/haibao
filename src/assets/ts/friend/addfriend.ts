@@ -113,7 +113,7 @@ addfirendCtr.directive("addfirenditem", ["$state", "mainDataServer",
             '<h3 class="nickname">' +
             '<span class="nickname_text">{{item.nickName}}</span>' +
             '</h3>' +
-            '<button class="functionBoxBtn" ng-click="applyfriendsrc()">加好友</button>' +
+            '<button class="functionBoxBtn" ng-click="applyfriendsrc()" ng-show="!isself">加好友</button>' +
             '</div>' +
             '</li>',
             link: function(scope: any, ele: angular.IRootElementService, attr: any) {
@@ -124,6 +124,7 @@ addfirendCtr.directive("addfirenditem", ["$state", "mainDataServer",
                         webimutil.Helper.alertMessage.error("此人已经是你的好友！", 2);
                         return;
                     }
+                    scope.isself = mainDataServer.loginUser.id == scope.item.id;
                     $state.go("main.applyfriend", { userId: scope.item.id, userName: scope.item.nickName });
                 }
             }
