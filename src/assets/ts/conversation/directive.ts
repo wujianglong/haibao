@@ -27,6 +27,7 @@ conversationDire.directive('contenteditableDire', function() {
             function replacemy(e: string) {
                 return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
             }
+
             var domElement = <any>element[0];
 
             // scope.$watch(function() {
@@ -66,14 +67,42 @@ conversationDire.directive('contenteditableDire', function() {
 
             if (!ngModel) return;
 
-            element.bind("paste", function(e: any) {
+            // element.bind("paste", function(e: any) {
+            //     var that = this, ohtml = that.innerHTML;
+            //     timeoutid && clearTimeout(timeoutid);
+            //     var timeoutid = setTimeout(function() {
+            //         that.innerHTML = replacemy(that.innerHTML);
+            //         ngModel.$setViewValue(that.innerHTML);
+            //         timeoutid = null;
+            //     }, 50);
+            // });
+
+            function handlePaste(e: any) {
                 var that = this, ohtml = that.innerHTML;
-                timeoutid && clearTimeout(timeoutid);
-                var timeoutid = setTimeout(function() {
-                    that.innerHTML = replacemy(that.innerHTML);
-                    ngModel.$setViewValue(that.innerHTML);
-                    timeoutid = null;
-                }, 50);
+                for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
+                    var item = e.clipboardData.items[i];
+                    console.log("Item: " + item.type);
+                    if (item.type.indexOf("image") > -1) {
+                         var fr = new FileReader;
+                         var data = item.getAsFile();
+                         fr.onloadend = function() {
+                            //  var img = new Image;
+                            //  img.onload = function() {
+                            //      that.appendChild(img);
+                            //  };
+                            //  img.src = fr.result;
+                            // uploadBase64(fr.result);
+                         };
+
+                         fr.readAsDataURL(data);
+                    } else {
+                        console.log("Discardingimage paste data");
+                    }
+                }
+            }
+
+            element.bind("paste", function(e: any) {
+                handlePaste(e);
             });
 
             ngModel.$render = function() {

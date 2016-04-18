@@ -144,6 +144,37 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $state.go("main");
         }
 
+        $scope.sendImg = function(){
+            //TODO:获取base64
+            // uploadBase64();
+        }
+
+        function getThumbnailAndSendImg(info: any, file: any) {
+          var info = JSON.parse(info);
+          webimutil.ImageHelper.getThumbnail(file, 60000, function(obj: any, data: any) {
+              var im = RongIMLib.ImageMessage.obtain(data, IMGDOMAIN + info.key);
+
+              var content = packmysend(im, webimmodel.MessageType.ImageMessage);
+              RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, im).then(function() {
+                setTimeout(function () {
+                    $scope.$emit("msglistchange");
+                    $scope.$emit("conversationChange");
+                }, 200);
+              }, function() {
+                setTimeout(function () {
+                    $scope.$emit("msglistchange");
+                    $scope.$emit("conversationChange");
+                }, 200);
+              })
+              conversationServer.addHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType,
+                  webimmodel.Message.convertMsg(content));
+              setTimeout(function() {
+                  $scope.$emit("msglistchange");
+                  $scope.$emit("conversationChange");
+              }, 200);
+          })
+        }
+
         $scope.$watch("currentConversation.draftMsg", function(newVal: string, oldVal: string) {
             if (newVal === oldVal)
                 return;
@@ -339,6 +370,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $http(req).success(function (res) {
                 // callback && callback.onSuccess && callback.onSuccess();
                 console.log('uploadBase64', res);
+                getThumbnailAndSendImg(res, file);
             }).error(function () {
             });
         }
@@ -347,30 +379,5 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             var obj = document.getElementById("message-content");
             webimutil.Helper.getFocus(obj);
         });
-
-        function handlePaste(e: any) {
-            for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
-                var item = e.clipboardData.items[i];
-                console.log("Item: " + item.type);
-                if (item.type.indexOf("image") > -1) {
-                     var fr = new FileReader;
-                     var data = item.getAsFile();
-                     fr.onloadend = function() {
-                         var img = new Image;
-                         img.onload = function() {
-                             document.getElementById('message-content').appendChild(img);
-                         };
-                         img.src = fr.result;
-                     };
-
-                     fr.readAsDataURL(data);
-                } else {
-                    console.log("Discardingimage paste data");
-                }
-            }
-        }
-
-        document.getElementById("message-content").
-            addEventListener("paste", handlePaste);
 
     }])
