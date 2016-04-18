@@ -91,7 +91,9 @@ conversationDire.directive('contenteditableDire', function() {
                             //      that.appendChild(img);
                             //  };
                             //  img.src = fr.result;
-                            // uploadBase64(fr.result);
+                            var base64Code = fr.result;
+                            base64Code = base64Code.replace('data:image/png;base64,','');
+                            scope.$parent.uploadBase64(base64Code);
                          };
 
                          fr.readAsDataURL(data);
