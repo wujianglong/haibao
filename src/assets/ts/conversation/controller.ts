@@ -348,4 +348,29 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             webimutil.Helper.getFocus(obj);
         });
 
+        function handlePaste(e: any) {
+            for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
+                var item = e.clipboardData.items[i];
+                console.log("Item: " + item.type);
+                if (item.type.indexOf("image") > -1) {
+                     var fr = new FileReader;
+                     var data = item.getAsFile();
+                     fr.onloadend = function() {
+                         var img = new Image;
+                         img.onload = function() {
+                             document.getElementById('message-content').appendChild(img);
+                         };
+                         img.src = fr.result;
+                     };
+
+                     fr.readAsDataURL(data);
+                } else {
+                    console.log("Discardingimage paste data");
+                }
+            }
+        }
+
+        document.getElementById("message-content").
+            addEventListener("paste", handlePaste);
+
     }])
