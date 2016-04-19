@@ -103,6 +103,23 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             return msgouter;
         }
 
+        function addmessage(msg: webimmodel.Message) {
+            var hislist = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] || []
+            if (hislist.length == 0) {
+                hislist.push(new webimmodel.GetHistoryPanel());
+                if (msg.sentTime.toLocaleDateString() != (new Date()).toLocaleDateString())
+                    hislist.push(new webimmodel.TimePanl(msg.sentTime));
+            }
+            conversationServer.addHistoryMessages(msg.targetId, msg.conversationType, msg);
+            if (msg.messageType == webimmodel.MessageType.ImageMessage) {
+                setTimeout(function() {
+                    $scope.$broadcast("msglistchange");
+                }, 200)
+            } else {
+                $scope.$broadcast("msglistchange");
+            }
+        }
+
         $scope.sendBtn = function() {
             $scope.showemoji = false;
 
@@ -124,6 +141,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             }, function(error) {
                 console.log(error);
+                if(error.errorCode == 405){
+                  var msg = webimutil.Helper.cloneObject(error.message);
+                  msg.content = "您的消息已经发出，但被对方拒收";
+                  msg.panelType = webimmodel.PanelType.InformationNotification;
+                  addmessage(msg);
+                }
             });
 
             var msgouter = packmysend(msg, webimmodel.MessageType.TextMessage);
@@ -150,7 +173,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         function getThumbnailAndSendImg(info: any, file: any) {
-          var info = JSON.parse(info);
+          // var info = JSON.parse(info);
           console.log('info', info);
           webimutil.ImageHelper.getThumbnail(file, 60000, function(obj: any, data: any) {
               var im = RongIMLib.ImageMessage.obtain(data, IMGDOMAIN + info.key);
@@ -356,7 +379,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             });
         }
 
-        $scope.uploadBase64 = function(file: string) {
+        function uploadBase64(strBase64: string, file: any) {
             var pic = "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";
             var req = {
                 method: 'POST',
@@ -366,11 +389,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     'Authorization': "UpToken " + conversationServer.uploadFileToken
                 },
                 withCredentials: false,
-                data: file
+                data: strBase64
             };
             $http(req).success(function (res) {
                 // callback && callback.onSuccess && callback.onSuccess();
-                console.log('uploadBase64', res);
                 getThumbnailAndSendImg(res, file);
             }).error(function () {
             });
@@ -380,5 +402,31 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             var obj = document.getElementById("message-content");
             webimutil.Helper.getFocus(obj);
         });
+
+        function handlePaste(e: any) {
+            var that = this, ohtml = that.innerHTML;
+            for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
+                var item = e.clipboardData.items[i];
+                if (item.type.indexOf("image") > -1) {
+                     var fr = new FileReader;
+                     var data = item.getAsFile();
+                     fr.onloadend = function() {
+                        var base64Code = fr.result;
+                        base64Code = base64Code.replace('data:image/png;base64,','');
+                        base64Code = base64Code.replace('data:image/jpg;base64,','');
+                        uploadBase64(base64Code, data);
+                     };
+
+                     fr.readAsDataURL(data);
+                } else {
+                    console.log("Discardingimage paste data");
+                }
+            }
+        }
+        document.getElementById("message-content").
+            addEventListener("paste", handlePaste);
+        // element.bind("paste", function(e: any) {
+        //     handlePaste(e);
+        // });
 
     }])
