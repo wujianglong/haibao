@@ -173,8 +173,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         function getThumbnailAndSendImg(info: any, file: any) {
-          // var info = JSON.parse(info);
-          console.log('info', info);
           webimutil.ImageHelper.getThumbnail(file, 60000, function(obj: any, data: any) {
               var im = RongIMLib.ImageMessage.obtain(data, IMGDOMAIN + info.key);
 
