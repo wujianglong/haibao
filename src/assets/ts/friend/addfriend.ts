@@ -121,7 +121,7 @@ addfirendCtr.directive("addfirenditem", ["$state", "mainDataServer",
                 scope.applyfriendsrc = function() {
                     var friend = mainDataServer.contactsList.getFriendById(scope.item.id);
                     if (friend) {
-                        webimutil.Helper.alertMessage.error("此人已经是你的好友！", 2);
+                        webimutil.Helper.alertMessage.error("此人已经是您的好友！", 2);
                         return;
                     }
                     $state.go("main.applyfriend", { userId: scope.item.id, userName: scope.item.nickName });

@@ -41,6 +41,7 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attrs: any, ngModel: any) {
             scope.isCurrentConversation = scope.item.targetType == mainDataServer.conversation.currentConversation.targetType && scope.item.targetId == mainDataServer.conversation.currentConversation.targetId;
+            // scope.isCurrentConversation = scope.isCurrentConversation || scope.item.targetType == webimmodel.conversationType.System &&  mainDataServer.conversation.currentConversation.targetType == webimmodel.conversationType.System
             if(!scope.item.targetId){
               scope.item.imgSrc='assets/img/barBg.png';
             }else{

@@ -77,33 +77,6 @@ conversationDire.directive('contenteditableDire', function() {
             //     }, 50);
             // });
 
-            function handlePaste(e: any) {
-                var that = this, ohtml = that.innerHTML;
-                for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
-                    var item = e.clipboardData.items[i];
-                    console.log("Item: " + item.type);
-                    if (item.type.indexOf("image") > -1) {
-                         var fr = new FileReader;
-                         var data = item.getAsFile();
-                         fr.onloadend = function() {
-                            //  var img = new Image;
-                            //  img.onload = function() {
-                            //      that.appendChild(img);
-                            //  };
-                            //  img.src = fr.result;
-                            // uploadBase64(fr.result);
-                         };
-
-                         fr.readAsDataURL(data);
-                    } else {
-                        console.log("Discardingimage paste data");
-                    }
-                }
-            }
-
-            element.bind("paste", function(e: any) {
-                handlePaste(e);
-            });
 
             ngModel.$render = function() {
                 element.html(ngModel.$viewValue || '');
