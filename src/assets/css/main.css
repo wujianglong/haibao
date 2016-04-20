@@ -2483,7 +2483,6 @@ input::-ms-clear{display:none;}
     background: url(../img/arrow.png);
 }
 .expressionWrap div{
-    margin: 3px 3px;
     cursor: default;
 }
 .RC_Expression {

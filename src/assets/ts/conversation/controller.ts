@@ -402,7 +402,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         });
 
         function handlePaste(e: any) {
-            var that = this, ohtml = that.innerHTML;
+            var reg = new RegExp('^data:image/[^;]+;base64,');
             for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
                 var item = e.clipboardData.items[i];
                 if (item.type.indexOf("image") > -1) {
@@ -410,14 +410,13 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                      var data = item.getAsFile();
                      fr.onloadend = function() {
                         var base64Code = fr.result;
-                        base64Code = base64Code.replace('data:image/png;base64,','');
-                        base64Code = base64Code.replace('data:image/jpg;base64,','');
+                        base64Code = base64Code.replace(reg,'');
                         uploadBase64(base64Code, data);
                      };
 
                      fr.readAsDataURL(data);
                 } else {
-                    console.log("Discardingimage paste data");
+                    console.log("Discardingimage paste data" + item.type);
                 }
             }
         }

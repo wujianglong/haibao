@@ -19,7 +19,7 @@ declare module RongIMLib {
         static init(): void
         static preLoaded(data: string): void
         static play(data: string, duration: number): void
-        static stop(data: string): void
+        static stop(data?: string): void
         static onprogress(): void
     }
 }

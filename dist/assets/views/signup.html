@@ -33,7 +33,7 @@
                           <div class="form-group">
                               <input type="password" name="password"  required ng-pattern='/^[0-9a-zA-Z!@#$%^&*(){}:"|>?\[\];,./\-=_+]{6,16}$/' ng-model="user.passWord"  class="form-control-my" placeholder="密码（由6-16个字符组成）" id="pwdUp" my-focus>
                               <p class="error-block" ng-show="(formSignup.password.$dirty||formSignup.submitted)&&formSignup.password.$error.required&&!formSignup.password.$focused">不可以为空</p>
-                              <p class="error-block" ng-show="!formSignup.password.$error.required&&formSignup.password.$dirty&&formSignup.password.$invalid&&!formSignup.password.$focused">6-16 位的英文、数字或 “_”</p>
+                              <p class="error-block" ng-show="!formSignup.password.$error.required&&formSignup.password.$dirty&&formSignup.password.$invalid&&!formSignup.password.$focused">6 - 16 位的英文、数字或 “_”</p>
                           </div>
                           <div class="button-wrapper form-group">
                               <button class="sign-button submit" ng-click="signup()" type="submit">注册</button>
