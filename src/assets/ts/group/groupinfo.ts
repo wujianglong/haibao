@@ -29,7 +29,7 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
         $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
 
         if (!$scope.groupInfo) {
-            webimutil.Helper.alertMessage.error("你不在此群组中", 2);
+            webimutil.Helper.alertMessage.error("您不在此群组中", 2);
             back();
         }
 

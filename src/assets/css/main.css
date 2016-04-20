@@ -992,12 +992,53 @@ input::-ms-clear{display:none;}
     /*font-weight: bold;*/
     font-size: 17px;
     color: #000;
-    line-height: 50px;
+    /*line-height: 50px;*/
     margin-top: 10px;
     margin-bottom: 8px;
 }
 .userInfo .info .userName span{
     position: relative;
+}
+/* 好友设置备注名 */
+.userInfo .info .remarkName.form-group {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-top: -6px;
+}
+.userInfo .info .remarkName .form-control {
+    display: inline-block;
+    width: auto;
+}
+.userInfo .info .remarkName label{
+    font-weight: normal;
+    font-size: 14px;
+    color: #999;
+    margin-right: 3px;
+    margin-bottom: 0;
+}
+.userInfo .info .remarkName input{
+    margin-right: 5px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 1px solid #ccc;
+    padding: 0;
+    background: transparent;
+    height: 20px;
+    text-indent: 3px;
+    width: 120px!important;
+}
+.userInfo .info .remarkName > i{
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: -4px;
+    background: url(../../static/images/icons.png) 0 -576px/100px auto no-repeat;
+}
+.userInfo .info .remarkName .error-block{
+    display: inline-block;
+    margin-left: 10px;
+    color: #f00;
 }
 .Presence--user.online {
     position: absolute;
@@ -2442,8 +2483,7 @@ input::-ms-clear{display:none;}
     background: url(../img/arrow.png);
 }
 .expressionWrap div{
-    margin: 3px 3px;
-    cursor: pointer;
+    cursor: default;
 }
 .RC_Expression {
     width: 22px;
@@ -2451,6 +2491,9 @@ input::-ms-clear{display:none;}
     background-image: url(http://res.websdk.rongcloud.cn/css-sprite_bg.png);
     display: inline-block;
 }
+.expressionWrap div { padding: 3px; border-radius: 4px; }
+.expressionWrap div:hover { background: #eee; }
+.expressionWrap>div>span>span{ font-size: 20px; vertical-align: middle; position: relative; left: -1px; }
 
 /* 登录 注册 */
 #sign{

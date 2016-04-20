@@ -60,7 +60,7 @@ addgroup.directive("addgroupitem", ["$state", "mainDataServer",
             link: function(scope: any, ele: angular.IRootElementService, attr: any) {
                 scope.applygroupsrc = function() {
                     if (mainDataServer.contactsList.getGroupById(scope.item.groupId)) {
-                        alert("你已经在群组里");
+                        alert("您已经在群组里");
                         return;
                     }
                     $state.go("main.applygroup", { groupId: scope.item.groupId });

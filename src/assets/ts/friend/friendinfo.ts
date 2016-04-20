@@ -47,6 +47,8 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
                 $scope.user.nickName = f.name;
                 $scope.user.portraitUri = f.imgSrc;
                 $scope.user.firstchar = f.firstchar;
+                $scope.user.displayName = f.displayName;
+                $scope.user.mobile = f.mobile;
             })
 
         } else if (member) {

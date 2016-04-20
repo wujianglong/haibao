@@ -78,7 +78,6 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
             // webimutil.Helper.alertMessage.error("陌生人不做显示", 2);
             // goback();
         }
-
         var addBlackList = function(id: any) {
             mainServer.user.addToBlackList(id).success(function() {
                 mainDataServer.blackList.add(new webimmodel.Friend({
@@ -150,7 +149,11 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
                   if(friend){
                      friend.displayName = $scope.user.displayName;
                      mainDataServer.contactsList.updateOrAddFriend(friend);
-                     mainDataServer.contactsList.removeFriendFromSubgroup(friendOld);
+                     var fold = webimutil.ChineseCharacter.getPortraitChar2(friendOld.displayName || friendOld.name);
+                     var fnew = webimutil.ChineseCharacter.getPortraitChar2(friend.displayName || friend.name);
+                     if(fold != fnew){
+                       mainDataServer.contactsList.removeFriendFromSubgroup(friendOld);
+                     }
                   }
                   $scope.back();
                 })

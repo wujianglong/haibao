@@ -25,11 +25,19 @@
                       <!-- <i class="Presence Presence--user offline"></i> -->
                     </span>
                 </h3>
+                <div class="form-group remarkName">
+                  <form name="modifyName" novalidate="novalidate">
+                  <!-- <input class="form-control" id="remarkName" type="text" placeholder="添加备注名"/> -->
+                  <input type="text" class="form-control" name="userName" ng-show="!isself && isfriend" id="remarkName"  ng-minlength="1" ng-maxlength="32" ng-model="user.displayName"  placeholder="添加备注名">
+                  <i class=""></i>
+                  <span class="error-block" ng-show="modifyName.userName.$dirty&&(modifyName.userName.$error.minlength||modifyName.userName.$error.maxlength)">备注名长度 0 - 16 个字符</span>
+                  </form>
+                </div>
                 <!-- <p class="userId">ID : <span>{{user.id}}</span></p> -->
                 <!-- <p class="isBlack">已加入黑名单</p> -->
             </div>
 <!-- 待修改 -->
-            <div class="editName clearfix" style="">
+            <!-- <div class="editName clearfix" style="">
              <form name="modifyName" novalidate="novalidate">
              <div class="clearfix">
              <div class="col-xs-3">
@@ -38,7 +46,7 @@
              <span class="error-block" ng-show="modifyName.userName.$dirty&&(modifyName.userName.$error.minlength||modifyName.userName.$error.maxlength)">昵称长度1-32</span>
              </div>
              </form>
-            </div>
+            </div> -->
 
         </div>
         <div class="userFunPannel clearfix">

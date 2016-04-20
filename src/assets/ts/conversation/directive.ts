@@ -27,6 +27,7 @@ conversationDire.directive('contenteditableDire', function() {
             function replacemy(e: string) {
                 return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
             }
+
             var domElement = <any>element[0];
 
             // scope.$watch(function() {
@@ -66,15 +67,16 @@ conversationDire.directive('contenteditableDire', function() {
 
             if (!ngModel) return;
 
-            element.bind("paste", function(e: any) {
-                var that = this, ohtml = that.innerHTML;
-                timeoutid && clearTimeout(timeoutid);
-                var timeoutid = setTimeout(function() {
-                    that.innerHTML = replacemy(that.innerHTML);
-                    ngModel.$setViewValue(that.innerHTML);
-                    timeoutid = null;
-                }, 50);
-            });
+            // element.bind("paste", function(e: any) {
+            //     var that = this, ohtml = that.innerHTML;
+            //     timeoutid && clearTimeout(timeoutid);
+            //     var timeoutid = setTimeout(function() {
+            //         that.innerHTML = replacemy(that.innerHTML);
+            //         ngModel.$setViewValue(that.innerHTML);
+            //         timeoutid = null;
+            //     }, 50);
+            // });
+
 
             ngModel.$render = function() {
                 element.html(ngModel.$viewValue || '');
@@ -176,7 +178,7 @@ conversationDire.directive("voiceMessage", ["$timeout", function($timeout: angul
             scope.item.duration = parseInt(scope.item.duration || scope.item.content.length / 1024);
             RongIMLib.RongIMVoice.preLoaded(scope.item.content);
             scope.play = function() {
-                RongIMLib.RongIMVoice.stop(scope.item.content);
+                RongIMLib.RongIMVoice.stop();
                 if (!scope.isplaying) {
                     scope.item.isUnReade = false;
                     RongIMLib.RongIMVoice.play(scope.item.content, scope.item.duration);
