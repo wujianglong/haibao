@@ -6,6 +6,8 @@
   content: attr(placeholder);
   display: block; /* For Firefox */
   color: #a9a9a9;
+  position:absolute;
+  top:6px;
 }
 * {
     padding: 0;
