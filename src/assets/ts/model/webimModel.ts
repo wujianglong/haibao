@@ -325,7 +325,7 @@ module webimmodel {
                         break;
                     case "Kicked":
                         //由于之前数据问题
-                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被剔出群组") : "移除群组";
+                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被踢出群组") : "移除群组";
                         break;
                     case "Rename":
                         msgContent = data.operatorNickname + " 修改了群名称";
