@@ -78,7 +78,6 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
             // webimutil.Helper.alertMessage.error("陌生人不做显示", 2);
             // goback();
         }
-        $scope.user.nickName = $scope.user.displayName || $scope.user.nickName;
         var addBlackList = function(id: any) {
             mainServer.user.addToBlackList(id).success(function() {
                 mainDataServer.blackList.add(new webimmodel.Friend({
