@@ -67,6 +67,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             $state.go("main.notification");
         }
 
+        $scope.showPasteDiv = function(visible: boolean){
+            $scope.$broadcast('showPasteDiv', visible);
+        }
+
+        $scope.uploadPasteImage = function(){
+            $scope.$broadcast('uploadPasteImage');
+        }
+
         function refreshconversationList() {
             $scope.mainData.conversation.updateConversations();
         }

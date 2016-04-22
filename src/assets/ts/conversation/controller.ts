@@ -185,15 +185,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
            }
         }
 
-        function showLoading(visible: boolean){
-           var loading = <any>document.getElementsByClassName("load-container")[0];
-           if(visible){
-             loading.style.visibility = "visible";
-           }else{
-             loading.style.visibility = "hidden";
-           }
-        }
-
         $scope.uploadPasteImage = function(){
           var reg = new RegExp('^data:image/[^;]+;base64,');
           var picContent = <any>document.getElementsByClassName("picContent")[0];
@@ -202,6 +193,23 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           showLoading(true);
           uploadBase64(base64Code, pasteImgFile);
           // $scope.showPasteDiv(false);
+        }
+
+        $scope.$on('showPasteDiv', function(event: any, visible: boolean) {
+          $scope.showPasteDiv(visible);
+        });
+
+        $scope.$on('uploadPasteImage', function(event: any) {
+          $scope.uploadPasteImage();
+        });
+
+        function showLoading(visible: boolean){
+           var loading = <any>document.getElementsByClassName("load-container")[0];
+           if(visible){
+             loading.style.visibility = "visible";
+           }else{
+             loading.style.visibility = "hidden";
+           }
         }
 
         function getThumbnailAndSendImg(info: any, file: any) {
