@@ -35,6 +35,7 @@ interface Window {
     [index: string]: any
     Electron: any
     _open_account_settings: any
+    upload_base64: any
 }
 interface Document {
     selection: any

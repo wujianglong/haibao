@@ -393,11 +393,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.MessageType.ImageMessage:
                     case webimmodel.MessageType.RichContentMessage:
                         addmessage(msg);
-                        webimutil.NotificationHelper.showNotification({
-                            title: msg.senderUserName,
-                            icon: "assets/img/SealTalk.ico",
-                            body: webimmodel.Message.messageToNotification(data), data: { targetId: msg.targetId, targetType: msg.conversationType }
-                        });
+                        var isself = mainDataServer.loginUser.id == msg.senderUserId;
+                        if (!isself) {
+                          webimutil.NotificationHelper.showNotification({
+                              title: msg.senderUserName,
+                              icon: "assets/img/SealTalk.ico",
+                              body: webimmodel.Message.messageToNotification(data), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                          });
+                        }
                         break;
                     case webimmodel.MessageType.UnknownMessage:
                         if (data.objectName == "RC:GrpNtf" && !data.hasReceivedByOtherClient) {

@@ -757,7 +757,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         notificationList: [],
         addNotification: function(item: webimmodel.NotificationFriend) {
             if (!this._findFriendApply(item)) {
-                item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
+                if(item.name)
+                   item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
                 this.notificationList.unshift(item);
             }
         },

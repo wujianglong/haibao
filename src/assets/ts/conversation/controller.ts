@@ -23,6 +23,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
+        var pasteImgFile : any = null;
         $scope.messagesloading = true;
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
@@ -170,6 +171,37 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         $scope.sendImg = function(){
             //TODO:获取base64
             // uploadBase64();
+        }
+
+        $scope.showPasteDiv = function(visible: boolean){
+           var pic = <any>document.getElementsByClassName("previewPic")[0];
+           var picBackground = <any>document.getElementsByClassName("previewPicLayer")[0];
+           if(visible){
+             pic.style.visibility = "visible";
+             picBackground.style.visibility = "visible";
+           }else{
+             pic.style.visibility = "hidden";
+             picBackground.style.visibility = "hidden";
+           }
+        }
+
+        function showLoading(visible: boolean){
+           var loading = <any>document.getElementsByClassName("load-container")[0];
+           if(visible){
+             loading.style.visibility = "visible";
+           }else{
+             loading.style.visibility = "hidden";
+           }
+        }
+
+        $scope.uploadPasteImage = function(){
+          var reg = new RegExp('^data:image/[^;]+;base64,');
+          var picContent = <any>document.getElementsByClassName("picContent")[0];
+          var base64Code = picContent.src;
+          base64Code = base64Code.replace(reg,'');
+          showLoading(true);
+          uploadBase64(base64Code, pasteImgFile);
+          // $scope.showPasteDiv(false);
         }
 
         function getThumbnailAndSendImg(info: any, file: any) {
@@ -391,8 +423,21 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $http(req).success(function (res) {
                 // callback && callback.onSuccess && callback.onSuccess();
                 getThumbnailAndSendImg(res, file);
-            }).error(function () {
+                showLoading(false);
+                $scope.showPasteDiv(false);
+            }).error(function (err) {
+                console.log('uploadBase64', err);
+                showLoading(false);
+                webimutil.Helper.alertMessage.error("上传图片出错！", 2);
             });
+        }
+
+        window.upload_base64 = function () {
+            var obj = document.getElementById("message-content");
+            if(obj){
+                obj.focus();
+                document.execCommand("Paste");
+            }
         }
 
         setTimeout(function() {
@@ -409,11 +454,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                      var data = item.getAsFile();
                      fr.onloadend = function() {
                         var base64Code = fr.result;
-                        base64Code = base64Code.replace(reg,'');
-                        uploadBase64(base64Code, data);
+                        // base64Code = base64Code.replace(reg,'');
+                        // uploadBase64(base64Code, data);
+                        var picContent = <any>document.getElementsByClassName("picContent")[0];
+                        picContent.src =  base64Code;
+                        $scope.showPasteDiv(true);
                      };
 
                      fr.readAsDataURL(data);
+                     pasteImgFile = data;
                 } else {
                     console.log("Discardingimage paste data" + item.type);
                 }
