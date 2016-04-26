@@ -4,7 +4,8 @@
 
                         <a class="phone_return" ng-click="back()"><span class="backArrow"><</span>返回</a>
                         <div class="title">
-                            <a class="title_name">好友信息</a>
+                            <a class="title_name" ng-show="!isself">好友信息</a>
+                            <a class="title_name" ng-show="isself">个人信息</a>
                             <!--<span class="title_count ">(16)</span>
                             <i class="Presence Presence&#45;&#45;stacked Presence&#45;&#45;chatBox"></i>-->
                         </div>
@@ -30,7 +31,7 @@
                 <p class="isBlack">{{user.mobile}}</p>
             </div>
         </div>
-        <div class="userFunPannel clearfix">
+        <div class="userFunPannel clearfix" ng-show="!isself">
             <ul class="clearfix ">
                 <li class="clearfix" >
                     <div class="left">

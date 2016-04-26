@@ -195,6 +195,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           // $scope.showPasteDiv(false);
         }
 
+        $scope.takeScreenShot = function () {
+          if (window.Electron) {
+              window.Electron.screenShot();
+          }
+        };
+
         $scope.$on('showPasteDiv', function(event: any, visible: boolean) {
           $scope.showPasteDiv(visible);
         });
