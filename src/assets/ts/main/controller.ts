@@ -238,8 +238,41 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             if (data.code == "200") {
                 RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
                     console.log("connect success:" + userId);
-                    RongIMSDKServer.getConversationList().then(function() {
+                    RongIMSDKServer.getConversationList().then(function(list) {
                         mainDataServer.conversation.updateConversations();
+                        //初始化讨论组
+                        for (var i = 0, length = list.length; i < length; i++) {
+                          if(list[i].conversationType == RongIMLib.ConversationType.DISCUSSION){
+                            RongIMSDKServer.getDiscussion(list[i].targetId).then(function (rep) {
+                                var discuss = <RongIMLib.Discussion>rep.data;
+                                var discussion = new webimmodel.Discussion({
+                                    id: discuss.id,
+                                    name: discuss.name,
+                                    imgSrc: "",
+                                    upperlimit: 500,
+                                    fact: 1,
+                                    creater: discuss.creatorId,
+                                    isOpen: discuss.isOpen
+                                });
+                                mainDataServer.contactsList.addDiscussion(discussion);
+
+                            },function () {
+
+                            });
+
+
+
+                            // for (var j = 0, len = members.length; j < len; j++) {
+                            //     var member = new webimmodel.Member({
+                            //         id: members[j].id,
+                            //         name: members[j].name,
+                            //         imgSrc: members[j].imgSrc,
+                            //         role: "1"
+                            //     });
+                            //     mainDataServer.contactsList.addDiscussionMember(discussion.id, member);
+                            // }
+                          }
+                        }
                     });
                 }, function(error) {
                     if (error.tokenError) {

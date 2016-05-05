@@ -566,6 +566,30 @@ module webimmodel {
 
     }
 
+    export class Discussion extends Contact {
+        upperlimit: number;
+        fact: number;
+        creater: string;
+        memberList: Member[];
+
+        constructor(item: {
+            id: string;
+            name: string;
+            imgSrc: string;
+            upperlimit: number;
+            fact: number;
+            creater: string;
+            isOpen: boolean;
+        }) {
+            super(item);
+            this.upperlimit = item.upperlimit;
+            this.fact = item.fact;
+            this.creater = item.creater;
+            this.memberList = []
+        }
+
+    }
+
     export class Member extends Contact {
         id: string;
         name: string;
