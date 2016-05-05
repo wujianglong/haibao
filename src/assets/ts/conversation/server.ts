@@ -182,6 +182,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     item.senderUserImgSrc = user.firstchar;
                     item.imgSrc = user.imgSrc
                 } else {
+                    if(item.senderUserId == '__system__') {
+                      return;
+                    }
                     mainServer.user.getInfo(item.senderUserId).success(function(rep) {
                         if (rep.code == 200) {
                             item.senderUserName = rep.result.nickname;
