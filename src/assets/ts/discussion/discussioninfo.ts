@@ -10,7 +10,7 @@ discussionInfo.controller("discussioninfoController", ["$scope", "$state", "$sta
             angular.element(document.getElementById("portrait")).css("background-color", webimutil.Helper.portraitColors[$scope.discussionInfo.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
         });
 
-        $scope.isEditable = false;
+        $scope.isEditable = true;
 
         function back() {
             if (conversationtype && conversationtype != "0") {
@@ -69,13 +69,12 @@ discussionInfo.controller("discussioninfoController", ["$scope", "$state", "$sta
                     return membersid.push(item.id);
                 }
             });
-            var userid = '';
-            RongIMSDKServer.removeMemberFromDiscussion(discussionid, userid, {
+            RongIMSDKServer.removeMemberFromDiscussion(discussionid, membersid[0], {
               onSuccess: function () {
-                for (var i = 0, len = membersid.length; i < len; i++) {
-                    mainDataServer.contactsList.removeDiscussionMember(discussionid, membersid[i]);
-                }
-                $scope.isEditable = false;
+                // for (var i = 0, len = membersid.length; i < len; i++) {
+                    mainDataServer.contactsList.removeDiscussionMember(discussionid, membersid[0]);
+                // }
+                $scope.isEditable = true;
               },
               onError: function () {
                 // console.log(err);

@@ -11,6 +11,8 @@
                 <span class="title_count "></span>
                 <i class="Presence Presence--stacked Presence--chatBox" ng-show="currentConversation.targetType==4"></i>
             </div>
+
+            <a class="editBtn" href="javascript:void 0" ui-sref="main.discussioninfo({discussionid: currentConversation.targetId, conversationtype: currentConversation.targetType})" ng-show="currentConversation.targetType==2">设置</a>
         </div>
     </div>
     <!-- content -->

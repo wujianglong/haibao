@@ -331,6 +331,36 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
                     var conversationitem = webimmodel.Conversation.convertToWebIM(list[i]);
+                    if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
+                        var members = list[i].latestMessage.content.extension.split(',');
+                        switch (list[i].latestMessage.content.type) {
+                            case 1:
+                                var arrMember: string[] = [];
+                                for (var j = 0, len = members.length; j < len; j++) {
+                                    (function (id: string, conv: webimmodel.Conversation, arrMem: string[], len: number) {
+                                      mainServer.user.getInfo(id).success(function (user) {
+                                        arrMem.push(user.result.nickname);
+                                        if(arrMem.length == len){
+                                            conv.lastMsg = arrMem.join('、') + conv.lastMsg;
+                                        }
+                                      });
+                                    }(members[j], conversationitem, arrMember, len));
+                                }
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                (function (id: string, conv: webimmodel.Conversation) {
+                                    mainServer.user.getInfo(id).success(function (user) {
+                                        conv.lastMsg = user.result.nickname + conv.lastMsg;
+                                    });
+                                }(members[0], conversationitem));
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
 
                     switch (list[i].conversationType) {
                         case RongIMLib.ConversationType.CHATROOM:
@@ -502,6 +532,22 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
                         }).error(function() {
 
+                        });
+                    }
+                    break;
+                case webimmodel.conversationType.Discussion:
+                    var discussioninfo = mainDataServer.contactsList.getDiscussionById(targetId);
+                    if (discussioninfo) {
+                        item.title = groupinfo.name;
+                        item.firstchar = groupinfo.firstchar;
+                    }
+                    else {
+                        RongIMSDKServer.getDiscussion(targetId).then(function (rep) {
+                            var discuss = rep.data;
+                            item.title = discuss.name;
+                            item.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
+                        }, function () {
+                            item.title = "未知讨论组";
                         });
                     }
                     break;

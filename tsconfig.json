@@ -29,7 +29,6 @@
     "./src/assets/ts/conversation/controller.ts",
     "./src/assets/ts/conversation/directive.ts",
     "./src/assets/ts/conversation/server.ts",
-    "./src/assets/ts/discussion/addgroup.ts",
     "./src/assets/ts/discussion/creatediscussion.ts",
     "./src/assets/ts/discussion/discussionaddmember.ts",
     "./src/assets/ts/discussion/discussioninfo.ts",
