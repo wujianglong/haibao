@@ -348,7 +348,7 @@ input::-ms-clear{display:none;}
     top: -75px;
     right: -76px;
     width: 100px;
-    height: 80px;
+    height: 120px;
     background: #fff;
     border-radius: 5px;
     z-index: 99;
@@ -2008,6 +2008,21 @@ input::-ms-clear{display:none;}
 }
 
 .friendsList .select input[type=checkbox]:checked + label {
+    background: url(../img/icons.png) 0 -412px/80px auto no-repeat;
+}
+.friendsList .select input[type=radio] + label {
+    display: inline-block;
+    background: url(../img/icons.png) 0 -386px/80px auto no-repeat;
+    width: 17px;
+    height: 17px;
+    border-radius: 7px;
+    margin: 8px 15px 0 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.friendsList .select input[type=radio]:checked + label {
     background: url(../img/icons.png) 0 -412px/80px auto no-repeat;
 }
 .friendsList .photo .img{

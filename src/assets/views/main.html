@@ -30,6 +30,7 @@
                       <ul class="addPanel" style="display:none">
                           <li id="createGroup"><a  ui-sref="main.creategroup">创建群组</a></li>
                           <li id="addFriends"><a  ui-sref="main.searchfriend">添加好友</a></li>
+                          <li id="addDiscussion"><a  ui-sref="main.discussionaddmember({iscreate: 'true', idorname: ''})">发起聊天</a></li>
                           <!-- <li id="addGroup"><a href="javascript:void (0)" ui-sref="main.searchgroup">加入群组</a></li> -->
                       </ul>
                     </div>
@@ -69,6 +70,7 @@
                         <groupitem  ng-repeat="item in mainData.contactsList.groupList" item="item" class="noticeBarList"></groupitem>
                       </div>
                   </div>
+
                   <div class="membersArea">
                       <div class="membersAreaHeader" ng-click="showfriends=!showfriends">联系人<span class="caret" ng-class="{'open':!showfriends}"></span></div>
 
