@@ -79,6 +79,19 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
                     $state.go("main");
                     return;
                 }
+            }]).when("/main/discussioninfo/:discussionid/:conversationtype", ["$state", "$match", "mainDataServer", function($state: angular.ui.IStateService, $match: any, mainDataServer: mainDataServer) {
+                if (!mainDataServer.loginUser.nickName) {
+                    $state.go("main");
+                    return;
+                } else {
+                    // $state.go("main.groupinfo", { groupid: $state.params["groupid"] });
+                    $state.transitionTo("main.discussioninfo", $match);
+                }
+            }]).when("/main/discussionaddmember/:iscreate/:idorname", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
+                if (!mainDataServer.loginUser.nickName) {
+                    $state.go("main");
+                    return;
+                }
             }]).when("/account", ["$state", function($state: angular.ui.IStateService) {
                 $state.go("account.signin");
             }]).otherwise('main');

@@ -63,16 +63,14 @@ discussionInfo.controller("discussioninfoController", ["$scope", "$state", "$sta
         }
 
         $scope.kickMember = function() {
-            var membersid = <string[]>[];
-            $scope.discussionInfo.memberList.filter(function(item: any) {
-                if (item.isSelected) {
-                    return membersid.push(item.id);
-                }
-            });
-            RongIMSDKServer.removeMemberFromDiscussion(discussionid, membersid[0], {
+            var selMember = $scope.selMember;
+            if(!selMember){
+              return
+            }
+            RongIMSDKServer.removeMemberFromDiscussion(discussionid, selMember, {
               onSuccess: function () {
                 // for (var i = 0, len = membersid.length; i < len; i++) {
-                    mainDataServer.contactsList.removeDiscussionMember(discussionid, membersid[0]);
+                    mainDataServer.contactsList.removeDiscussionMember(discussionid, selMember);
                 // }
                 $scope.isEditable = true;
               },
@@ -112,46 +110,42 @@ discussionInfo.controller("discussioninfoController", ["$scope", "$state", "$sta
             //
             // })
         }
+        $scope.getSelect = function (val: string) {
+            // console.log('getSelect', val);
+            $scope.selMember = val;
+        };
 
     }]);
 
-// discussionInfo.directive("member", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
-//     return {
-//         restrict: "E",
-//         scope: { item: "=", isshow: "=" },
-//         template: '<li class="chat_item discussionUser_item">' +
-//         '<div class="select"  ng-show="isshow">' +
-//         '<input type="checkbox" class="hide" ng-disabled="item.id==loginUserid" id="{{item.id}}" value="136" ng-model="item.isSelected" data-count="" name="">' +
-//         '<label for="{{item.id}}"></label>' +
-//         '</div>' +
-//         '<div ng-click="showinfo()">' +
-//         '<div class="photo">' +
-//         '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
-//         '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
-//         '</div>' +
-//         '<div class="info">' +
-//         '<h3 class="nickname">' +
-//         '<span class="nickname_text">{{item.name}}</span>' +
-//         '</h3>' +
-//         '</div>' +
-//         '</div>' +
-//         '</li>',
-//         link: function(scope: any, ele: any, attr: any) {
-//             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-//
-//             scope.showinfo = function() {
-//                 $state.go("main.friendinfo", { userid: scope.item.id, discussionid: scope.$parent.discussionInfo.id, targetid: scope.$parent.discussionInfo.id, conversationtype: $state.params["conversationtype"] });
-//             }
-//             scope.loginUserid = mainDataServer.loginUser.id;
-//             scope.$watch("item.isSelected", function(newValue: boolean, oldValue: boolean) {
-//                 if (newValue == oldValue) {
-//                     return;
-//                 }
-//                 // if (newValue && scope.item.id == mainDataServer.loginUser.id) {
-//                 //     webimutil.Helper.alertMessage.error("您不可以将自己删除", 2);
-//                 //     scope.item.isSelected = false;
-//                 // }
-//             })
-//         }
-//     }
-// }])
+discussionInfo.directive("discussionMember", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
+    return {
+        restrict: "E",
+        scope: { item: "=", isshow: "=" , updateSelect: "&"},
+        template: '<li class="chat_item groupUser_item">' +
+        '<div class="select"  ng-show="isshow">' +
+        '<input type="radio" class="hide" ng-disabled="item.id==loginUserid" id="{{item.id}}" value="{{item.id}}" ng-model="selMember" data-count="" name="rdMember" ng-click="updateSelect({val: selMember})">' +
+        '<label for="{{item.id}}"></label>' +
+        '</div>' +
+        '<div ng-click="showinfo()">' +
+        '<div class="photo">' +
+        '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
+        '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
+        '</div>' +
+        '<div class="info">' +
+        '<h3 class="nickname">' +
+        '<span class="nickname_text">{{item.name}}</span>' +
+        '</h3>' +
+        '</div>' +
+        '</div>' +
+        '</li>',
+        link: function(scope: any, ele: any, attr: any) {
+            angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+
+            scope.showinfo = function() {
+                $state.go("main.friendinfo", { userid: scope.item.id, discussionid: scope.$parent.discussionInfo.id, targetid: scope.$parent.discussionInfo.id, conversationtype: $state.params["conversationtype"] });
+            }
+            scope.loginUserid = mainDataServer.loginUser.id;
+
+        }
+    }
+}])
