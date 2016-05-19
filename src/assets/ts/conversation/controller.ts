@@ -25,6 +25,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var conversation = {};
         var pasteImgFile : any = null;
         $scope.messagesloading = true;
+        $scope.showCutScreen = false;
+        if (window.Electron){
+          $scope.showCutScreen = true;
+        }
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
                 var conv = mainDataServer.conversation.createConversation(targetType, targetId);
@@ -451,6 +455,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(obj){
                 obj.focus();
                 document.execCommand("Paste");
+                // window.Electron.currentWebContents ? window.Electron.currentWebContents.paste() : window.Electron.currentWindow && window.Electron.currentWindow.webContents.paste()
+
             }
         }
 

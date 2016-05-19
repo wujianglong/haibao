@@ -62,9 +62,8 @@ discussionAddMember.controller("discussionaddmemberController", ["$scope", "$sta
                 //请求服务创建群组 将自己加入
                 membersid.push(mainDataServer.loginUser.id);
                 RongIMSDKServer.createDiscussion(tempname, membersid).then(function(rep) {
-
                     var discussion = new webimmodel.Discussion({
-                        id: rep,
+                        id: rep.data,
                         name: tempname,
                         imgSrc: "",
                         upperlimit: 500,

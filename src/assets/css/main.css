@@ -2356,6 +2356,13 @@ input::-ms-clear{display:none;}
 .MessageForm-tool i.iconfont-smile:hover {
     background-position: -60px -188px;
 }
+.MessageForm-tool i.screen_shot {
+     background: url(../img/icons.png) 0 -641px/100px auto no-repeat;
+}
+.MessageForm-tool i.screen_shot:hover {
+    background-position: -60px -641px;
+}
+
 .MessageForm-tool i.iconfont-upload {
     background: url(../img/icons.png) 0 -546px/100px auto no-repeat;
 }

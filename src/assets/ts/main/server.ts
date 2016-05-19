@@ -538,8 +538,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 case webimmodel.conversationType.Discussion:
                     var discussioninfo = mainDataServer.contactsList.getDiscussionById(targetId);
                     if (discussioninfo) {
-                        item.title = groupinfo.name;
-                        item.firstchar = groupinfo.firstchar;
+                        item.title = discussioninfo.name;
+                        item.firstchar = discussioninfo.firstchar;
                     }
                     else {
                         RongIMSDKServer.getDiscussion(targetId).then(function (rep) {
@@ -919,6 +919,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     var RongIMSDKServer = <any>{};
 
     RongIMSDKServer.init = function(appkey: string) {
+        // RongIMLib.RongIMClient.init(appkey, new RongIMLib.WebSQLDataProvider());
         RongIMLib.RongIMClient.init(appkey);
     }
 
@@ -1209,7 +1210,7 @@ interface RongIMSDKServer {
     disconnect(): void
     logout(): void
     reconnect(callback?: any): void
-    createDiscussion(name: string, userIdList: string[]): angular.IPromise<string>
+    createDiscussion(name: string, userIdList: string[]): angular.IPromise<{data: string}>
     addMemberToDiscussion(discussionId: string, userIdList: string[], callback?: any): void
     removeMemberFromDiscussion(discussionId: string, userId: string, callback?: any): void
     setDiscussionName(discussionId: string, name: string, callback?: any): void

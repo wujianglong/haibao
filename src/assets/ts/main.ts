@@ -269,6 +269,9 @@ webimApp.filter('trustHtml', ["$sce", function($sce: angular.ISCEService) {
 
 webimApp.filter("showTime", ["$filter", function($filter: angular.IFilterService) {
     return function(time: Date) {
+        if(!time){
+          return;
+        }
         var today = new Date();
         if (time.toDateString() === today.toDateString()) {
             return $filter("date")(time, "HH:mm");
@@ -289,6 +292,9 @@ webimApp.filter("selectedNum", [function() {
 
 webimApp.filter("historyTime", ["$filter", function($filter: angular.IFilterService) {
     return function(time: Date) {
+        if(!time){
+          return;
+        }
         var today = new Date();
         if (time.toDateString() === today.toDateString()) {
             return $filter("date")(time, "HH:mm");
