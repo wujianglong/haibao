@@ -3,8 +3,8 @@
 
 var modifypassword = angular.module("webim.usermodifypassword", ["webim.main.server"]);
 
-modifypassword.controller("modifypasswordController", ["$scope", "$state", "mainServer",
-    function($scope: any, $state: angular.ui.IStateService, mainServer: mainServer) {
+modifypassword.controller("modifypasswordController", ["$scope", "$state", "mainServer", "mainDataServer",
+    function($scope: any, $state: angular.ui.IStateService, mainServer: mainServer, mainDataServer: mainDataServer) {
         $scope.user = {
             oldpassword: "",
             newpassword: "",
@@ -27,8 +27,9 @@ modifypassword.controller("modifypasswordController", ["$scope", "$state", "main
                 //修改密码
                 mainServer.user.modefiyPassword($scope.user.newpassword, $scope.user.oldpassword).success(function(rep) {
                     if (rep.code == 200) {
-                        $state.go("main.userinfo");
-                        webimutil.Helper.alertMessage.success("修改成功", 2);
+                        // $state.go("main.userinfo");
+                        logout();
+                        webimutil.Helper.alertMessage.success("修改成功,请重新登录", 2);
                     } else if (rep.code == 1000) {
                         $scope.validate.oldpassworderror = true;
                     }
@@ -37,6 +38,29 @@ modifypassword.controller("modifypasswordController", ["$scope", "$state", "main
 
                 });
             }
+        }
+
+
+
+        $scope.validRepeatPwd = function () {
+             var newpassword = angular.element(document.getElementById("newPW"));
+             var repeatpassword = angular.element(document.getElementById("renewPW"));
+             if(!repeatpassword.val()){
+                 return;
+             }
+             var result = repeatpassword.val() != newpassword.val();
+             $scope.formModifyPWD.repeatpassword.$setValidity("pwmatch", !result);
+        };
+
+        function logout() {
+            mainServer.user.logout().success(function() {
+                webimutil.CookieHelper.removeCookie("loginuserid");//清除登录状态
+                mainDataServer.loginUser = new webimmodel.UserInfo();//清除用户信息
+                if (window.Electron) {
+                    window.Electron.webQuit();
+                }
+                $state.go("account.signin");
+            })
         }
 
     }]);

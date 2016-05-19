@@ -331,6 +331,36 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
                     var conversationitem = webimmodel.Conversation.convertToWebIM(list[i]);
+                    if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
+                        var members = list[i].latestMessage.content.extension.split(',');
+                        switch (list[i].latestMessage.content.type) {
+                            case 1:
+                                var arrMember: string[] = [];
+                                for (var j = 0, len = members.length; j < len; j++) {
+                                    (function (id: string, conv: webimmodel.Conversation, arrMem: string[], len: number) {
+                                      mainServer.user.getInfo(id).success(function (user) {
+                                        arrMem.push(user.result.nickname);
+                                        if(arrMem.length == len){
+                                            conv.lastMsg = arrMem.join('、') + conv.lastMsg;
+                                        }
+                                      });
+                                    }(members[j], conversationitem, arrMember, len));
+                                }
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                (function (id: string, conv: webimmodel.Conversation) {
+                                    mainServer.user.getInfo(id).success(function (user) {
+                                        conv.lastMsg = user.result.nickname + conv.lastMsg;
+                                    });
+                                }(members[0], conversationitem));
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
 
                     switch (list[i].conversationType) {
                         case RongIMLib.ConversationType.CHATROOM:
@@ -340,7 +370,21 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         //     conversationitem.title = "客服";
                         //     break;
                         case RongIMLib.ConversationType.DISCUSSION:
-                            conversationitem.title = "讨论组" + list[i].targetId;
+                            // conversationitem.title = "讨论组" + list[i].targetId;
+                            if (list[i].targetId) {
+                              (function (id: string, conv: webimmodel.Conversation) {
+                                  RongIMSDKServer.getDiscussion(id).then(function (rep) {
+                                      var discuss = <RongIMLib.Discussion>rep.data;
+                                      conv.title = discuss.name;
+                                      conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
+                                  },function () {
+                                      conv.title = "未知讨论组";
+                                  });
+                              })(list[i].targetId || list[i].senderUserId, conversationitem);
+                            }
+                            else{
+                              conversationitem.title = "讨论组" + list[i].targetId;
+                            }
                             break;
                         case RongIMLib.ConversationType.GROUP:
                             let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
@@ -491,6 +535,22 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         });
                     }
                     break;
+                case webimmodel.conversationType.Discussion:
+                    var discussioninfo = mainDataServer.contactsList.getDiscussionById(targetId);
+                    if (discussioninfo) {
+                        item.title = discussioninfo.name;
+                        item.firstchar = discussioninfo.firstchar;
+                    }
+                    else {
+                        RongIMSDKServer.getDiscussion(targetId).then(function (rep) {
+                            var discuss = rep.data;
+                            item.title = discuss.name;
+                            item.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
+                        }, function () {
+                            item.title = "未知讨论组";
+                        });
+                    }
+                    break;
                 default:
                     console.log("暂不支持创建此类型会话");
             }
@@ -553,9 +613,19 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     var contactsList = {
         groupList: <webimmodel.Group[]>[],
         subgroupList: <webimmodel.Subgroup[]>[],
+        discussionList: <webimmodel.Discussion[]>[],
         getGroupById: function(id: string) {
             for (let i = 0; i < this.groupList.length; i++) {
                 let item = this.groupList[i];
+                if (item.id == id) {
+                    return item;
+                }
+            }
+            return null;
+        },
+        getDiscussionById: function(id: string) {
+            for (let i = 0; i < this.discussionList.length; i++) {
+                let item = this.discussionList[i];
                 if (item.id == id) {
                     return item;
                 }
@@ -679,6 +749,24 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
+        addDiscussion: function(discussion: webimmodel.Discussion) {
+            if (!contactsList.getDiscussionById(discussion.id)) {
+                var obj = webimutil.ChineseCharacter.convertToABC(discussion.name);
+                var f = webimutil.ChineseCharacter.getPortraitChar(discussion.name);
+                discussion.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f })
+                this.discussionList.push(discussion);
+            }
+        },
+        removeDiscussion: function(discussionId: string) {
+            for (var i = 0, len = this.discussionList.length; i < len; i++) {
+                if (this.discussionList[i].id == discussionId) {
+                    this.discussionList.splice(i, 1);
+                    mainDataServer.conversation.updateConversations();
+                    return true;
+                }
+            }
+            return false;
+        },
         find: function(str: string, arr: webimmodel.Contact[]) {
             var num = /^[0-9]+$/, abc = /^[a-zA-Z]+$/, reg = /^[0-9a-zA-Z\-]+$/;
             var str = str.trim();
@@ -747,6 +835,50 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 }
             }
             return false;
+        },
+        getDiscussionMember: function(discussionId: string, memberId: string) {
+            var item = this.getDiscussionById(discussionId);
+            if (item) {
+                for (let i = 0, len = item.memberList.length; i < len; i++) {
+                    if (item.memberList[i].id == memberId) {
+                        return item.memberList[i];
+                    }
+                }
+            } else {
+
+            }
+
+            return null;
+        },
+        addDiscussionMember: function(discussionId: string, member: webimmodel.Member) {
+            var item = this.getDiscussionById(discussionId);
+            if (item && !contactsList.getDiscussionMember(discussionId, member.id)) {
+                var obj = webimutil.ChineseCharacter.convertToABC(member.name);
+
+                var f = webimutil.ChineseCharacter.getPortraitChar(member.name);
+
+                member.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+                item.memberList.push(member);
+                item.fact = item.memberList.length;
+            } else {
+
+            }
+        },
+        removeDiscussionMember: function(discussionId: string, memberid: string) {
+            var item = this.getDiscussionById(discussionId);
+            if (!item) {
+                throw Error("not found discussion:" + discussionId);
+            }
+
+            for (let i = 0, len = item.memberList.length; i < len; i++) {
+                var member = item.memberList[i];
+                if (member.id == memberid) {
+                    item.memberList.splice(i, 1);
+                    item.fact = item.memberList.length;
+                    return true;
+                }
+            }
+            return false;
         }
     }
     mainDataServer.contactsList = contactsList;
@@ -757,7 +889,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         notificationList: [],
         addNotification: function(item: webimmodel.NotificationFriend) {
             if (!this._findFriendApply(item)) {
-                item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
+                if(item.name)
+                   item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
                 this.notificationList.unshift(item);
             }
         },
@@ -786,6 +919,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     var RongIMSDKServer = <any>{};
 
     RongIMSDKServer.init = function(appkey: string) {
+        // RongIMLib.RongIMClient.init(appkey, new RongIMLib.WebSQLDataProvider());
         RongIMLib.RongIMClient.init(appkey);
     }
 
@@ -1007,6 +1141,52 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         }
     }
 
+    RongIMSDKServer.createDiscussion = function(name: string, userIdList: string[]) {
+        var defer = $q.defer();
+        RongIMLib.RongIMClient.getInstance().createDiscussion(name, userIdList, {
+            onSuccess: function(data) {
+                defer.resolve({
+                    data: data
+                });
+            },
+            onError: function(error) {
+                defer.reject(error);
+            }
+        })
+        return defer.promise;
+    }
+
+    RongIMSDKServer.addMemberToDiscussion = function(discussionId: string, userIdList: string[], callback: any) {
+        return RongIMLib.RongIMClient.getInstance().addMemberToDiscussion(discussionId, userIdList, callback);
+    }
+
+    RongIMSDKServer.removeMemberFromDiscussion = function(discussionId: string, userId: string, callback: any) {
+        return RongIMLib.RongIMClient.getInstance().removeMemberFromDiscussion(discussionId, userId, callback);
+    }
+
+    RongIMSDKServer.setDiscussionName = function(discussionId: string, name: string, callback: any) {
+        return RongIMLib.RongIMClient.getInstance().setDiscussionName(discussionId, name, callback);
+    }
+
+    RongIMSDKServer.getDiscussion = function(discussionId: string, callback: any) {
+        var defer = $q.defer();
+        RongIMLib.RongIMClient.getInstance().getDiscussion(discussionId, {
+            onSuccess: function(data) {
+                defer.resolve({
+                    data: data
+                });
+            },
+            onError: function(error) {
+                defer.reject(error);
+            }
+        })
+        return defer.promise;
+    }
+
+    RongIMSDKServer.quitDiscussion = function(discussionId: string, callback: any) {
+        return RongIMLib.RongIMClient.getInstance().quitDiscussion(discussionId, callback);
+    }
+
     return RongIMSDKServer;
 }]);
 
@@ -1030,6 +1210,12 @@ interface RongIMSDKServer {
     disconnect(): void
     logout(): void
     reconnect(callback?: any): void
+    createDiscussion(name: string, userIdList: string[]): angular.IPromise<{data: string}>
+    addMemberToDiscussion(discussionId: string, userIdList: string[], callback?: any): void
+    removeMemberFromDiscussion(discussionId: string, userId: string, callback?: any): void
+    setDiscussionName(discussionId: string, name: string, callback?: any): void
+    getDiscussion(discussionId: string): angular.IPromise<{data: RongIMLib.Discussion}>
+    quitDiscussion(discussionId: string, callback?: any): void
 }
 
 interface mainDataServer {
@@ -1048,7 +1234,9 @@ interface mainDataServer {
         groupList: webimmodel.Group[],
         // friendList: webimmodel.Friend[],
         subgroupList: webimmodel.Subgroup[],
+        discussionList: webimmodel.Discussion[],
         getGroupById(id: string): webimmodel.Group
+        getDiscussionById(id: string): webimmodel.Discussion
         getFriendById(id: string): webimmodel.Friend
         // getSubgroupFriendById(id: string): webimmodel.Friend
         addFriend(friend: webimmodel.Friend): webimmodel.Friend
@@ -1057,10 +1245,15 @@ interface mainDataServer {
         removeFriendFromSubgroup(friend: webimmodel.Friend): void
         addGroup(group: webimmodel.Group): void
         removeGroup(id: string): boolean;
+        addDiscussion(group: webimmodel.Discussion): void
+        removeDiscussion(id: string): boolean;
         find(str: string, arr: webimmodel.Contact[]): webimmodel.Contact[]
         getGroupMember(groupId: string, memberId: string): webimmodel.Member
         addGroupMember(groupId: string, member: webimmodel.Member): any
         removeGroupMember(groupId: string, memberid: string): boolean
+        getDiscussionMember(discussionId: string, memberId: string): webimmodel.Member
+        addDiscussionMember(discussionId: string, member: webimmodel.Member): any
+        removeDiscussionMember(discussionId: string, memberid: string): boolean
     }
     notification: {
         hasNewNotification: boolean

@@ -103,7 +103,7 @@ module webimmodel {
     }
 
     export var MessageType = {
-        DiscussionNotificationMessage: "DiscussionNotificationMessage ",
+        DiscussionNotificationMessage: "DiscussionNotificationMessage",
         TextMessage: "TextMessage",
         ImageMessage: "ImageMessage",
         VoiceMessage: "VoiceMessage",
@@ -277,13 +277,22 @@ module webimmodel {
                     msg.content = comm;
                     break;
                 case MessageType.DiscussionNotificationMessage:
-                    var discussion = new DiscussionNotificationMessage();
-                    discussion.extension = SDKmsg.content.extension;
-                    discussion.operation = SDKmsg.content.operation;
-                    discussion.type = SDKmsg.content.type;
-                    discussion.isHasReceived = SDKmsg.content.isHasReceived;
-
-                    msg.content = discussion;
+                    // var discussion = new DiscussionNotificationMessage();
+                    // discussion.extension = SDKmsg.content.extension;
+                    // discussion.operation = SDKmsg.content.operation;
+                    // discussion.type = SDKmsg.content.type;
+                    // discussion.isHasReceived = SDKmsg.content.isHasReceived;
+                    // msg.content = discussion;
+                    // msg.panelType = webimmodel.PanelType.InformationNotification;
+                    if (SDKmsg.objectName == "RC:DizNtf") {
+                        var groupnot = new webimmodel.InformationNotificationMessage();
+                        groupnot.content = SDKmsg.content.message;
+                        msg.content = groupnot;
+                        msg.panelType = webimmodel.PanelType.InformationNotification;
+                    } else {
+                        console.log("has unknown message type " + SDKmsg.messageType)
+                    }
+                    break;
                 default:
                     if (SDKmsg.objectName == "RC:GrpNtf") {
                         var groupnot = new webimmodel.InformationNotificationMessage();
@@ -325,7 +334,7 @@ module webimmodel {
                         break;
                     case "Kicked":
                         //由于之前数据问题
-                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被剔出群组") : "移除群组";
+                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被踢出群组") : "移除群组";
                         break;
                     case "Rename":
                         msgContent = data.operatorNickname + " 修改了群名称";
@@ -335,6 +344,36 @@ module webimmodel {
                         break;
                     case "Dismiss":
                         msgContent = data.operatorNickname + " 解散了群组 " + data.targetGroupName;
+                        break;
+                    default:
+                        break;
+                }
+            } else if (msg.objectName == "RC:DizNtf") {
+                var data = msg
+                // var members = msg.content.extension.split(',');
+                // for (var i = 0, len = members.length; i < len; i++) {
+                //     mainServer.user.getInfo(members[i]).success(function (rep) {
+                //         if (item.content === comment) {
+                //             item.content = rep.result.nickname + item.content;
+                //         }
+                //         else {
+                //             item.content = rep.result.nickname + "、" + item.content;
+                //         }
+                //     });
+                // }
+                switch (msg.content.type) {
+                    case 1:
+                        msgContent = " 加入了讨论组";
+                        break;
+                    case 2:
+                        msgContent =  " 退出了讨论组";
+                        break;
+                    case 4:
+                        //由于之前数据问题
+                        msgContent = " 被踢出讨论组";
+                        break;
+                    case 3:
+                        msgContent = " 修改了讨论组名称";
                         break;
                     default:
                         break;
@@ -556,6 +595,30 @@ module webimmodel {
             upperlimit: number;
             fact: number;
             creater: string;
+        }) {
+            super(item);
+            this.upperlimit = item.upperlimit;
+            this.fact = item.fact;
+            this.creater = item.creater;
+            this.memberList = []
+        }
+
+    }
+
+    export class Discussion extends Contact {
+        upperlimit: number;
+        fact: number;
+        creater: string;
+        memberList: Member[];
+
+        constructor(item: {
+            id: string;
+            name: string;
+            imgSrc: string;
+            upperlimit: number;
+            fact: number;
+            creater: string;
+            isOpen: boolean;
         }) {
             super(item);
             this.upperlimit = item.upperlimit;

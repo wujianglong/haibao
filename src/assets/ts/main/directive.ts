@@ -44,7 +44,11 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
             // scope.isCurrentConversation = scope.isCurrentConversation || scope.item.targetType == webimmodel.conversationType.System &&  mainDataServer.conversation.currentConversation.targetType == webimmodel.conversationType.System
             if(!scope.item.targetId){
               scope.item.imgSrc='assets/img/barBg.png';
-            }else{
+            }
+            else if (scope.item.targetType == webimmodel.conversationType.Discussion){
+                scope.item.imgSrc = 'assets/img/room_icon.png';
+            }
+            else{
               angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.targetId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
             }
             ele.bind("click", function() {

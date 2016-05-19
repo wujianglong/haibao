@@ -67,15 +67,15 @@ conversationDire.directive('contenteditableDire', function() {
 
             if (!ngModel) return;
 
-            // element.bind("paste", function(e: any) {
-            //     var that = this, ohtml = that.innerHTML;
-            //     timeoutid && clearTimeout(timeoutid);
-            //     var timeoutid = setTimeout(function() {
-            //         that.innerHTML = replacemy(that.innerHTML);
-            //         ngModel.$setViewValue(that.innerHTML);
-            //         timeoutid = null;
-            //     }, 50);
-            // });
+            element.bind("paste", function(e: any) {
+                var that = this, ohtml = that.innerHTML;
+                timeoutid && clearTimeout(timeoutid);
+                var timeoutid = setTimeout(function() {
+                    that.innerHTML = replacemy(that.innerHTML);
+                    ngModel.$setViewValue(that.innerHTML);
+                    timeoutid = null;
+                }, 50);
+            });
 
 
             ngModel.$render = function() {

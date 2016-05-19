@@ -23,7 +23,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
+        var pasteImgFile : any = null;
         $scope.messagesloading = true;
+        $scope.showCutScreen = false;
+        if (window.Electron){
+          $scope.showCutScreen = true;
+        }
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
                 var conv = mainDataServer.conversation.createConversation(targetType, targetId);
@@ -170,6 +175,51 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         $scope.sendImg = function(){
             //TODO:获取base64
             // uploadBase64();
+        }
+
+        $scope.showPasteDiv = function(visible: boolean){
+           var pic = <any>document.getElementsByClassName("previewPic")[0];
+           var picBackground = <any>document.getElementsByClassName("previewPicLayer")[0];
+           if(visible){
+             pic.style.visibility = "visible";
+             picBackground.style.visibility = "visible";
+           }else{
+             pic.style.visibility = "hidden";
+             picBackground.style.visibility = "hidden";
+           }
+        }
+
+        $scope.uploadPasteImage = function(){
+          var reg = new RegExp('^data:image/[^;]+;base64,');
+          var picContent = <any>document.getElementsByClassName("picContent")[0];
+          var base64Code = picContent.src;
+          base64Code = base64Code.replace(reg,'');
+          showLoading(true);
+          uploadBase64(base64Code, pasteImgFile);
+          // $scope.showPasteDiv(false);
+        }
+
+        $scope.takeScreenShot = function () {
+          if (window.Electron) {
+              window.Electron.screenShot();
+          }
+        };
+
+        $scope.$on('showPasteDiv', function(event: any, visible: boolean) {
+          $scope.showPasteDiv(visible);
+        });
+
+        $scope.$on('uploadPasteImage', function(event: any) {
+          $scope.uploadPasteImage();
+        });
+
+        function showLoading(visible: boolean){
+           var loading = <any>document.getElementsByClassName("load-container")[0];
+           if(visible){
+             loading.style.visibility = "visible";
+           }else{
+             loading.style.visibility = "hidden";
+           }
         }
 
         function getThumbnailAndSendImg(info: any, file: any) {
@@ -378,7 +428,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         function uploadBase64(strBase64: string, file: any) {
-            var pic = "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";
             var req = {
                 method: 'POST',
                 url: 'http://up.qiniu.com/putb64/-1',
@@ -392,8 +441,23 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $http(req).success(function (res) {
                 // callback && callback.onSuccess && callback.onSuccess();
                 getThumbnailAndSendImg(res, file);
-            }).error(function () {
+                showLoading(false);
+                $scope.showPasteDiv(false);
+            }).error(function (err) {
+                console.log('uploadBase64', err);
+                showLoading(false);
+                webimutil.Helper.alertMessage.error("上传图片出错！", 2);
             });
+        }
+
+        window.upload_base64 = function () {
+            var obj = document.getElementById("message-content");
+            if(obj){
+                obj.focus();
+                document.execCommand("Paste");
+                // window.Electron.currentWebContents ? window.Electron.currentWebContents.paste() : window.Electron.currentWindow && window.Electron.currentWindow.webContents.paste()
+
+            }
         }
 
         setTimeout(function() {
@@ -410,11 +474,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                      var data = item.getAsFile();
                      fr.onloadend = function() {
                         var base64Code = fr.result;
-                        base64Code = base64Code.replace(reg,'');
-                        uploadBase64(base64Code, data);
+                        // base64Code = base64Code.replace(reg,'');
+                        // uploadBase64(base64Code, data);
+                        var picContent = <any>document.getElementsByClassName("picContent")[0];
+                        picContent.src =  base64Code;
+                        $scope.showPasteDiv(true);
                      };
 
                      fr.readAsDataURL(data);
+                     pasteImgFile = data;
                 } else {
                     console.log("Discardingimage paste data" + item.type);
                 }

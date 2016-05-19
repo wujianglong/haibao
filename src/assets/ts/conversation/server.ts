@@ -51,6 +51,41 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
         }
 
+        function asyncConverDiscussionNotifition(msgsdk: any, item: any) {
+            var detail = <any>msgsdk
+            var comment = "", members = <any>[]
+            switch (detail.content.type) {
+                case 1:
+                    comment = " 加入讨论组";
+                    members = detail.content.extension.split(',');
+                    break;
+                case 2:
+                    comment = " 退出讨论组"
+                    members = detail.content.extension.split(',');
+                    break;
+                case 4:
+                    comment = " 被踢出讨论组";
+                    members = detail.content.extension.split(',');
+                    break;
+                case 3:
+                    comment = " 讨论组更名";
+                    break;
+                default:
+                    console.log("未知讨论组通知");
+            }
+
+            item.content  = comment;
+            for (var i = 0, len = members.length; i < len; i++) {
+                mainServer.user.getInfo(members[i]).success(function(rep) {
+                    if (item.content  === comment) {
+                        item.content  = rep.result.nickname + item.content ;
+                    } else {
+                        item.content  = rep.result.nickname + "、" + item.content ;
+                    }
+                })
+            }
+        }
+
         function getHistory(id: string, type: string, count: number) {
             var d = $q.defer();
             var conver = type;
@@ -85,6 +120,11 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 break;
                             case webimmodel.MessageType.UnknownMessage:
                                 if (msgsdk.objectName == "RC:GrpNtf") {
+
+                                }
+                                break;
+                            case webimmodel.MessageType.DiscussionNotificationMessage:
+                                if (msgsdk.objectName == "RC:DizNtf") {
 
                                 }
                                 break;
@@ -167,6 +207,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     case webimmodel.conversationType.Group:
                         user = mainDataServer.contactsList.getGroupMember(item.targetId, item.senderUserId);
                         break;
+                    case webimmodel.conversationType.Discussion:
+                        user = mainDataServer.contactsList.getDiscussionMember(item.targetId, item.senderUserId);
+                        break;
                     case webimmodel.conversationType.System:
                         user = mainDataServer.contactsList.getFriendById(item.senderUserId);
                         if (user) {
@@ -182,6 +225,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     item.senderUserImgSrc = user.firstchar;
                     item.imgSrc = user.imgSrc
                 } else {
+                    if(item.senderUserId == '__system__') {
+                      return;
+                    }
                     mainServer.user.getInfo(item.senderUserId).success(function(rep) {
                         if (rep.code == 200) {
                             item.senderUserName = rep.result.nickname;
@@ -202,6 +248,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.messageAddUserInfo = messageAddUserInfo;
         conversationServer.unshiftHistoryMessages = unshiftHistoryMessages;
         conversationServer.asyncConverGroupNotifition = asyncConverGroupNotifition;
+        conversationServer.asyncConverDiscussionNotifition = asyncConverDiscussionNotifition;
 
         return conversationServer;
     }])
@@ -214,6 +261,7 @@ interface conversationServer {
     messageAddUserInfo(item: webimmodel.Message): void
     unshiftHistoryMessages(id: string, type: number, item: any): void
     asyncConverGroupNotifition(msgsdk: any, item: any): void
+    asyncConverDiscussionNotifition(msgsdk: any, item: any): void
     uploadFileToken: string
     initUpload(): void
 }

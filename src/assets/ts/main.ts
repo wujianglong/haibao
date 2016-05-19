@@ -8,7 +8,7 @@ var webimApp = angular.module("webim", ["ui.router", "ui.event", "uiSwitch", "ng
     "webim.addfirend", "webim.friendinfo", "webim.editfriendinfo",
     "webim.creategroup", "webim.addgroup", "webim.groupaddmember", "webim.goupinfo",
     "webim.userinfo", "webim.blacklist", "webim.notification", "webim.usermodifypassword",
-    "webim.account"], function() {
+    "webim.account", "webim.creatediscussion", "webim.discussionaddmember", "webim.discussioninfo"], function() {
     });
 
 webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvider",
@@ -75,6 +75,19 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
                     $state.transitionTo("main.groupinfo", $match);
                 }
             }]).when("/main/groupaddmember/:iscreate/:idorname", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
+                if (!mainDataServer.loginUser.nickName) {
+                    $state.go("main");
+                    return;
+                }
+            }]).when("/main/discussioninfo/:discussionid/:conversationtype", ["$state", "$match", "mainDataServer", function($state: angular.ui.IStateService, $match: any, mainDataServer: mainDataServer) {
+                if (!mainDataServer.loginUser.nickName) {
+                    $state.go("main");
+                    return;
+                } else {
+                    // $state.go("main.groupinfo", { groupid: $state.params["groupid"] });
+                    $state.transitionTo("main.discussioninfo", $match);
+                }
+            }]).when("/main/discussionaddmember/:iscreate/:idorname", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
                 if (!mainDataServer.loginUser.nickName) {
                     $state.go("main");
                     return;
@@ -170,6 +183,18 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
             url: '/resetpassword/:token',
             templateUrl: 'assets/views/resetpassword.html',
             controller: 'resetpasswordController'
+        }).state("main.creatediscussion", {
+            url: "/creatediscussion",
+            templateUrl: "assets/views/creatediscussion.html",
+            controller: "creatediscussionController"
+        }).state("main.discussionaddmember", {
+            url: "/discussionaddmember/:iscreate/:idorname",
+            templateUrl: "assets/views/discussionaddmember.html",
+            controller: "discussionaddmemberController"
+        }).state("main.discussioninfo", {
+            url: "/discussioninfo/:discussionid/:conversationtype",
+            templateUrl: "assets/views/discussioninfo.html",
+            controller: "discussioninfoController"
         })
 
     }]);
@@ -244,6 +269,9 @@ webimApp.filter('trustHtml', ["$sce", function($sce: angular.ISCEService) {
 
 webimApp.filter("showTime", ["$filter", function($filter: angular.IFilterService) {
     return function(time: Date) {
+        if(!time){
+          return;
+        }
         var today = new Date();
         if (time.toDateString() === today.toDateString()) {
             return $filter("date")(time, "HH:mm");
@@ -264,6 +292,9 @@ webimApp.filter("selectedNum", [function() {
 
 webimApp.filter("historyTime", ["$filter", function($filter: angular.IFilterService) {
     return function(time: Date) {
+        if(!time){
+          return;
+        }
         var today = new Date();
         if (time.toDateString() === today.toDateString()) {
             return $filter("date")(time, "HH:mm");

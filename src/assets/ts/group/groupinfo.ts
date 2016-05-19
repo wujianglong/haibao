@@ -118,7 +118,7 @@ groupInfo.directive("member", ["$state", "mainDataServer", function($state: angu
         scope: { item: "=", isshow: "=" },
         template: '<li class="chat_item groupUser_item">' +
         '<div class="select"  ng-show="isshow">' +
-        '<input type="checkbox" class="hide" id="{{item.id}}" value="136" ng-model="item.isSelected" data-count="" name="">' +
+        '<input type="checkbox" class="hide" ng-disabled="item.id==loginUserid" id="{{item.id}}" value="136" ng-model="item.isSelected" data-count="" name="">' +
         '<label for="{{item.id}}"></label>' +
         '</div>' +
         '<div ng-click="showinfo()">' +
@@ -139,15 +139,15 @@ groupInfo.directive("member", ["$state", "mainDataServer", function($state: angu
             scope.showinfo = function() {
                 $state.go("main.friendinfo", { userid: scope.item.id, groupid: scope.$parent.groupInfo.id, targetid: scope.$parent.groupInfo.id, conversationtype: $state.params["conversationtype"] });
             }
-
+            scope.loginUserid = mainDataServer.loginUser.id;
             scope.$watch("item.isSelected", function(newValue: boolean, oldValue: boolean) {
                 if (newValue == oldValue) {
                     return;
                 }
-                if (newValue && scope.item.id == mainDataServer.loginUser.id) {
-                    webimutil.Helper.alertMessage.error("您不可以将自己删除", 2);
-                    scope.item.isSelected = false;
-                }
+                // if (newValue && scope.item.id == mainDataServer.loginUser.id) {
+                //     webimutil.Helper.alertMessage.error("您不可以将自己删除", 2);
+                //     scope.item.isSelected = false;
+                // }
             })
         }
     }
