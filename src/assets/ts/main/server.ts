@@ -84,6 +84,13 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     url: serverBaseUrl + "/user/" + id
                 })
             },
+            getBatchInfo: function(ids: string[]) {
+                var param = ids.join("&id=")
+                return $http({
+                    method: "get",
+                    url: serverBaseUrl + "/user/batch?id=" + param
+                })
+            },
             setNickName: function(nickname: string) {
                 return $http({
                     method: "POST",
@@ -1280,6 +1287,7 @@ interface mainServer {
         signin(phone: string, region: string, password: string): angular.IHttpPromise<any>
         logout(): angular.IHttpPromise<any>
         getInfo(id: string): angular.IHttpPromise<{ result: { id: string, nickname: string, portraitUri: string, displayName: string }, code: number }>
+        getBatchInfo(id: string[]): angular.IHttpPromise<{ result: [{ id: string, nickname: string, portraitUri: string, displayName: string }], code: number }>
         getUserByPhone(region: string, phone: string): angular.IHttpPromise<any>
         setNickName(nickname: string): angular.IHttpPromise<any>
         resetPassword(password: string, token: string): angular.IHttpPromise<any>

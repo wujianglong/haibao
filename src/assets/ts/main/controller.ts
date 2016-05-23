@@ -255,19 +255,31 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     isOpen: discuss.isOpen
                                 });
                                 mainDataServer.contactsList.addDiscussion(discussion);
+                                mainServer.user.getBatchInfo(discuss.memberIdList).then(function (repmem) {
+                                    var lists = repmem.data.result;
+                                    for (var j = 0, len = lists.length; j < len; j++) {
+                                        var member = new webimmodel.Member({
+                                            id: lists[j].id,
+                                            name: lists[j].nickname,
+                                            imgSrc: lists[j].portraitUri,
+                                            role: "1"
+                                        });
+                                        mainDataServer.contactsList.addDiscussionMember(discussion.id, member);
+                                    }
+                                });
 
-                                for (var j = 0, len = discuss.memberIdList.length; j < len; j++) {
-                                  mainServer.user.getInfo(discuss.memberIdList[j]).then(function (repmem) {
-                                      var member = new webimmodel.Member({
-                                          id: repmem.data.result.id,
-                                          name: repmem.data.result.nickname,
-                                          imgSrc: repmem.data.result.portraitUri,
-                                          role: "1"
-                                      });
-                                      mainDataServer.contactsList.addDiscussionMember(discussion.id, member);
-                                  });
-
-                                }
+                                // for (var j = 0, len = discuss.memberIdList.length; j < len; j++) {
+                                //   mainServer.user.getInfo(discuss.memberIdList[j]).then(function (repmem) {
+                                //       var member = new webimmodel.Member({
+                                //           id: repmem.data.result.id,
+                                //           name: repmem.data.result.nickname,
+                                //           imgSrc: repmem.data.result.portraitUri,
+                                //           role: "1"
+                                //       });
+                                //       mainDataServer.contactsList.addDiscussionMember(discussion.id, member);
+                                //   });
+                                //
+                                // }
 
                             },function () {
 
