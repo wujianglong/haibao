@@ -780,7 +780,7 @@ declare module RongIMLib {
          * msg_conversationType_targetId_no.
          */
         private pottingConversation(tempConver);
-        private sortConversationList(conversationList);
+        sortConversationList(conversationList: any): void;
         getConversationList(callback: ResultCallback<Conversation[]>, conversationTypes: ConversationType[]): void;
         getRemoteConversationList(callback: ResultCallback<Conversation[]>, conversationTypes: ConversationType[]): void;
         /**

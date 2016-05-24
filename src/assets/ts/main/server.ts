@@ -334,6 +334,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             });
 
             RongIMSDKServer.getConversationList().then(function(list) {
+                RongIMLib.RongIMClient.getInstance().sortConversationList(list);
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
@@ -1194,6 +1195,10 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         return RongIMLib.RongIMClient.getInstance().quitDiscussion(discussionId, callback);
     }
 
+    // RongIMSDKServer.sortConversationList = function(list: RongIMLib.Conversation[]) {
+    //     return RongIMLib.RongIMClient.getInstance().sortConversationList(list);
+    // }
+
     return RongIMSDKServer;
 }]);
 
@@ -1223,6 +1228,7 @@ interface RongIMSDKServer {
     setDiscussionName(discussionId: string, name: string, callback?: any): void
     getDiscussion(discussionId: string): angular.IPromise<{data: RongIMLib.Discussion}>
     quitDiscussion(discussionId: string, callback?: any): void
+    // sortConversationList(list: RongIMLib.Conversation[]): void
 }
 
 interface mainDataServer {
