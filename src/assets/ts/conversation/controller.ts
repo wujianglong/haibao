@@ -186,6 +186,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
            }else{
              pic.style.visibility = "hidden";
              picBackground.style.visibility = "hidden";
+             showLoading(false);
            }
         }
 
