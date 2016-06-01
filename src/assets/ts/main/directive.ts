@@ -8,7 +8,7 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         scope: {
             item: "="
         },
-        template: '<div class="chatList" ng-class="{selected:isCurrentConversation}">' +
+        template: '<div class="chatList" ng-class="{selected:isCurrentConversation}" id="{{item.targetType}}_{{item.targetId}}">' +
         '<div class="chat_item online slide-left">' +
         '<div class="ext">' +
         '<p class="attr clearfix timer">' +
@@ -52,7 +52,12 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
               angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.targetId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
             }
             ele.bind("click", function() {
-
+                scope.$parent.unSelect(scope.item.targetType + '_' + scope.item.targetId);
+                scope.$parent.$apply();
+                // scope.isCurrentConversation = true;
+                mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - scope.item.unReadNum;
+                scope.item.unReadNum = 0;
+                //TODO 改变总未读消息数;改变会话选中状态
                 if (scope.item.targetType == webimmodel.conversationType.System) {
                     $state.go("main.notification");
                     return;

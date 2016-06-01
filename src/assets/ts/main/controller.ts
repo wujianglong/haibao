@@ -45,6 +45,15 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             isFriendList: false,
             issearchList: false
         }
+        $scope.curCon = "";
+        $scope.unSelect = function (curConVal: string) {
+            if($scope.curCon){
+              $('#' + $scope.curCon).removeClass("selected");
+            }
+            $('#' + curConVal).addClass("selected");
+            $scope.curCon = curConVal;
+
+        };
 
         //查找好友
         //

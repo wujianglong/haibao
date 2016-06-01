@@ -46,9 +46,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         // RongIMSDKServer.clearMessagesUnreadStatus(targetType, targetId);
         RongIMSDKServer.clearUnreadCount(targetType, targetId);
-        setTimeout(function () {
-            $scope.$emit("conversationChange");
-        }, 200);
+        // setTimeout(function () {
+        //     $scope.$emit("conversationChange");
+        // }, 200);
 
 
 
@@ -158,8 +158,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             //添加消息到历史消息并清空发送消息框
             conversationServer.addHistoryMessages(targetId, targetType, webimmodel.Message.convertMsg(msgouter));
+            $scope.$emit("msglistchange");
             setTimeout(function () {
-                $scope.$emit("msglistchange");
                 $scope.$emit("conversationChange");
             }, 200);
             $scope.currentConversation.draftMsg = "";
