@@ -26,8 +26,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var pasteImgFile : any = null;
         $scope.messagesloading = true;
         $scope.showCutScreen = false;
-        if (window.Electron){
-          $scope.showCutScreen = true;
+        if (window.Electron && window.Electron.appInfo){
+          if(window.Electron.appInfo.version > '1.0.1'){
+              $scope.showCutScreen = true;
+          }
         }
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
@@ -46,9 +48,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         // RongIMSDKServer.clearMessagesUnreadStatus(targetType, targetId);
         RongIMSDKServer.clearUnreadCount(targetType, targetId);
-        setTimeout(function () {
-            $scope.$emit("conversationChange");
-        }, 200);
+        // setTimeout(function () {
+        //     $scope.$emit("conversationChange");
+        // }, 200);
 
 
 
@@ -158,8 +160,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             //添加消息到历史消息并清空发送消息框
             conversationServer.addHistoryMessages(targetId, targetType, webimmodel.Message.convertMsg(msgouter));
+            $scope.$emit("msglistchange");
             setTimeout(function () {
-                $scope.$emit("msglistchange");
                 $scope.$emit("conversationChange");
             }, 200);
             $scope.currentConversation.draftMsg = "";
