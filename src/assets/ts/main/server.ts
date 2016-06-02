@@ -446,6 +446,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             break;
                         case RongIMLib.ConversationType.SYSTEM:
                             list[i].conversationTitle = "系统消息";
+                            conversationitem.title = "系统消息";
                             break;
                         case RongIMLib.ConversationType.CUSTOMER_SERVICE:
                             if(list[i].unreadMessageCount){

@@ -342,7 +342,7 @@ conversationDire.directive("locationMessage", [function() {
         '<div class="Message-map">' +
         '<span class="Message-entry" style="">' +
         '<div class="mapBox">' +
-        '<img ng-src="{{item.content||\'../../static / images / barBg.png\'}" alt=""/>' +
+        '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" alt=""/>' +
         '<span>{{item.poi}}</span>' +
         '</div>' +
         '</span>' +
