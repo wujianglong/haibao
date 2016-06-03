@@ -9,10 +9,10 @@ createGroup.controller("creategroupController", ["$scope", "$state",
 
         $scope.submite = function() {
             var name = ($scope.groupName || "").trim();
-            if (name.length >= 2 && name.length <= 32) {
+            if (name.length >= 2 && name.length <= 10) {
                 $state.go("main.groupaddmember", { iscreate: "true", idorname: $scope.groupName })
             } else {
-                webimutil.Helper.alertMessage.error("名称长度2-32", 2);
+                webimutil.Helper.alertMessage.error("名称长度2-10", 2);
             }
 
         }
