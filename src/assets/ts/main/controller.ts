@@ -52,6 +52,11 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }
             $('#' + curConVal).addClass("selected");
             $scope.curCon = curConVal;
+<<<<<<< HEAD
+=======
+
+        };
+>>>>>>> dev
 
         };
         //查找好友

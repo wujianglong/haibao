@@ -227,8 +227,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         function getThumbnailAndSendImg(info: any, file: any) {
           webimutil.ImageHelper.getThumbnail(file, 60000, function(obj: any, data: any) {
-              var im = RongIMLib.ImageMessage.obtain(data, IMGDOMAIN + info.key);
-
+              var reg = new RegExp('^data:image/[^;]+;base64,');
+              var dataFinal = data.replace(reg, '');
+              var im = RongIMLib.ImageMessage.obtain(dataFinal, IMGDOMAIN + info.key);
               var content = packmysend(im, webimmodel.MessageType.ImageMessage);
               RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, im).then(function() {
                 setTimeout(function () {
@@ -391,8 +392,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                         !function(info: any) {
                             var info = JSON.parse(info);
                             webimutil.ImageHelper.getThumbnail(file.getNative(), 60000, function(obj: any, data: any) {
-                                var im = RongIMLib.ImageMessage.obtain(data, IMGDOMAIN + info.key);
-
+                                var reg = new RegExp('^data:image/[^;]+;base64,');
+                                var dataFinal = data.replace(reg, '');
+                                var im = RongIMLib.ImageMessage.obtain(dataFinal, IMGDOMAIN + info.key);
                                 var content = packmysend(im, webimmodel.MessageType.ImageMessage);
                                 RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, im).then(function() {
                                   setTimeout(function () {

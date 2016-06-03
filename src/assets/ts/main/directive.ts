@@ -54,8 +54,8 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
                 scope.$parent.unSelect(scope.item.targetType + '_' + scope.item.targetId);
                 scope.$parent.$apply();
                 // scope.isCurrentConversation = true;
+                mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - scope.item.unReadNum;
                 scope.item.unReadNum = 0;
-                //TODO 改变总未读消息数;改变会话选中状态
                 if (scope.item.targetType == webimmodel.conversationType.System) {
                     $state.go("main.notification");
                     return;
