@@ -24,6 +24,16 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
         var pasteImgFile : any = null;
+        if(webimutil.Helper.os.mac){
+           if(webimutil.Helper.browser.safari){
+             angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
+           }
+        }
+        else{
+           angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-250px");
+           angular.element(document.getElementsByClassName("expressionWrap")).css("padding", "5px 18px");
+        }
+        
         $scope.messagesloading = true;
         $scope.showCutScreen = false;
         if (window.Electron){

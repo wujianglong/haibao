@@ -2482,11 +2482,11 @@ input::-ms-clear{display:none;}
 .expressionWrap{
     border: 1px solid #D9DADC;
     margin: 6px 15px;
-    width: 359px;
+    width: 348px;
     padding: 5px 8px;
     position: absolute;
     left: -16px;
-    top: -200px;
+    top: -220px;
     background: #fff;
     z-index: 1100;
 }
@@ -2509,15 +2509,15 @@ input::-ms-clear{display:none;}
 .expressionWrap div{
     cursor: default;
 }
-.RC_Expression {
+/*.RC_Expression {
     width: 22px;
     height: 22px;
     background-image: url(http://res.websdk.rongcloud.cn/css-sprite_bg.png);
     display: inline-block;
-}
+}*/
 .expressionWrap div { padding: 3px; border-radius: 4px; }
 .expressionWrap div:hover { background: #eee; }
-.expressionWrap>div>span>span{ font-size: 20px; vertical-align: middle; position: relative; left: -1px; }
+.expressionWrap>div>span>span{ font-size: 20px; vertical-align: middle; }
 
 /* 登录 注册 */
 #sign{
