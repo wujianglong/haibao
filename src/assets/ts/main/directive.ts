@@ -54,7 +54,6 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
             ele.bind("click", function() {
                 scope.$parent.unSelect(scope.item.targetType + '_' + scope.item.targetId);
                 scope.$parent.$apply();
-                // scope.isCurrentConversation = true;
                 mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - scope.item.unReadNum;
                 scope.item.unReadNum = 0;
                 if (scope.item.targetType == webimmodel.conversationType.System) {

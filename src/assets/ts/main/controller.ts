@@ -725,7 +725,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                 }
 
-                $scope.mainData.conversation.updateConversations();
+                // $scope.mainData.conversation.updateConversations();
+                $scope.mainData.conversation.updateConStatic(msg, true, $state.is("main.chat") && !document.hidden);
                 $scope.$apply();
 
             }

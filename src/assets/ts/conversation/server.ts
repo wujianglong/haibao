@@ -16,15 +16,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             var comment = "", members = <any>[]
             switch (detail.operation) {
                 case "Add":
-                    comment = " 加入群组";
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 加入群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Quit":
-                    comment = " 退出群组"
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 退出群组"
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Kicked":
-                    comment = " 被踢出群组";
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 被踢出群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Rename":
@@ -40,15 +40,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
 
             item.content  = comment;
-            for (var i = 0, len = members.length; i < len; i++) {
-                mainServer.user.getInfo(members[i]).success(function(rep) {
-                    if (item.content  === comment) {
-                        item.content  = rep.result.nickname + item.content ;
-                    } else {
-                        item.content  = rep.result.nickname + "、" + item.content ;
-                    }
-                })
-            }
+            // for (var i = 0, len = members.length; i < len; i++) {
+            //     mainServer.user.getInfo(members[i]).success(function(rep) {
+            //         if (item.content  === comment) {
+            //             item.content  = rep.result.nickname + item.content ;
+            //         } else {
+            //             item.content  = rep.result.nickname + "、" + item.content ;
+            //         }
+            //     })
+            // }
         }
 
         function asyncConverDiscussionNotifition(msgsdk: any, item: any) {
@@ -75,15 +75,25 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
 
             item.content  = comment;
-            for (var i = 0, len = members.length; i < len; i++) {
-                mainServer.user.getInfo(members[i]).success(function(rep) {
-                    if (item.content  === comment) {
-                        item.content  = rep.result.nickname + item.content ;
-                    } else {
-                        item.content  = rep.result.nickname + "、" + item.content ;
-                    }
-                })
-            }
+            mainServer.user.getBatchInfo(members).then(function (repmem) {
+                var lists = repmem.data.result;
+                var membersName:string[] = [];
+                for (var j = 0, len = lists.length; j < len; j++) {
+                    membersName.push(lists[j].nickname);
+                }
+                if(membersName){
+                  item.content = membersName.join('、') + item.content;
+                }
+            });
+            // for (var i = 0, len = members.length; i < len; i++) {
+            //     mainServer.user.getInfo(members[i]).success(function(rep) {
+            //         if (item.content  === comment) {
+            //             item.content  = rep.result.nickname + item.content ;
+            //         } else {
+            //             item.content  = rep.result.nickname + "、" + item.content ;
+            //         }
+            //     })
+            // }
         }
 
         function getHistory(id: string, type: string, count: number) {

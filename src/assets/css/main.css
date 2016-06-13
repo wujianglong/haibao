@@ -396,6 +396,8 @@ input::-ms-clear{display:none;}
     box-shadow: none;
     text-indent: 2em;
     padding: 6px 12px 4px;
+    background: url(../img/icons.png) 10px -110px/108px auto no-repeat;
+    background-color: #fff;
 }
 
 .searchArea div label {
@@ -405,6 +407,7 @@ input::-ms-clear{display:none;}
     background: url(../img/icons.png) 10px -110px/108px auto no-repeat;
     width: 70px;
     height: 36px;
+    display: none;
 }
 
 .searchArea div.isfocus label {
@@ -422,6 +425,7 @@ input::-ms-clear{display:none;}
 
 .searchArea div input:focus {
     text-indent: 0;
+    background: none;
 }
 .searchArea div .clearInputBtn{
     position: absolute;

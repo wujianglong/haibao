@@ -574,6 +574,90 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
+        updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
+          var type = msg.conversationType , id = msg.targetId;
+          var hasCon = false;
+          if(add){  //add
+             //updateCon  顺序,最近会话内容,时间
+             var curCon : webimmodel.Conversation = null;
+             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+                     curCon = mainDataServer.conversation.conversations[i];
+                     mainDataServer.conversation.conversations.splice(i, 1);
+                     hasCon = true;
+                     break;
+                 }
+             }
+             if(!hasCon){   // create con
+                 curCon = mainDataServer.conversation.createConversation(type, id);
+             }
+             switch (msg.messageType) {
+               case webimmodel.MessageType.VoiceMessage:
+                   curCon.lastMsg = '[声音]';
+                   break;
+               case webimmodel.MessageType.TextMessage:
+                   curCon.lastMsg = msg.content.content;
+                   break;
+               case webimmodel.MessageType.LocationMessage:
+                   curCon.lastMsg = '[位置]';
+                   break;
+               case webimmodel.MessageType.ImageMessage:
+                   curCon.lastMsg = '[图片]';
+                   break;
+               case webimmodel.MessageType.RichContentMessage:
+                   curCon.lastMsg = '[富文本]';
+                   break;
+               case webimmodel.MessageType.ContactNotificationMessage:
+                   break;
+               case webimmodel.MessageType.DiscussionNotificationMessage:
+                   curCon.lastMsg = msg.content;
+                   break;
+               case webimmodel.MessageType.UnknownMessage:
+                   if (msg.objectName == "RC:GrpNtf"){
+                       curCon.lastMsg = msg.content;
+                   }
+                   break;
+               default:
+                   curCon.lastMsg = '未解析';
+             }
+             if (type == webimmodel.conversationType.Group){
+                 //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
+                      var member = mainDataServer.contactsList.getGroupMember(msg.targetId, msg.senderUserId);
+                      if (member) {
+                          curCon.lastMsg = member.name + "：" + curCon.lastMsg;
+                      }
+                      else {
+                          (function (id: string, conv: webimmodel.Conversation) {
+                              mainServer.user.getInfo(id).success(function (user) {
+                                  conv.lastMsg = user.result.nickname + "：" + conv.lastMsg;
+                              });
+                          }(msg.senderUserId, curCon));
+                      }
+                 //  }
+
+             }
+             if(isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId){
+                 RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                 mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
+                 curCon.unReadNum = 0;
+             }else{
+                 curCon.unReadNum++;
+                 mainDataServer.conversation.totalUnreadCount++;
+             }
+             curCon.lastTime = msg.sentTime;
+             mainDataServer.conversation.conversations.unshift(curCon);
+
+            //如果不是当前会话,则会话未读消息增加;总未读消息增加
+          }else{
+            for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+                if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+                    var curCon = mainDataServer.conversation.conversations[i];
+                    mainDataServer.conversation.conversations.splice(i, 1);
+                    break;
+                }
+            }
+          }
+        },
         setDraft: function(type: string, id: string, msg: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
@@ -1241,6 +1325,7 @@ interface mainDataServer {
         updateConversations(): angular.IPromise<any>
         createConversation(targetType: number, targetId: string): webimmodel.Conversation
         getConversation(type: number, id: string): webimmodel.Conversation
+        updateConStatic(msg: webimmodel.Message, add: boolean, isChat:boolean): void
         setDraft(type: string, id: string, msg: string): boolean
         clearMessagesUnreadStatus(type: string, id: string): boolean
     }
