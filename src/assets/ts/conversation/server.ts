@@ -10,6 +10,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         conversationServer.historyMessagesCache = <any>{};
         conversationServer.conversationMessageList = <any>[];
+        conversationServer.conversationMessageListShow = <any>[];
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content.message.content
@@ -170,10 +171,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[0] && arr[0].sentTime && arr[0].panelType != webimmodel.PanelType.Time && item.sentTime) {
                 if (compareDateIsAddSpan(arr[0].sentTime, item.sentTime)) {
                     arr.unshift(new webimmodel.TimePanl(arr[0].sentTime));
+                    conversationServer.conversationMessageListShow.unshift(new webimmodel.TimePanl(arr[0].sentTime));
                 }
             }
             messageAddUserInfo(item);
             arr.unshift(item);
+            conversationServer.conversationMessageListShow.unshift(item);
         }
 
         function compareDateIsAddSpan(first: Date, second: Date) {
@@ -266,6 +269,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 interface conversationServer {
     historyMessagesCache: any
     conversationMessageList: any[]
+    conversationMessageListShow: any[]
     getHistory(id: string, type: number, count: number): angular.IPromise<any>
     addHistoryMessages(id: string, type: number, item: webimmodel.Message): void
     messageAddUserInfo(item: webimmodel.Message): void

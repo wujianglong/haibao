@@ -74,12 +74,14 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
                     $scope.messagesloading = false;
                 }, 0)
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
                 }, 0)
@@ -88,6 +90,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         } else {
             //有未读消息
             conversationServer.conversationMessageList = currenthis;
+            conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
             setTimeout(function() {
                 adjustScrollbars();
                 $scope.messagesloading = false;

@@ -377,23 +377,23 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         // case RongIMLib.ConversationType.CUSTOMER_SERVICE:
                         //     conversationitem.title = "客服";
                         //     break;
-                        case RongIMLib.ConversationType.DISCUSSION:
-                            // conversationitem.title = "讨论组" + list[i].targetId;
-                            if (list[i].targetId) {
-                              (function (id: string, conv: webimmodel.Conversation) {
-                                  RongIMSDKServer.getDiscussion(id).then(function (rep) {
-                                      var discuss = <RongIMLib.Discussion>rep.data;
-                                      conv.title = discuss.name;
-                                      conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
-                                  },function () {
-                                      conv.title = "未知讨论组";
-                                  });
-                              })(list[i].targetId || list[i].senderUserId, conversationitem);
-                            }
-                            else{
-                              conversationitem.title = "讨论组" + list[i].targetId;
-                            }
-                            break;
+                        // case RongIMLib.ConversationType.DISCUSSION:
+                        //     // conversationitem.title = "讨论组" + list[i].targetId;
+                        //     if (list[i].targetId) {
+                        //       (function (id: string, conv: webimmodel.Conversation) {
+                        //           RongIMSDKServer.getDiscussion(id).then(function (rep) {
+                        //               var discuss = <RongIMLib.Discussion>rep.data;
+                        //               conv.title = discuss.name;
+                        //               conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
+                        //           },function () {
+                        //               conv.title = "未知讨论组";
+                        //           });
+                        //       })(list[i].targetId || list[i].senderUserId, conversationitem);
+                        //     }
+                        //     else{
+                        //       conversationitem.title = "讨论组" + list[i].targetId;
+                        //     }
+                        //     break;
                         case RongIMLib.ConversationType.GROUP:
                             let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
                             if (!group) {
@@ -448,6 +448,12 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             list[i].conversationTitle = "系统消息";
                             conversationitem.title = "系统消息";
                             break;
+
+                        case RongIMLib.ConversationType.DISCUSSION:
+                             if (list[i].unreadMessageCount) {
+                                allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+                             }
+                             break;
                         case RongIMLib.ConversationType.CUSTOMER_SERVICE:
                             if(list[i].unreadMessageCount){
                                 haveCUSTOMER_SERVICE = true;
@@ -496,7 +502,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             });
                         })(conversationitem);
                     }
-                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE) continue;
+                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION) continue;
                     mainDataServer.conversation.conversations.push(conversationitem);
                 }
                 if(!haveCUSTOMER_SERVICE){
@@ -577,6 +583,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
           var type = msg.conversationType , id = msg.targetId;
           var hasCon = false;
+          if(type == webimmodel.conversationType.Discussion){
+             return;
+          }
           if(add){  //add
              //updateCon  顺序,最近会话内容,时间
              var curCon : webimmodel.Conversation = null;
