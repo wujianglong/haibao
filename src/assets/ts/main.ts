@@ -231,7 +231,7 @@ function cancelScollStyle() {
             }
         }
     }
-    var listScroll = ["body", "#functionBox", "#chatArea", "#Messages", ".noticeBarList", ".main", ".noticeBarList", ".chatArea", ".communicateList"];
+    var listScroll = ["body", "#functionBox", "#chatArea", "#Messages", ".main", ".chatArea", ".communicateList"];
     var len = listScroll.length;
 
 
