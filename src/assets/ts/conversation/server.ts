@@ -29,6 +29,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Rename":
+                    comment = detail.data.data.operatorNickname + " 修改群名称为 " + detail.data.data.targetGroupName;
                     break;
                 case "Create":
                     comment = detail.data.data.operatorNickname + " 创建了群组";
@@ -195,10 +196,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
                 if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
                     arr.push(new webimmodel.TimePanl(item.sentTime));
+                    conversationServer.conversationMessageListShow.push(new webimmodel.TimePanl(item.sentTime));
                 }
             }
             messageAddUserInfo(item);
             arr.push(item);
+            conversationServer.conversationMessageListShow.push(item);
         }
 
         //消息里没有用户信息，要去本地的好友列表里查找

@@ -174,7 +174,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             // setTimeout(function () {
             //     $scope.$emit("conversationChange");
             // }, 200);
-            $scope.mainData.conversation.updateConStatic(msgouter, true, true);
+            $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msgouter), true, true);
             $scope.currentConversation.draftMsg = "";
 
             var obj = document.getElementById("message-content");
@@ -196,6 +196,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
            if(visible){
              pic.style.visibility = "visible";
              picBackground.style.visibility = "visible";
+             pic.focus();
            }else{
              pic.style.visibility = "hidden";
              picBackground.style.visibility = "hidden";

@@ -339,36 +339,36 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
                     var conversationitem = webimmodel.Conversation.convertToWebIM(list[i]);
-                    if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
-                        var members = list[i].latestMessage.content.extension.split(',');
-                        switch (list[i].latestMessage.content.type) {
-                            case 1:
-                                var arrMember: string[] = [];
-                                for (var j = 0, len = members.length; j < len; j++) {
-                                    (function (id: string, conv: webimmodel.Conversation, arrMem: string[], len: number) {
-                                      mainServer.user.getInfo(id).success(function (user) {
-                                        arrMem.push(user.result.nickname);
-                                        if(arrMem.length == len){
-                                            conv.lastMsg = arrMem.join('、') + conv.lastMsg;
-                                        }
-                                      });
-                                    }(members[j], conversationitem, arrMember, len));
-                                }
-                                break;
-                            case 2:
-                            case 3:
-                            case 4:
-                                (function (id: string, conv: webimmodel.Conversation) {
-                                    mainServer.user.getInfo(id).success(function (user) {
-                                        conv.lastMsg = user.result.nickname + conv.lastMsg;
-                                    });
-                                }(members[0], conversationitem));
-                                break;
-                            default:
-                                break;
-                        }
-
-                    }
+                    // if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
+                    //     var members = list[i].latestMessage.content.extension.split(',');
+                    //     switch (list[i].latestMessage.content.type) {
+                    //         case 1:
+                    //             var arrMember: string[] = [];
+                    //             for (var j = 0, len = members.length; j < len; j++) {
+                    //                 (function (id: string, conv: webimmodel.Conversation, arrMem: string[], len: number) {
+                    //                   mainServer.user.getInfo(id).success(function (user) {
+                    //                     arrMem.push(user.result.nickname);
+                    //                     if(arrMem.length == len){
+                    //                         conv.lastMsg = arrMem.join('、') + conv.lastMsg;
+                    //                     }
+                    //                   });
+                    //                 }(members[j], conversationitem, arrMember, len));
+                    //             }
+                    //             break;
+                    //         case 2:
+                    //         case 3:
+                    //         case 4:
+                    //             (function (id: string, conv: webimmodel.Conversation) {
+                    //                 mainServer.user.getInfo(id).success(function (user) {
+                    //                     conv.lastMsg = user.result.nickname + conv.lastMsg;
+                    //                 });
+                    //             }(members[0], conversationitem));
+                    //             break;
+                    //         default:
+                    //             break;
+                    //     }
+                    //
+                    // }
 
                     switch (list[i].conversationType) {
                         case RongIMLib.ConversationType.CHATROOM:
@@ -397,7 +397,13 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         case RongIMLib.ConversationType.GROUP:
                             let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
                             if (!group) {
-                                addgroup = true;
+                                // addgroup = true;
+                                (function (id: string, conv: webimmodel.Conversation, listi: any) {
+                                    mainServer.group.getById(id).success(function (rep) {
+                                        listi.conversationTitle = rep.result.name;
+                                        conv.title = rep.result.name;
+                                    });
+                                }(list[i].targetId, conversationitem, list[i]));
                             } else {
                                 //TODO:添加最后一条消息的发送人
                                 if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
@@ -412,9 +418,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                         } (list[i].latestMessage.senderUserId, conversationitem))
                                     }
                                 }
+                                list[i].conversationTitle = group ? group.name : "未知群组";
+                                conversationitem.title = group ? group.name : "未知群组";
                             }
-                            list[i].conversationTitle = group ? group.name : "未知群组";
-                            conversationitem.title = group ? group.name : "未知群组";
+                            // list[i].conversationTitle = group ? group.name : "未知群组";
+                            // conversationitem.title = group ? group.name : "未知群组";
                             conversationitem.firstchar = group ? group.firstchar : "";
                             conversationitem.imgSrc = group ? group.imgSrc : "";
                             break;
@@ -580,6 +588,15 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
+        updateConversationTitle: function(type: number, id: string, title: string) {
+            for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+                if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+                    mainDataServer.conversation.conversations[i].title = title;
+                    return true;
+                }
+            }
+            return false;
+        },
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
           var type = msg.conversationType , id = msg.targetId;
           var hasCon = false;
@@ -724,6 +741,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 }
             }
             return null;
+        },
+        updateGroupNameById: function(id: string, name: string) {
+            for (let i = 0; i < this.groupList.length; i++) {
+                let item = this.groupList[i];
+                if (item.id == id) {
+                    item.name = name;
+                    return true;
+                }
+            }
+            return false;
         },
         getDiscussionById: function(id: string) {
             for (let i = 0; i < this.discussionList.length; i++) {
@@ -1334,6 +1361,7 @@ interface mainDataServer {
         updateConversations(): angular.IPromise<any>
         createConversation(targetType: number, targetId: string): webimmodel.Conversation
         getConversation(type: number, id: string): webimmodel.Conversation
+        updateConversationTitle(type: number, targetId: string, title: string): boolean
         updateConStatic(msg: webimmodel.Message, add: boolean, isChat:boolean): void
         setDraft(type: string, id: string, msg: string): boolean
         clearMessagesUnreadStatus(type: string, id: string): boolean
@@ -1344,6 +1372,7 @@ interface mainDataServer {
         subgroupList: webimmodel.Subgroup[],
         discussionList: webimmodel.Discussion[],
         getGroupById(id: string): webimmodel.Group
+        updateGroupNameById(id: string, name: string): boolean
         getDiscussionById(id: string): webimmodel.Discussion
         getFriendById(id: string): webimmodel.Friend
         // getSubgroupFriendById(id: string): webimmodel.Friend

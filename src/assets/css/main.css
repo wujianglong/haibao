@@ -2879,10 +2879,11 @@ input::-ms-clear{display:none;}
     text-align: center;
     background: url(../img/picWrapBg.png) 0 0/18px auto repeat;
     margin: 20px 15px 25px;
+    line-height: 250px;
 }
 .previewPic .picWrap .picContent{
     max-width: 100%;
-    height: 250px;
+    max-height: 250px;
     display: inline-block;
 }
 .previewPic .picFooter{
