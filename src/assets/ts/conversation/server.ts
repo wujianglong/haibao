@@ -33,6 +33,11 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     break;
                 case "Create":
                     comment = detail.data.data.operatorNickname + " 创建了群组";
+                    // if(detail.operatorUserId == mainDataServer.loginUser.id){
+                    //   comment = "你 创建了群组";
+                    // }else{
+                    //   comment = detail.data.data.operatorNickname + " 创建了群组";
+                    // }
                     break;
                 case "Dismiss":
                     comment = detail.data.data.operatorNickname + " 解散了群组";
