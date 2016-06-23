@@ -423,6 +423,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             }
                             // list[i].conversationTitle = group ? group.name : "未知群组";
                             // conversationitem.title = group ? group.name : "未知群组";
+                            if (conversationitem.lastMsg && list[i].latestMessage.objectName == "RC:GrpNtf" && list[i].latestMessage.content.message.content.operation == "Create" && list[i].latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+                                 conversationitem.lastMsg = '你 创建了群组';
+                            }
                             conversationitem.firstchar = group ? group.firstchar : "";
                             conversationitem.imgSrc = group ? group.imgSrc : "";
                             break;
@@ -667,12 +670,15 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                  mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
                  curCon.unReadNum = 0;
              }else{
+               if(msg.senderUserId == mainDataServer.loginUser.id){}
+               else{
                  if(curCon.unReadNum){
                    curCon.unReadNum++;
                  }else{
                    curCon.unReadNum = 1;
                  }
                  mainDataServer.conversation.totalUnreadCount++;
+               }
              }
              curCon.lastTime = msg.sentTime;
              mainDataServer.conversation.conversations.unshift(curCon);

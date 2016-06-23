@@ -32,12 +32,11 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     comment = detail.data.data.operatorNickname + " 修改群名称为 " + detail.data.data.targetGroupName;
                     break;
                 case "Create":
-                    comment = detail.data.data.operatorNickname + " 创建了群组";
-                    // if(detail.operatorUserId == mainDataServer.loginUser.id){
-                    //   comment = "你 创建了群组";
-                    // }else{
-                    //   comment = detail.data.data.operatorNickname + " 创建了群组";
-                    // }
+                    if(detail.operatorUserId == mainDataServer.loginUser.id){
+                      comment = "你 创建了群组";
+                    }else{
+                      comment = detail.data.data.operatorNickname + " 创建了群组";
+                    }
                     break;
                 case "Dismiss":
                     comment = detail.data.data.operatorNickname + " 解散了群组";
