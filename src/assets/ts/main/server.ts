@@ -667,7 +667,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                  mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
                  curCon.unReadNum = 0;
              }else{
-                 curCon.unReadNum++;
+                 if(curCon.unReadNum){
+                   curCon.unReadNum++;
+                 }else{
+                   curCon.unReadNum = 1;
+                 }
                  mainDataServer.conversation.totalUnreadCount++;
              }
              curCon.lastTime = msg.sentTime;
