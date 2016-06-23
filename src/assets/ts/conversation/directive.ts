@@ -157,6 +157,16 @@ conversationDire.directive("emoji", [function() {
                 var obj = document.getElementById("message-content");
                 webimutil.Helper.getFocus(obj);
             })
+
+            if(webimutil.Helper.os.mac){
+               if(webimutil.Helper.browser.safari){
+                 angular.element(ele[0]).css("padding-top", "5px");
+               }
+            }
+            else{
+               angular.element(ele[0]).css("padding-bottom", "5px");
+               angular.element(ele[0]).css("padding-right", "4px");
+            }
         }
     }
 }]);
@@ -265,7 +275,7 @@ conversationDire.directive("imageMessage", [function() {
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var img = new Image();
-            img.src = scope.item.imageUri;
+            // img.src = scope.item.imageUri;
             setTimeout(function() {
                 $('#rebox_' + scope.$id).rebox({ selector: 'a' }).bind("rebox:open", function() {
                     //jQuery rebox 点击空白关闭

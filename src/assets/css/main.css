@@ -40,12 +40,12 @@ font {
 body,
 button, input, select, textarea /* for ie */
 {
-    font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    font-family: "Helvetica Neue", Helvetica,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-size: 14px;
-    font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    font-family: "Helvetica Neue", Helvetica,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
 }
 
 address, cite, dfn, em, var {
@@ -348,7 +348,7 @@ input::-ms-clear{display:none;}
     top: -75px;
     right: -76px;
     width: 100px;
-    height: 120px;
+    height: 80px;
     background: #fff;
     border-radius: 5px;
     z-index: 99;
@@ -396,6 +396,8 @@ input::-ms-clear{display:none;}
     box-shadow: none;
     text-indent: 2em;
     padding: 6px 12px 4px;
+    background: url(../img/icons.png) 10px -110px/108px auto no-repeat;
+    background-color: #fff;
 }
 
 .searchArea div label {
@@ -405,6 +407,7 @@ input::-ms-clear{display:none;}
     background: url(../img/icons.png) 10px -110px/108px auto no-repeat;
     width: 70px;
     height: 36px;
+    display: none;
 }
 
 .searchArea div.isfocus label {
@@ -422,6 +425,7 @@ input::-ms-clear{display:none;}
 
 .searchArea div input:focus {
     text-indent: 0;
+    background: none;
 }
 .searchArea div .clearInputBtn{
     position: absolute;
@@ -497,7 +501,7 @@ input::-ms-clear{display:none;}
 
 .chat_item .info .nickname {
     font-weight: 400;
-    font-size: 13px;
+    font-size: 14px;
     color: #000;
     line-height: 20px;
     margin: 0;
@@ -524,7 +528,7 @@ input::-ms-clear{display:none;}
 
 .chat_item .info .msg {
     color: #8e969f;
-    font-size: 13px;
+    font-size: 14px;
     width: 100%;
     /*overflow: hidden;
     text-overflow: ellipsis;
@@ -649,14 +653,14 @@ input::-ms-clear{display:none;}
 .phone_return {
     position: absolute;
     color: #0099ff;
-    top: 14px;
+    /*top: 14px;*/
     left: -3px;
     font-size: 16px;
     /*background: url(../../static/images/icons.png) 1px -180px/86px auto no-repeat;*/
     /*background: url(../../static/images/leftArrow.png) 0px 3px/10px auto no-repeat;*/
     /*text-indent: 20px;*/
-    height: 24px;
-    line-height: 24px;
+    height: 34px;
+    line-height: 34px;
 }
 .phone_return:hover, .phone_return:active,.phone_return:focus {
      color: #0994f1;
@@ -664,11 +668,11 @@ input::-ms-clear{display:none;}
 .editBtn {
     position: absolute;
     color: #0099ff;
-    top: 14px;
+    /*top: 14px;*/
     right: -3px;
     font-size: 16px;
-    height: 24px;
-    line-height: 24px;
+    height: 34px;
+    line-height: 34px;
 }
 .editBtn:hover, .editBtn:active,.editBtn:focus {
     color: #0994f1;
@@ -1100,6 +1104,7 @@ input::-ms-clear{display:none;}
 .userFunPannel ul li .right{
     float: right;
     padding-right: 5px;
+    height: 40px;
 }
 .userFunPannel ul li:last-child{
     /*margin-top: 300px;*/
@@ -1249,6 +1254,7 @@ input::-ms-clear{display:none;}
     width: 200px;
     height: 40px;
     padding: 6px 0 3px 18px;
+    cursor: pointer;
 }
 #Messages .public-Message .Message-audio .audioBox i:nth-child(1) {
     background: url(../img/audioBg2.png) 0px -66px/199px auto no-repeat;
@@ -1729,6 +1735,7 @@ input::-ms-clear{display:none;}
 
 .Message-author > .author {
     color: #8e969f;
+    cursor: pointer;
 }
 .Message-author > .author:hover {
     color: #0099ff;
@@ -2104,6 +2111,7 @@ input::-ms-clear{display:none;}
     font-size: 14px;
     color: #010101;
     line-height: 36px;
+    margin-bottom: 10px;
 }
 .groupAddUser a{
     background: url(../img/icons.png) 0px -432px/100px auto no-repeat;
@@ -2116,8 +2124,8 @@ input::-ms-clear{display:none;}
 .groupAddUser{}
 
 .groupInfo .groupUserList .friendsList .photo .img {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
 }
 .chat_item.groupUser_item {
     padding: 10px 18px 0 0;
@@ -2482,11 +2490,11 @@ input::-ms-clear{display:none;}
 .expressionWrap{
     border: 1px solid #D9DADC;
     margin: 6px 15px;
-    width: 359px;
+    width: 348px;
     padding: 5px 8px;
     position: absolute;
     left: -16px;
-    top: -200px;
+    top: -220px;
     background: #fff;
     z-index: 1100;
 }
@@ -2509,15 +2517,15 @@ input::-ms-clear{display:none;}
 .expressionWrap div{
     cursor: default;
 }
-.RC_Expression {
+/*.RC_Expression {
     width: 22px;
     height: 22px;
     background-image: url(http://res.websdk.rongcloud.cn/css-sprite_bg.png);
     display: inline-block;
-}
+}*/
 .expressionWrap div { padding: 3px; border-radius: 4px; }
 .expressionWrap div:hover { background: #eee; }
-.expressionWrap>div>span>span{ font-size: 20px; vertical-align: middle; position: relative; left: -1px; }
+.expressionWrap>div>span>span{ font-size: 20px; vertical-align: middle; }
 
 /* 登录 注册 */
 #sign{
@@ -2871,10 +2879,11 @@ input::-ms-clear{display:none;}
     text-align: center;
     background: url(../img/picWrapBg.png) 0 0/18px auto repeat;
     margin: 20px 15px 25px;
+    line-height: 250px;
 }
 .previewPic .picWrap .picContent{
     max-width: 100%;
-    height: 250px;
+    max-height: 250px;
     display: inline-block;
 }
 .previewPic .picFooter{

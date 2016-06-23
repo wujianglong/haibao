@@ -10,24 +10,26 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         conversationServer.historyMessagesCache = <any>{};
         conversationServer.conversationMessageList = <any>[];
+        conversationServer.conversationMessageListShow = <any>[];
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content.message.content
             var comment = "", members = <any>[]
             switch (detail.operation) {
                 case "Add":
-                    comment = " 加入群组";
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 加入群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Quit":
-                    comment = " 退出群组"
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 退出群组"
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Kicked":
-                    comment = " 被踢出群组";
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 被踢出群组";
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Rename":
+                    comment = detail.data.data.operatorNickname + " 修改群名称为 " + detail.data.data.targetGroupName;
                     break;
                 case "Create":
                     comment = detail.data.data.operatorNickname + " 创建了群组";
@@ -40,15 +42,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
 
             item.content  = comment;
-            for (var i = 0, len = members.length; i < len; i++) {
-                mainServer.user.getInfo(members[i]).success(function(rep) {
-                    if (item.content  === comment) {
-                        item.content  = rep.result.nickname + item.content ;
-                    } else {
-                        item.content  = rep.result.nickname + "、" + item.content ;
-                    }
-                })
-            }
+            // for (var i = 0, len = members.length; i < len; i++) {
+            //     mainServer.user.getInfo(members[i]).success(function(rep) {
+            //         if (item.content  === comment) {
+            //             item.content  = rep.result.nickname + item.content ;
+            //         } else {
+            //             item.content  = rep.result.nickname + "、" + item.content ;
+            //         }
+            //     })
+            // }
         }
 
         function asyncConverDiscussionNotifition(msgsdk: any, item: any) {
@@ -75,15 +77,25 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
 
             item.content  = comment;
-            for (var i = 0, len = members.length; i < len; i++) {
-                mainServer.user.getInfo(members[i]).success(function(rep) {
-                    if (item.content  === comment) {
-                        item.content  = rep.result.nickname + item.content ;
-                    } else {
-                        item.content  = rep.result.nickname + "、" + item.content ;
-                    }
-                })
-            }
+            mainServer.user.getBatchInfo(members).then(function (repmem) {
+                var lists = repmem.data.result;
+                var membersName:string[] = [];
+                for (var j = 0, len = lists.length; j < len; j++) {
+                    membersName.push(lists[j].nickname);
+                }
+                if(membersName){
+                  item.content = membersName.join('、') + item.content;
+                }
+            });
+            // for (var i = 0, len = members.length; i < len; i++) {
+            //     mainServer.user.getInfo(members[i]).success(function(rep) {
+            //         if (item.content  === comment) {
+            //             item.content  = rep.result.nickname + item.content ;
+            //         } else {
+            //             item.content  = rep.result.nickname + "、" + item.content ;
+            //         }
+            //     })
+            // }
         }
 
         function getHistory(id: string, type: string, count: number) {
@@ -160,10 +172,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[0] && arr[0].sentTime && arr[0].panelType != webimmodel.PanelType.Time && item.sentTime) {
                 if (compareDateIsAddSpan(arr[0].sentTime, item.sentTime)) {
                     arr.unshift(new webimmodel.TimePanl(arr[0].sentTime));
+                    conversationServer.conversationMessageListShow.unshift(new webimmodel.TimePanl(arr[0].sentTime));
                 }
             }
             messageAddUserInfo(item);
             arr.unshift(item);
+            conversationServer.conversationMessageListShow.unshift(item);
         }
 
         function compareDateIsAddSpan(first: Date, second: Date) {
@@ -182,10 +196,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
                 if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
                     arr.push(new webimmodel.TimePanl(item.sentTime));
+                    conversationServer.conversationMessageListShow.push(new webimmodel.TimePanl(item.sentTime));
                 }
             }
             messageAddUserInfo(item);
             arr.push(item);
+            conversationServer.conversationMessageListShow.push(item);
         }
 
         //消息里没有用户信息，要去本地的好友列表里查找
@@ -256,6 +272,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 interface conversationServer {
     historyMessagesCache: any
     conversationMessageList: any[]
+    conversationMessageListShow: any[]
     getHistory(id: string, type: number, count: number): angular.IPromise<any>
     addHistoryMessages(id: string, type: number, item: webimmodel.Message): void
     messageAddUserInfo(item: webimmodel.Message): void

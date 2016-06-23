@@ -97,6 +97,9 @@ module webimutil {
             chrome: /chrome/.test(userAgent),
             mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit|like gecko)/.test(userAgent)
         }
+        static os = {
+            mac: (userAgent.match(/Mac\s+OS/i))
+        };
 
     }
 

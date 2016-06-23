@@ -24,6 +24,16 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
         var pasteImgFile : any = null;
+        if(webimutil.Helper.os.mac){
+           if(webimutil.Helper.browser.safari){
+             angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
+           }
+        }
+        else{
+           angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-250px");
+           angular.element(document.getElementsByClassName("expressionWrap")).css("padding", "5px 18px");
+        }
+
         $scope.messagesloading = true;
         $scope.showCutScreen = false;
         if (window.Electron && window.Electron.appInfo){
@@ -66,12 +76,14 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
                     $scope.messagesloading = false;
                 }, 0)
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
                 }, 0)
@@ -80,6 +92,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         } else {
             //有未读消息
             conversationServer.conversationMessageList = currenthis;
+            conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
             setTimeout(function() {
                 adjustScrollbars();
                 $scope.messagesloading = false;
@@ -147,7 +160,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 
             }, function(error) {
-                console.log(error);
                 if(error.errorCode == 405){
                   var msg = webimutil.Helper.cloneObject(error.message);
                   msg.content = "您的消息已经发出，但被对方拒收";
@@ -161,9 +173,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             //添加消息到历史消息并清空发送消息框
             conversationServer.addHistoryMessages(targetId, targetType, webimmodel.Message.convertMsg(msgouter));
             $scope.$emit("msglistchange");
-            setTimeout(function () {
-                $scope.$emit("conversationChange");
-            }, 200);
+            // setTimeout(function () {
+            //     $scope.$emit("conversationChange");
+            // }, 200);
+            $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msgouter), true, true);
             $scope.currentConversation.draftMsg = "";
 
             var obj = document.getElementById("message-content");
@@ -185,6 +198,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
            if(visible){
              pic.style.visibility = "visible";
              picBackground.style.visibility = "visible";
+             pic.focus();
            }else{
              pic.style.visibility = "hidden";
              picBackground.style.visibility = "hidden";
@@ -204,6 +218,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.takeScreenShot = function () {
           if (window.Electron) {
+              if (typeof window.Electron.screenShot === "undefined"){
+                 console.log('您的app版本过低,不支持截图功能')
+                 return;
+              }
               window.Electron.screenShot();
           }
         };
@@ -300,7 +318,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         });
         // $scope.emojiList = RongIMLib.Expression.getAllExpression(60, 0);
 
-        $scope.emojiList = RongIMLib.RongIMEmoji.emojis.slice(0, 60);
+        $scope.emojiList = RongIMLib.RongIMEmoji.emojis.slice(0, 60);  //128
 
 
 

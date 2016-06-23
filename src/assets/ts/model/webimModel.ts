@@ -337,13 +337,16 @@ module webimmodel {
                         msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被踢出群组") : "移除群组";
                         break;
                     case "Rename":
-                        msgContent = data.operatorNickname + " 修改了群名称";
+                        msgContent = data.operatorNickname + " 修改群名称为 " + data.targetGroupName;
                         break;
                     case "Create":
                         msgContent = data.operatorNickname + " 创建了群组";
                         break;
                     case "Dismiss":
-                        msgContent = data.operatorNickname + " 解散了群组 " + data.targetGroupName;
+                        msgContent = data.operatorNickname + " 解散了群组 ";
+                        if(data.targetGroupName){
+                            msgContent += data.targetGroupName;
+                        }
                         break;
                     default:
                         break;
