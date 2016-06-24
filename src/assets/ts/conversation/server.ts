@@ -15,31 +15,45 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content.message.content
             var comment = "", members = <any>[]
+            var isself = detail.operatorUserId == mainDataServer.loginUser.id ? true : false;
             switch (detail.operation) {
                 case "Add":
-                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 加入群组";
+                    if(isself){
+                       comment = '你邀请' +detail.data.data.targetUserDisplayNames.join('、') + "加入了群组";
+                    }else{
+                       comment = detail.data.data.operatorNickname + '邀请' +detail.data.data.targetUserDisplayNames.join('、') + "加入了群组";
+                    }
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Quit":
-                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 退出群组"
+                    comment = detail.data.data.targetUserDisplayNames.join('、') + "退出了群组"
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Kicked":
-                    comment = detail.data.data.targetUserDisplayNames.join('、') + " 被踢出群组";
+                    if(isself){
+                       comment = '你将' + detail.data.data.targetUserDisplayNames.join('、') + " 移出了群组";
+                    }else{
+                       comment = detail.data.data.operatorNickname + '将' + detail.data.data.targetUserDisplayNames.join('、') + " 移出了群组";
+                    }
                     members = detail.data.data.targetUserIds;
                     break;
                 case "Rename":
-                    comment = detail.data.data.operatorNickname + " 修改群名称为 " + detail.data.data.targetGroupName;
+                    if(isself){
+                      comment = "你更新了群名称";
+                      // + detail.data.data.targetGroupName;
+                    }else{
+                      comment = detail.data.data.operatorNickname + "更新了群名称";
+                    }
                     break;
                 case "Create":
                     if(detail.operatorUserId == mainDataServer.loginUser.id){
-                      comment = "你 创建了群组";
+                      comment = "你创建了群组";
                     }else{
-                      comment = detail.data.data.operatorNickname + " 创建了群组";
+                      comment = detail.data.data.operatorNickname + "创建了群组";
                     }
                     break;
                 case "Dismiss":
-                    comment = detail.data.data.operatorNickname + " 解散了群组";
+                    comment = detail.data.data.operatorNickname + "解散了群组";
                     break;
                 default:
                     console.log("未知群组通知");
@@ -176,12 +190,10 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[0] && arr[0].sentTime && arr[0].panelType != webimmodel.PanelType.Time && item.sentTime) {
                 if (compareDateIsAddSpan(arr[0].sentTime, item.sentTime)) {
                     arr.unshift(new webimmodel.TimePanl(arr[0].sentTime));
-                    conversationServer.conversationMessageListShow.unshift(new webimmodel.TimePanl(arr[0].sentTime));
                 }
             }
             messageAddUserInfo(item);
             arr.unshift(item);
-            conversationServer.conversationMessageListShow.unshift(item);
         }
 
         function compareDateIsAddSpan(first: Date, second: Date) {
@@ -200,12 +212,18 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
                 if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
                     arr.push(new webimmodel.TimePanl(item.sentTime));
-                    conversationServer.conversationMessageListShow.push(new webimmodel.TimePanl(item.sentTime));
+                    //判断如果是当前会话的消息则加入
+                    if (type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
+                      conversationServer.conversationMessageListShow.push(new webimmodel.TimePanl(item.sentTime));
+                    }
                 }
             }
             messageAddUserInfo(item);
             arr.push(item);
-            conversationServer.conversationMessageListShow.push(item);
+            //判断如果是当前会话的消息则加入
+            if (type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
+              conversationServer.conversationMessageListShow.push(item);
+            }
         }
 
         //消息里没有用户信息，要去本地的好友列表里查找

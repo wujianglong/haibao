@@ -338,7 +338,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
-                    var conversationitem = webimmodel.Conversation.convertToWebIM(list[i]);
+                    var conversationitem = webimmodel.Conversation.convertToWebIM(list[i], mainDataServer.loginUser.id);
                     // if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
                     //     var members = list[i].latestMessage.content.extension.split(',');
                     //     switch (list[i].latestMessage.content.type) {

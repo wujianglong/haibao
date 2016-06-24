@@ -569,7 +569,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           webimutil.NotificationHelper.showNotification({
                               title: msg.senderUserName,
                               icon: "assets/img/SealTalk.ico",
-                              body: webimmodel.Message.messageToNotification(data), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                              body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id), data: { targetId: msg.targetId, targetType: msg.conversationType }
                           });
                         }
                         break;

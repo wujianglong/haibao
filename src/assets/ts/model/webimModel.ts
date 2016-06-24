@@ -35,7 +35,7 @@ module webimmodel {
             }
         }
 
-        static convertToWebIM(item: RongIMLib.Conversation) {
+        static convertToWebIM(item: RongIMLib.Conversation, operatorid: string) {
             var lasttime: Date;
             if (item.latestMessage && item.sentTime) {
                 lasttime = new Date(item.sentTime);
@@ -43,7 +43,7 @@ module webimmodel {
 
             var msgContent = ""
             if (item.latestMessage) {
-                msgContent = Message.messageToNotification(item.latestMessage)
+                msgContent = Message.messageToNotification(item.latestMessage, operatorid)
             }
 
             return new Conversation({
@@ -311,7 +311,7 @@ module webimmodel {
             return msg;
         }
 
-        static messageToNotification = function(msg: any) {
+        static messageToNotification = function(msg: any, operatorid: string) {
             if (!msg)
                 return null;
             var msgtype = msg.messageType, msgContent: string;
@@ -327,23 +327,39 @@ module webimmodel {
                 var data = msg.content.message.content.data.data
                 switch (msg.content.message.content.operation) {
                     case "Add":
-                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
+                        if(msg.content.message.content.operatorUserId == operatorid){
+                          msgContent = data.targetUserDisplayNames ? ("你邀请" + data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
+                        }else{
+                          msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "邀请" + data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
+                        }
                         break;
                     case "Quit":
-                        msgContent = data.operatorNickname + " 退出了群组";
+                        msgContent = data.operatorNickname + "退出了群组";
                         break;
                     case "Kicked":
                         //由于之前数据问题
-                        msgContent = data.targetUserDisplayNames ? (data.targetUserDisplayNames.join("、") + " 被踢出群组") : "移除群组";
+                        if(msg.content.message.content.operatorUserId == operatorid){
+                           msgContent = data.targetUserDisplayNames ? ("你将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
+                        }else{
+                          msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
+                        }
                         break;
                     case "Rename":
-                        msgContent = data.operatorNickname + " 修改群名称为 " + data.targetGroupName;
+                        if(msg.content.message.content.operatorUserId == operatorid){
+                          msgContent = "你更新了群名称";
+                        }else{
+                          msgContent = data.operatorNickname + "更新了群名称";
+                        }
                         break;
                     case "Create":
-                        msgContent = data.operatorNickname + " 创建了群组";
+                        if(msg.content.message.content.operatorUserId == operatorid){
+                          msgContent = "你创建了群组";
+                        }else{
+                          msgContent = data.operatorNickname + "创建了群组";
+                        }
                         break;
                     case "Dismiss":
-                        msgContent = data.operatorNickname + " 解散了群组 ";
+                        msgContent = data.operatorNickname + "解散了群组";
                         if(data.targetGroupName){
                             msgContent += data.targetGroupName;
                         }
