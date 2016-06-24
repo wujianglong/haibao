@@ -127,6 +127,7 @@ module webimmodel {
     export enum NoticePanelType {
         ApplyFriend = 1, AgreedFriend = 2,
         WarningNotice = 101,
+        System = 102
     }
 
     export enum FriendStatus {
@@ -328,9 +329,9 @@ module webimmodel {
                 switch (msg.content.message.content.operation) {
                     case "Add":
                         if(msg.content.message.content.operatorUserId == operatorid){
-                          msgContent = data.targetUserDisplayNames ? ("你邀请" + data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
+                          msgContent = data.targetUserDisplayNames ? ("你邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
                         }else{
-                          msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "邀请" + data.targetUserDisplayNames.join("、") + " 加入了群组") : "加入群组";
+                          msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
                         }
                         break;
                     case "Quit":
@@ -402,7 +403,11 @@ module webimmodel {
                 msgContent = msg.content ? msg.content.content : "";
 
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
-                msgContent = RongIMLib.RongIMEmoji.emojiToSymbol(msgContent);
+                // msgContent = RongIMLib.RongIMEmoji.emojiToSymbol(msgContent);
+
+                if (RongIMLib.RongIMEmoji && RongIMLib.RongIMEmoji.emojiToHTML) {
+                    msgContent = RongIMLib.RongIMEmoji.emojiToHTML(msgContent);
+                }
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");

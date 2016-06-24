@@ -490,6 +490,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         function handlePaste(e: any) {
             var reg = new RegExp('^data:image/[^;]+;base64,');
+            var hasImg = false;
             for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
                 var item = e.clipboardData.items[i];
                 if (item.type.indexOf("image") > -1) {
@@ -506,9 +507,17 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
                      fr.readAsDataURL(data);
                      pasteImgFile = data;
-                } else {
-                    console.log("Discardingimage paste data" + item.type);
+                     e.preventDefault();
+                     hasImg = true;
+                     break;
                 }
+            }
+            if(!hasImg){
+              e.preventDefault();
+              var strText = e.clipboardData.getData("text/plain");
+              // || e.clipboardData.getData("text/html");
+              var obj = document.getElementById("message-content");
+              obj.innerHTML = strText;
             }
         }
         document.getElementById("message-content").
