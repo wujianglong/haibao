@@ -606,6 +606,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
           if(type == webimmodel.conversationType.Discussion){
              return;
           }
+          if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
+            return ;
+          }
           if(add){  //add
              //updateCon  顺序,最近会话内容,时间
              var curCon : webimmodel.Conversation = null;
@@ -645,6 +648,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                    if (msg.objectName == "RC:GrpNtf"){
                        curCon.lastMsg = msg.content;
                    }
+                   break;
+               case webimmodel.MessageType.ReadReceiptMessage:
+               case webimmodel.MessageType.TypingStatusMessage:
                    break;
                default:
                    curCon.lastMsg = '未解析';

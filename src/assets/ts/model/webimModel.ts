@@ -116,7 +116,9 @@ module webimmodel {
         InformationNotificationMessage: "InformationNotificationMessage",
         ContactNotificationMessage: "ContactNotificationMessage",
         ProfileNotificationMessage: "ProfileNotificationMessage",
-        CommandNotificationMessage: "CommandNotificationMessage"
+        CommandNotificationMessage: "CommandNotificationMessage",
+        ReadReceiptMessage: "ReadReceiptMessage",
+        TypingStatusMessage: "TypingStatusMessage"
     }
 
     export enum conversationType {
