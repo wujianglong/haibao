@@ -109,7 +109,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         //窗口获得焦点时清除当前未读消息
         window.onfocus = function() {
             if ($state.is("main.chat")) {
-                RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetType);
+                RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                 mainDataServer.conversation.updateConversations();
             }
         }
