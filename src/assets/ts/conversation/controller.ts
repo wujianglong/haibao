@@ -111,6 +111,39 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $state.go("main.friendinfo", { userid: userid, groupid: "0", targetid: targetId, conversationtype: targetType });
         }
 
+        function updateTargetDetail(){
+            if(targetType == webimmodel.conversationType.Private){
+               var friend = mainDataServer.contactsList.getFriendById(targetId);
+               var isself = friend ? null : mainDataServer.loginUser.id == targetId;
+               if (friend) {
+                   mainServer.friend.getProfile(targetId).success(function(data) {
+                       var f = new webimmodel.Friend({ id: data.result.user.id, name: data.result.user.nickname, imgSrc: data.result.user.portraitUri });
+                       f.displayName = data.result.displayName;
+                       f.mobile = data.result.user.phone;
+                       // f = mainDataServer.contactsList.addFriend(f);
+                       f = mainDataServer.contactsList.updateOrAddFriend(f);
+                       mainDataServer.conversation.updateConversationDetail(targetType, targetId, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
+                   })
+
+               } else if (isself)
+               {
+
+               }
+               else {
+                  //  mainServer.user.getInfo(targetId).then(function(rep) {
+                  //      $scope.user.id = rep.data.result.id
+                  //      $scope.user.nickName = rep.data.result.nickname
+                  //      $scope.user.portraitUri = rep.data.result.portraitUri;
+                   //
+                  //      $scope.user.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.data.result.nickname);
+                  //      setPortrait();
+                  //  })
+               }
+
+            }
+        }
+        updateTargetDetail();
+
         function packmysend(msg: any, msgType: string) {
             var msgouter = new RongIMLib.Message();
             msgouter.content = msg;

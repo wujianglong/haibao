@@ -600,6 +600,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
+        updateConversationDetail: function(type: number, id: string, title: string, portrait: string) {
+            for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+                if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+                    mainDataServer.conversation.conversations[i].title = title;
+                    mainDataServer.conversation.conversations[i].imgSrc = portrait;
+                    return true;
+                }
+            }
+            return false;
+        },
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
           var type = msg.conversationType , id = msg.targetId;
           var hasCon = false;
@@ -1378,6 +1388,7 @@ interface mainDataServer {
         createConversation(targetType: number, targetId: string): webimmodel.Conversation
         getConversation(type: number, id: string): webimmodel.Conversation
         updateConversationTitle(type: number, targetId: string, title: string): boolean
+        updateConversationDetail(type: number, targetId: string, title: string, portrait: string): boolean
         updateConStatic(msg: webimmodel.Message, add: boolean, isChat:boolean): void
         setDraft(type: string, id: string, msg: string): boolean
         clearMessagesUnreadStatus(type: string, id: string): boolean
