@@ -286,6 +286,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(conversationServer.conversationMessageList);
                 // setTimeout(function() {
                 //     adjustScrollbars();
                 // }, 0)
@@ -298,6 +299,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
+                conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(conversationServer.conversationMessageList);
             });
         }
 

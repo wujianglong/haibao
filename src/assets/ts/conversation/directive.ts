@@ -275,7 +275,7 @@ conversationDire.directive("imageMessage", [function() {
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var img = new Image();
-            // img.src = scope.item.imageUri;
+            img.src = scope.item.imageUri;
             setTimeout(function() {
                 $('#rebox_' + scope.$id).rebox({ selector: 'a' }).bind("rebox:open", function() {
                     //jQuery rebox 点击空白关闭
