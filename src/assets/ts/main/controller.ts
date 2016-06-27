@@ -248,6 +248,15 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
         RongIMSDKServer.init(appconfig.getAppKey());
 
+        // var messageName = "ReadReceiptMessage"; // 消息名称。
+        // var objectName = "RC:ReadNtf"; // 消息内置名称，请按照此格式命名。
+        // var mesasgeTag = new RongIMLib.MessageTag(false, false);// 消息是否保存是否计数，true true 保存且计数，false false 不保存不计数。
+        // var propertys = ["data","messageName","typingContentType"]; // 消息类中的属性名。
+        // var propertys = ["lastMessageSendTime","messageName","messageUId", "type"]; // 消息类中的属性名。
+        // RongIMSDKServer.registerMessageType(messageName,objectName,mesasgeTag,propertys);
+        // var regMsg = RongIMSDKServer.RegisterMessage;
+        // var msg = regMsg.ReadReceiptMessage({"lastMessageSendTime":'extra.cover',"messageName":'extra.username',"messageUId":'extra',"type":'type'});
+
         mainServer.user.getToken().success(function(data: any) {
             if (data.code == "200") {
                 RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {

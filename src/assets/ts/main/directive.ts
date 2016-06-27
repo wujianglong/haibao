@@ -228,7 +228,6 @@ mainDire.directive("inputWrap", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attrs: angular.IAttributes) {
             scope.showplaceholder = true;
             scope.maxlength = scope.maxlength || 64;
-
             if (scope.loadedfocus) {
                 angular.element(ele).find("textarea")[0].focus();
                 scope.showplaceholder = true;
@@ -257,6 +256,9 @@ mainDire.directive("inputWrap", [function() {
             });
 
             scope.message = scope.message || "";
+            if(scope.message){
+              scope.showplaceholder = false;
+            }
             scope.$watch("message", function(newVal: any, oldVal: any) {
                 if (newVal.length > scope.maxlength) {
                     scope.message = newVal.substring(0, scope.maxlength);

@@ -513,7 +513,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             });
                         })(conversationitem);
                     }
-                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION) continue;
+                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM) continue;
                     mainDataServer.conversation.conversations.push(conversationitem);
                 }
                 if(!haveCUSTOMER_SERVICE){
@@ -613,8 +613,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
           var type = msg.conversationType , id = msg.targetId;
           var hasCon = false;
-          if(type == webimmodel.conversationType.Discussion){
-             return;
+          if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage) {
+              return;
           }
           if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
             return ;
@@ -1345,7 +1345,13 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     // RongIMSDKServer.sortConversationList = function(list: RongIMLib.Conversation[]) {
     //     return RongIMLib.RongIMClient.getInstance().sortConversationList(list);
     // }
+    RongIMSDKServer.registerMessageType = function(messageType: string, objectName: string, messageTag: any, messageContent: any) {
+        return RongIMLib.RongIMClient.registerMessageType(messageType, objectName, messageTag, messageContent);
+    }
 
+    RongIMSDKServer.RegisterMessage = function() {
+        return RongIMLib.RongIMClient.RegisterMessage;
+    }
     return RongIMSDKServer;
 }]);
 
@@ -1375,6 +1381,8 @@ interface RongIMSDKServer {
     setDiscussionName(discussionId: string, name: string, callback?: any): void
     getDiscussion(discussionId: string): angular.IPromise<{data: RongIMLib.Discussion}>
     quitDiscussion(discussionId: string, callback?: any): void
+    registerMessageType(messageType: string, objectName: string, messageTag: any, messageContent: any): void
+    RegisterMessage(): any
     // sortConversationList(list: RongIMLib.Conversation[]): void
 }
 

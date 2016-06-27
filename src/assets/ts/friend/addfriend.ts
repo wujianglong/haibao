@@ -49,7 +49,7 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
         var conversationtype = $stateParams["conversationtype"];
 
         $scope.title = userName;
-
+        // $scope.message = '我是' + userName;
         $scope.applyfriendbtn = function() {
             var id = userId;
             if (!$scope.message) {

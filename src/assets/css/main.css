@@ -15,7 +15,7 @@
 }
 
 html, body {
-    background: #fff;
+    background: url(../img/webBg.png) 0 0/10px 10px;
     height: 100%;
 }
 body{
@@ -2529,8 +2529,8 @@ input::-ms-clear{display:none;}
 
 /* 登录 注册 */
 #sign{
-    min-height: 760px;
-    position: relative;
+    /*min-height: 760px;
+    position: relative;*/
     height: 100%;
 }
 #sign .header{
@@ -2576,17 +2576,17 @@ input::-ms-clear{display:none;}
     margin: 0 auto;
 }
 #sign .content .main .mainWrap{
-    width: 705px;
+    width: 800px;
     margin: 0 auto;
 }
 #sign .content .main .leftBox{
-    width: 258px;
+    width: 360px;
     height: 333px;
-    background: url(../img/signBg.png) 0 0/auto 333px;
-    margin: 78px 0 0 0;
+    background: url(../img/signBg.png) no-repeat 0 0/auto 333px;
+    margin: 92px 0 0 0;
 }
 #sign .content .main .rightBox{
-    margin: 130px 0 0 165px;
+    margin: 130px 0 0 105px;
 }
 .sign-flow {
     float: right;
@@ -2703,7 +2703,7 @@ input::-ms-clear{display:none;}
 .footer p {
     clear: both;
     text-align: center;
-    color: #9ca8af;
+    color: #fff;
     font-size: 14px;
 }
 .footer p span{
@@ -2711,7 +2711,7 @@ input::-ms-clear{display:none;}
     display: inline;
 }
 .footer p span a{
-    color: #9ca8af;
+    color: #fff;
     text-decoration: none;
 }
 .msgCode .form-control-my{

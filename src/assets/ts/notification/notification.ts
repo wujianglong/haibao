@@ -20,7 +20,7 @@ notification.directive("applyfriendNotice", ["mainServer", "mainDataServer",
             restrict: "E",
             scope: { item: "=" },
             template: '<li class="clearfix">' +
-            '<div class="center">申请加您为好友</div>' +
+            '<div class="center">请求添加你为好友</div>' +
             '<div class="left">' +
             '<div class="photo">' +
             '<img class="img" ng-show="item.portraitUri" ng-src="{{item.portraitUri||\'./assets/img/barBg.png\'}}" alt="">' +
