@@ -298,13 +298,20 @@ module webimmodel {
                         console.log("has unknown message type " + SDKmsg.messageType)
                     }
                     break;
+                case MessageType.ReadReceiptMessage:
+                case MessageType.TypingStatusMessage:
+                    break;
                 default:
                     if (SDKmsg.objectName == "RC:GrpNtf") {
                         var groupnot = new webimmodel.InformationNotificationMessage();
                         groupnot.content = SDKmsg.content.message;
                         msg.content = groupnot;
                         msg.panelType = webimmodel.PanelType.InformationNotification;
-                    } else {
+                    } else if(SDKmsg.objectName == "RC:RLStart" || SDKmsg.objectName == "RC:RL"){
+
+                    }
+                    else
+                    {
                         console.log("has unknown message type " + SDKmsg.messageType)
                     }
                     break;
@@ -351,9 +358,9 @@ module webimmodel {
                         break;
                     case "Rename":
                         if(msg.content.message.content.operatorUserId == operatorid){
-                          msgContent = "你更新了群名称";
+                          msgContent = "你修改群名称为" + data.targetGroupName;
                         }else{
-                          msgContent = data.operatorNickname + "更新了群名称";
+                          msgContent = data.operatorNickname + "修改群名称为" + data.targetGroupName;
                         }
                         break;
                     case "Create":

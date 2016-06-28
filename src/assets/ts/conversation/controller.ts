@@ -566,13 +566,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                      break;
                 }
             }
-            if(!hasImg){
-              e.preventDefault();
-              var strText = e.clipboardData.getData("text/plain");
-              // || e.clipboardData.getData("text/html");
-              var obj = document.getElementById("message-content");
-              obj.innerHTML = obj.innerHTML + strText;
-            }
+            // if(!hasImg){
+            //   e.preventDefault();
+            //   var strText = e.clipboardData.getData("text/plain");
+            //   var obj = document.getElementById("message-content");
+            //   obj.innerHTML = obj.innerHTML + strText;
+            // }
         }
         document.getElementById("message-content").
             addEventListener("paste", handlePaste);

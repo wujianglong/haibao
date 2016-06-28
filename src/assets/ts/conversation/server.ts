@@ -39,10 +39,10 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     break;
                 case "Rename":
                     if(isself){
-                      comment = "你更新了群名称";
+                      comment = "你修改名称为" + detail.data.data.targetGroupName;
                       // + detail.data.data.targetGroupName;
                     }else{
-                      comment = detail.data.data.operatorNickname + "更新了群名称";
+                      comment = detail.data.data.operatorNickname + "修改群名称为" + detail.data.data.targetGroupName;
                     }
                     break;
                 case "Create":

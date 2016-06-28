@@ -36,6 +36,7 @@ interface Window {
     Electron: any
     _open_account_settings: any
     upload_base64: any
+    clipboardData: any
 }
 interface Document {
     selection: any

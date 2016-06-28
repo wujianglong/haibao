@@ -68,13 +68,34 @@ conversationDire.directive('contenteditableDire', function() {
             if (!ngModel) return;
 
             element.bind("paste", function(e: any) {
-                var that = this, ohtml = that.innerHTML;
-                timeoutid && clearTimeout(timeoutid);
-                var timeoutid = setTimeout(function() {
-                    that.innerHTML = replacemy(that.innerHTML);
-                    ngModel.$setViewValue(that.innerHTML);
-                    timeoutid = null;
-                }, 50);
+              var content = '',hasImg = false;
+              for (var i = 0; i < e.clipboardData.items.length; i++) {
+                  var item = e.clipboardData.items[i];
+                  if (item.type.indexOf("image") > -1) {
+                    hasImg = true;
+                    break;
+                  }
+              }
+              e.preventDefault();
+              if(!hasImg){
+                if (e.clipboardData) {
+                    content = (e.originalEvent || e).clipboardData.getData('text/plain');
+                    content = replacemy(content);
+                    document.execCommand('insertText', false, content);
+                }
+                else if (window.clipboardData) {
+                    content = window.clipboardData.getData('Text');
+                    content = replacemy(content);
+                    document.selection.createRange().pasteHTML(content);
+                }
+              }
+                // var that = this, ohtml = that.innerHTML;
+                // timeoutid && clearTimeout(timeoutid);
+                // var timeoutid = setTimeout(function() {
+                //     that.innerHTML = replacemy(that.innerHTML);
+                //     ngModel.$setViewValue(that.innerHTML);
+                //     timeoutid = null;
+                // }, 50);
             });
 
 

@@ -644,7 +644,7 @@ module webimutil {
         static desktopNotification = true;
 
         static isNotificationSupported() {
-            return typeof Notification === "function";
+            return typeof Notification === "function" || typeof Notification === "object";
         }
 
         static requestPermission() {
