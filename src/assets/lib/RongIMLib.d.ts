@@ -1781,6 +1781,15 @@ declare module RongIMLib {
         static obtain(title: string, content: string, imageUri: string): RichContentMessage;
         encode(): string;
     }
+    class ReadReceiptMessage implements MessageContent {
+        lastMessageSendTime: number;
+        messageUId: string;
+        type: number;
+        messageName: string;
+        constructor(message: any);
+        static obtain(messageUId: string, lastMessageSendTime: number, type: ConversationType): ReadReceiptMessage;
+        encode(): string;
+    }
     class UnknownMessage implements MessageContent {
         message: UnknownMessage;
         messageName: string;
@@ -1811,6 +1820,7 @@ declare module RongIMLib {
         constructor(message: RichContentMessage);
         encode(): any;
     }
+
 }
 declare module RongIMLib {
     class Conversation {

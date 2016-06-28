@@ -43,7 +43,7 @@ module webimmodel {
 
             var msgContent = ""
             if (item.latestMessage) {
-                msgContent = Message.messageToNotification(item.latestMessage, operatorid)
+                msgContent = Message.messageToNotification(item.latestMessage, operatorid, false)
             }
 
             return new Conversation({
@@ -159,6 +159,7 @@ module webimmodel {
         objectName: string;
         messageDirection: MessageDirection;
         messageId: string;
+        messageUId: string;
         receivedStatus: ReceivedStatus;
         receivedTime: Date;
         senderUserId: string;
@@ -182,6 +183,7 @@ module webimmodel {
             msg.objectName = SDKmsg.objectName
             msg.messageDirection = SDKmsg.messageDirection;
             msg.messageId = SDKmsg.messageId;
+            msg.messageUId = SDKmsg.messageUId;
             msg.receivedStatus = SDKmsg.receivedStatus;
             msg.receivedTime = new Date(SDKmsg.receivedTime);
             msg.senderUserId = SDKmsg.senderUserId;
@@ -314,7 +316,7 @@ module webimmodel {
             return msg;
         }
 
-        static messageToNotification = function(msg: any, operatorid: string) {
+        static messageToNotification = function(msg: any, operatorid: string, isnotification: boolean) {
             if (!msg)
                 return null;
             var msgtype = msg.messageType, msgContent: string;
@@ -405,11 +407,15 @@ module webimmodel {
                 msgContent = msg.content ? msg.content.content : "";
 
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
-                // msgContent = RongIMLib.RongIMEmoji.emojiToSymbol(msgContent);
-
-                if (RongIMLib.RongIMEmoji && RongIMLib.RongIMEmoji.emojiToHTML) {
-                    msgContent = RongIMLib.RongIMEmoji.emojiToHTML(msgContent);
+                if(isnotification){
+                   msgContent = RongIMLib.RongIMEmoji.emojiToSymbol(msgContent);
                 }
+                else{
+                    if (RongIMLib.RongIMEmoji && RongIMLib.RongIMEmoji.emojiToHTML) {
+                        msgContent = RongIMLib.RongIMEmoji.emojiToHTML(msgContent);
+                    }
+                }
+
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");

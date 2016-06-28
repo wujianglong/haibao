@@ -1704,8 +1704,8 @@ input::-ms-clear{display:none;}
 }
 
 .Message img {
-    max-width: 250px;
-    max-height: 250px;
+    max-width: 240px;
+    max-height: 240px;
 }
 
 .Message-avatar {

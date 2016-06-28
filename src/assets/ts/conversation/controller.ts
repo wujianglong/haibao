@@ -81,6 +81,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     adjustScrollbars();
                     $scope.messagesloading = false;
                 }, 0)
+                var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
+                sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
@@ -93,6 +95,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             //有未读消息
             conversationServer.conversationMessageList = currenthis;
             conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
+            var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
+            sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
             setTimeout(function() {
                 adjustScrollbars();
                 $scope.messagesloading = false;
@@ -110,6 +114,21 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         $scope.touserinfo = function(userid: string) {
             $state.go("main.friendinfo", { userid: userid, groupid: "0", targetid: targetId, conversationtype: targetType });
         }
+
+        function sendReadReceiptMessage(messageuid: string, sendtime: number){
+          var messageUId = messageuid;
+          var lastMessageSendTime = sendtime;
+          var type = "1";// 备用，默认赋值 1 即可。
+          // 以上 3 个属性在会话的最后一条消息中可以获得。
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
+          // var msg = RongIMLib.TextMessage.obtain('con');
+          RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
+
+          }, function(error) {
+              console.log('sendReadReceiptMessage', error.errorCode);
+          });
+        }
+        // sendReadReceiptMessage();
 
         function updateTargetDetail(){
             if(targetType == webimmodel.conversationType.Private){
@@ -552,7 +571,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               var strText = e.clipboardData.getData("text/plain");
               // || e.clipboardData.getData("text/html");
               var obj = document.getElementById("message-content");
-              obj.innerHTML = strText;
+              obj.innerHTML = obj.innerHTML + strText;
             }
         }
         document.getElementById("message-content").
