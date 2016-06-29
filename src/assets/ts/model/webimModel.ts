@@ -13,6 +13,8 @@ module webimmodel {
         public draftMsg: string;
         public firstchar: string;
         public imgSrc: string;
+        public pinyin: string;
+        public everychar: string;
         constructor(item?: {
             title: string,
             targetId: string,
@@ -33,6 +35,14 @@ module webimmodel {
                 this.draftMsg = item.draftMsg;
                 this.firstchar = item.firstchar;
             }
+        }
+
+        setpinying(item: {
+            pinyin: string;
+            everychar: string;
+        }) {
+            this.pinyin = item.pinyin;
+            this.everychar = item.everychar;
         }
 
         static convertToWebIM(item: RongIMLib.Conversation, operatorid: string) {
@@ -416,6 +426,9 @@ module webimmodel {
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
                 if(isnotification){
                    msgContent = RongIMLib.RongIMEmoji.emojiToSymbol(msgContent);
+                   if (webimutil.Helper.os.mac){
+                     msgContent = RongIMLib.RongIMEmoji.symbolToEmoji(msgContent);
+                   }
                 }
                 else{
                     if (RongIMLib.RongIMEmoji && RongIMLib.RongIMEmoji.emojiToHTML) {

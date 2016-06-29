@@ -402,6 +402,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                     mainServer.group.getById(id).success(function (rep) {
                                         listi.conversationTitle = rep.result.name;
                                         conv.title = rep.result.name;
+                                        var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
                                     });
                                 }(list[i].targetId, conversationitem, list[i]));
                             } else {
@@ -428,6 +430,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             }
                             conversationitem.firstchar = group ? group.firstchar : "";
                             conversationitem.imgSrc = group ? group.imgSrc : "";
+                            conversationitem.firstchar = group ? group.firstchar : "";
+                            conversationitem.everychar = group ? group.everychar : "";
                             break;
                         case RongIMLib.ConversationType.PRIVATE:
                             if (list[i].latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
@@ -442,12 +446,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 conversationitem.title = friendinfo.displayName || friendinfo.name;
                                 conversationitem.firstchar = friendinfo.firstchar;
                                 conversationitem.imgSrc = friendinfo.imgSrc;
+                                conversationitem.firstchar = friendinfo.firstchar;
+                                conversationitem.everychar = friendinfo.everychar;
                             } else if (list[i].targetId) {
                                 (function(id: string, conv: webimmodel.Conversation) {
                                     mainServer.user.getInfo(id).success(function(rep) {
                                         // list[i].conversationTitle = rep.result.nickname;
                                         conv.title = rep.result.nickname + "(非好友)";
                                         conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                        var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
+                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
                                     }).error(function() {
                                         conv.title = "非系统用户";
                                     });
@@ -730,6 +738,31 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 }
             }
             return false;
+        },
+        find: function(str: string, arr: webimmodel.Conversation[]) {
+            var num = /^[0-9]+$/, abc = /^[a-zA-Z]+$/, reg = /^[0-9a-zA-Z\-]+$/;
+            var str = str.trim();
+            var newArr = <webimmodel.Conversation[]>[];
+
+            // if (num.test(str)) {
+            //
+            // } else
+            if (reg.test(str)) {
+                for (let i = 0; i < arr.length; i++) {
+                    let item = arr[i];
+                    if (item.everychar.toLowerCase().indexOf(str.toLowerCase()) !== -1 || item.pinyin.toLowerCase().indexOf(str.toLowerCase()) !== -1) {
+                        newArr.push(item);
+                    }
+                }
+            } else if (str !== "") {
+                for (let i = 0; i < arr.length; i++) {
+                    let item = arr[i];
+                    if (item.title.indexOf(str) !== -1) {
+                        newArr.push(item);
+                    }
+                }
+            }
+            return newArr;
         }
     };
 
@@ -1403,6 +1436,7 @@ interface mainDataServer {
         updateConStatic(msg: webimmodel.Message, add: boolean, isChat:boolean): void
         setDraft(type: string, id: string, msg: string): boolean
         clearMessagesUnreadStatus(type: string, id: string): boolean
+        find(str: string, arr: webimmodel.Conversation[]): webimmodel.Conversation[]
     }
     contactsList: {
         groupList: webimmodel.Group[],
