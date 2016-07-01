@@ -13,9 +13,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, appconfig: any) {
 
         if (!mainDataServer.loginUser.id) {
-            var userid = webimutil.CookieHelper.getCookie("loginuserid");
+            var userid = webimutil.CookieHelper.getCookie("loginuserid"),usertoken = webimutil.CookieHelper.getCookie("loginusertoken");
             if (userid) {
                 mainDataServer.loginUser.id = userid;
+                mainDataServer.loginUser.token = usertoken;
             } else {
                 $state.go("account.signin");
             }
@@ -53,6 +54,22 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             $('#' + curConVal).addClass("selected");
             $scope.curCon = curConVal;
         };
+
+        $scope.selectGo = function(id: string, type: webimmodel.conversationType){
+             if($scope.switchbtn.isFriendList){
+               $state.go("main.friendinfo", { userid: id, groupid: "0", targetid: "0", conversationtype: "0" });
+             }else{
+               $state.go("main.chat", { targetId: id, targetType: type }, { location: "replace" });
+             }
+        }
+        $scope.selectGoGroup = function(id: string, type: webimmodel.conversationType){
+             if($scope.switchbtn.isFriendList){
+               $state.go("main.groupinfo", { groupid: id, conversationtype: "0" });
+             }else{
+               $state.go("main.chat", { targetId: id, targetType: type }, { location: "replace" });
+             }
+        }
+
         //查找好友
         //
 
@@ -248,60 +265,63 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
         RongIMSDKServer.init(appconfig.getAppKey());
 
-        mainServer.user.getToken().success(function(data: any) {
-            if (data.code == "200") {
-                RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
-                    console.log("connect success:" + userId);
-                    RongIMSDKServer.getConversationList().then(function(list) {
-                        mainDataServer.conversation.updateConversations();
-                        //初始化讨论组
-                        // for (var i = 0, length = list.length; i < length; i++) {
-                        //   if(list[i].conversationType == RongIMLib.ConversationType.DISCUSSION){
-                        //     RongIMSDKServer.getDiscussion(list[i].targetId).then(function (rep) {
-                        //         var discuss = <RongIMLib.Discussion>rep.data;
-                        //         var discussion = new webimmodel.Discussion({
-                        //             id: discuss.id,
-                        //             name: discuss.name,
-                        //             imgSrc: "",
-                        //             upperlimit: 500,
-                        //             fact: 1,
-                        //             creater: discuss.creatorId,
-                        //             isOpen: discuss.isOpen
-                        //         });
-                        //         mainDataServer.contactsList.addDiscussion(discussion);
-                        //         mainServer.user.getBatchInfo(discuss.memberIdList).then(function (repmem) {
-                        //             var lists = repmem.data.result;
-                        //             for (var j = 0, len = lists.length; j < len; j++) {
-                        //                 var member = new webimmodel.Member({
-                        //                     id: lists[j].id,
-                        //                     name: lists[j].nickname,
-                        //                     imgSrc: lists[j].portraitUri,
-                        //                     role: "1"
-                        //                 });
-                        //                 mainDataServer.contactsList.addDiscussionMember(discussion.id, member);
-                        //             }
-                        //         });
-                        //
-                        //     },function () {
-                        //
-                        //     });
-                        //
-                        //   }
-                        // }
-                    });
-                }, function(error) {
-                    if (error.tokenError) {
-                        //token 错误。
-                    }
-                    //其他错误
-                    //TODO:逻辑未处理
-                });
-            } else {
-                $state.go("account.signin");
-            }
-        }).error(function(e) {
-            $state.go("account.signin");
-        });
+        if(mainDataServer.loginUser.token){
+          RongIMSDKServer.connect(<string>mainDataServer.loginUser.token).then(function(userId) {
+              console.log("connect success1:" + userId);
+              RongIMSDKServer.getConversationList().then(function(list) {
+                  mainDataServer.conversation.updateConversations();
+              });
+          }, function(error) {
+              if (error.tokenError) {
+                  //token 错误。
+                  mainServer.user.getToken().success(function(data: any) {
+                      if (data.code == "200") {
+                          RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
+                              console.log("connect success2:" + userId);
+                              RongIMSDKServer.getConversationList().then(function(list) {
+                                  mainDataServer.conversation.updateConversations();
+                              });
+                          }, function(error) {
+                              if (error.tokenError) {
+                                  //token 错误。
+                              }
+                              //其他错误
+                              //TODO:逻辑未处理
+                          });
+                      } else {
+                          $state.go("account.signin");
+                      }
+                  }).error(function(e) {
+                      $state.go("account.signin");
+                  });
+              }
+              //其他错误
+              //TODO:逻辑未处理
+          });
+        }else{
+          mainServer.user.getToken().success(function(data: any) {
+              if (data.code == "200") {
+                  RongIMSDKServer.connect(<string>data.result.token).then(function(userId) {
+                      console.log("connect success3:" + userId);
+                      RongIMSDKServer.getConversationList().then(function(list) {
+                          mainDataServer.conversation.updateConversations();
+                      });
+                  }, function(error) {
+                      if (error.tokenError) {
+                          //token 错误。
+                      }
+                      //其他错误
+                      //TODO:逻辑未处理
+                  });
+              } else {
+                  $state.go("account.signin");
+              }
+          }).error(function(e) {
+              $state.go("account.signin");
+          });
+        }
+
+
 
         var isReconnect = true;
         RongIMSDKServer.setConnectionStatusListener({
@@ -647,13 +667,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 case "Kicked":
                                     var changemembers = groupNotification.message.content.data.data.targetUserIds.join().split(",");
                                     var groupid = data.targetId;
+                                    var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
                                     var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
                                     if (self == -1) {
                                         for (var a = 0, len = changemembers.length; a < len; a++) {
                                             mainDataServer.contactsList.removeGroupMember(groupid, changemembers[a]);
                                         }
                                     } else {
-                                        var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + mainDataServer.contactsList.getGroupById(groupid).name + '"' + '已将您踢出');
+                                        var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + groupname + '"' + '已将您踢出');
                                         mainDataServer.notification.addNotification(temporarynotifi);
                                         if (!$state.is("main.notification")) {
                                             mainDataServer.notification.hasNewNotification = true;
@@ -672,7 +693,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     // console.log("TODO:暂不做修改群组名称");
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-                                    var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + mainDataServer.contactsList.getGroupById(groupid).name + '"' + '已由 ' + groupNotification.message.content.data.data.operatorNickname + ' 更名为' + groupNotification.message.content.data.data.targetGroupName);
+                                    var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + groupname + '"' + '已由 ' + groupNotification.message.content.data.data.operatorNickname + ' 更名为' + groupNotification.message.content.data.data.targetGroupName);
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {
                                         mainDataServer.notification.hasNewNotification = true;
@@ -736,8 +757,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             addmessage(msg);
                         }
                         break;
+                    case webimmodel.MessageType.InformationNotificationMessage:
+                           msg.content = data.content;
+                           addmessage(msg);
+                        break;
                     default:
-                        // console.log(data.messageType + "：未处理")
+                        console.log(data.messageType + "：未处理")
                         break;
                 }
 

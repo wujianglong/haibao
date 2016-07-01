@@ -47,14 +47,16 @@ account.controller("signinController", ["$scope", "$state", "mainServer", "mainD
                     if (rep.code === 200) {
                         // 登录账户
                         mainDataServer.loginUser.id = rep.result.id;
+                        mainDataServer.loginUser.token = rep.result.token;
                         webimutil.CookieHelper.setCookie("loginuserid", rep.result.id);
+                        webimutil.CookieHelper.setCookie("loginusertoken", rep.result.token);
                         $state.go("main");
 
                     } else if (rep.code === 1000) {
                         //用户或密码错误
                         $scope.userorpwdIsError = true;
                     } else {
-                      
+
                     }
                 }).error(function(error, code) {
                     if (code == 400) {

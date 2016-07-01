@@ -15,8 +15,8 @@ function adjustScrollbars() {
     ele.scrollTop = ele.scrollHeight;
 }
 
-conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http",
-    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService) {
+conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http", "$timeout",
+    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService, $timeout: angular.ITimeoutService) {
 
         var targetId = $state.params["targetId"];
         var targetType = Number($state.params["targetType"]);
@@ -82,7 +82,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     $scope.messagesloading = false;
                 }, 0)
                 var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
-                sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+                if(lastItem && lastItem.messageUId && lastItem.sentTime){
+                  sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+                }
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
@@ -96,7 +98,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             conversationServer.conversationMessageList = currenthis;
             conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
             var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
-            sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+            if(lastItem && lastItem.messageUId && lastItem.sentTime){
+              sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+            }
             setTimeout(function() {
                 adjustScrollbars();
                 $scope.messagesloading = false;
@@ -118,8 +122,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         function sendReadReceiptMessage(messageuid: string, sendtime: number){
           var messageUId = messageuid;
           var lastMessageSendTime = sendtime;
-          var type = "1";// 备用，默认赋值 1 即可。
+          var type = webimmodel.conversationType.Private;
           // 以上 3 个属性在会话的最后一条消息中可以获得。
+          if(targetType != webimmodel.conversationType.Private){
+            return;
+          }
           var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
           // var msg = RongIMLib.TextMessage.obtain('con');
           RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
@@ -351,7 +358,14 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
+                var ele = document.getElementById("Messages");
+                if (!ele)
+                    return;
+                var scrollRemaining = ele.scrollHeight - ele.scrollTop;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(conversationServer.conversationMessageList);
+                $timeout(function(){
+                      ele.scrollTop = ele.scrollHeight - scrollRemaining;
+                    },0);
             });
         }
 
@@ -545,6 +559,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         function handlePaste(e: any) {
             var reg = new RegExp('^data:image/[^;]+;base64,');
             var hasImg = false;
+            if(!e.clipboardData.items){
+              return;
+            }
             for (var i = 0 ; i < e.clipboardData.items.length ; i++) {
                 var item = e.clipboardData.items[i];
                 if (item.type.indexOf("image") > -1) {

@@ -142,7 +142,6 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                             case webimmodel.MessageType.LocationMessage:
                             case webimmodel.MessageType.ImageMessage:
                             case webimmodel.MessageType.RichContentMessage:
-                            case webimmodel.MessageType.InformationNotificationMessage:
                                 var item = webimmodel.Message.convertMsg(msgsdk);
                                 if (item) {
                                     unshiftHistoryMessages(currentConversationTargetId, conver, item);
@@ -150,7 +149,17 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 break;
                             case webimmodel.MessageType.UnknownMessage:
                                 if (msgsdk.objectName == "RC:GrpNtf") {
-
+                                  var item = webimmodel.Message.convertMsg(msgsdk);
+                                  if (item) {
+                                      conversationServer.asyncConverGroupNotifition(msgsdk, item);
+                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                  }
+                                }
+                                break;
+                            case webimmodel.MessageType.InformationNotificationMessage:
+                                var item = webimmodel.Message.convertMsg(msgsdk);
+                                if (item) {
+                                    unshiftHistoryMessages(currentConversationTargetId, conver, item);
                                 }
                                 break;
                             case webimmodel.MessageType.DiscussionNotificationMessage:

@@ -69,11 +69,13 @@ conversationDire.directive('contenteditableDire', function() {
 
             element.bind("paste", function(e: any) {
               var content = '',hasImg = false;
-              for (var i = 0; i < e.clipboardData.items.length; i++) {
-                  var item = e.clipboardData.items[i];
-                  if (item.type.indexOf("image") > -1) {
-                    hasImg = true;
-                    break;
+              if(e.clipboardData.items){
+                  for (var i = 0; i < e.clipboardData.items.length; i++) {
+                      var item = e.clipboardData.items[i];
+                      if (item.type.indexOf("image") > -1) {
+                        hasImg = true;
+                        break;
+                      }
                   }
               }
               e.preventDefault();
