@@ -408,7 +408,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 }(list[i].targetId, conversationitem, list[i]));
                             } else {
                                 //TODO:添加最后一条消息的发送人
-                                if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
+                                if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
                                     var member = mainDataServer.contactsList.getGroupMember(group.id, list[i].latestMessage.senderUserId);
                                     if (member) {
                                         conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
@@ -456,6 +456,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                         conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                                         var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
                                         conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
+                                        conv.imgSrc = rep.result.portraitUri;
                                     }).error(function() {
                                         conv.title = "非系统用户";
                                     });
@@ -673,10 +674,14 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                case webimmodel.MessageType.ReadReceiptMessage:
                case webimmodel.MessageType.TypingStatusMessage:
                    break;
+               case webimmodel.MessageType.InformationNotificationMessage:
+                  //  curCon.lastMsg = msg.content;
+                   curCon.lastMsg = "[通知消息]";
+                   break;
                default:
                    curCon.lastMsg = '未解析';
              }
-             if (type == webimmodel.conversationType.Group){
+             if (type == webimmodel.conversationType.Group && msg.messageType!=webimmodel.MessageType.UnknownMessage && msg.messageType!=webimmodel.MessageType.InformationNotificationMessage){
                  //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
                       var member = mainDataServer.contactsList.getGroupMember(msg.targetId, msg.senderUserId);
                       if (member) {

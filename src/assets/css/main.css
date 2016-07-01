@@ -415,7 +415,7 @@ input::-ms-clear{display:none;}
 }
 
 .searchArea div.isfocus input {
-    text-indent: 0;
+    /*text-indent: 0;*/
 }
 
 #functionBox .searchArea div.isfocus input {

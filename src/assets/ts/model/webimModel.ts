@@ -255,10 +255,11 @@ module webimmodel {
                     msg.content = location;
                     break;
                 case MessageType.InformationNotificationMessage:
-                    var info = new InformationNotificationMessage();
-                    info.content = SDKmsg.content.message;
-
-                    msg.content = info;
+                    // var info = new InformationNotificationMessage();
+                    // info.content = SDKmsg.content.message;
+                    // msg.content = info;
+                    msg.content = SDKmsg.content.message;
+                    msg.panelType = webimmodel.PanelType.InformationNotification;
                     break;
                 case MessageType.ContactNotificationMessage:
                     var contact = new ContactNotificationMessage();
@@ -343,7 +344,7 @@ module webimmodel {
                 msgContent = "[位置]";
             } else if (msgtype == MessageType.VoiceMessage) {
                 msgContent = "[语音]";
-            } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage) {
+            } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage || msgtype == MessageType.InformationNotificationMessage) {
                 msgContent = "[通知消息]";
             } else if (msg.objectName == "RC:GrpNtf") {
                 var data = msg.content.message.content.data.data
@@ -577,6 +578,7 @@ module webimmodel {
 
     export class UserInfo {
         constructor(public id?: string,
+            public token?: string,
             public nickName?: string,
             public portraitUri?: string,
             public phone?: string,
