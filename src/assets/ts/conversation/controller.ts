@@ -24,6 +24,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
         var pasteImgFile : any = null;
+        var groupid = targetType == webimmodel.conversationType.Private ? "0" : targetId;
         if(webimutil.Helper.os.mac){
            if(webimutil.Helper.browser.safari){
              angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
@@ -109,14 +110,14 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.tofriendinfo = function() {
             if ($scope.currentConversation.targetType == webimmodel.conversationType.Private) {
-                $state.go("main.friendinfo", { userid: targetId, groupid: "0", targetid: targetId, conversationtype: targetType });
+                $state.go("main.friendinfo", { userid: targetId, groupid: groupid, targetid: targetId, conversationtype: targetType });
             } else {
                 $state.go("main.groupinfo", { groupid: targetId, conversationtype: targetType });
             }
         }
 
         $scope.touserinfo = function(userid: string) {
-            $state.go("main.friendinfo", { userid: userid, groupid: "0", targetid: targetId, conversationtype: targetType });
+            $state.go("main.friendinfo", { userid: userid, groupid: groupid, targetid: targetId, conversationtype: targetType });
         }
 
         function sendReadReceiptMessage(messageuid: string, sendtime: number){

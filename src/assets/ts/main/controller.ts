@@ -290,6 +290,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           }, function(error) {
                               if (error.tokenError) {
                                   //token 错误。
+                                  console.log('token error');
                               }
                               //其他错误
                               //TODO:逻辑未处理

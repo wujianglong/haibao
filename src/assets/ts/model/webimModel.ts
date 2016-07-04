@@ -40,6 +40,7 @@ module webimmodel {
         setpinying(item: {
             pinyin: string;
             everychar: string;
+            firstchar: string;
         }) {
             this.pinyin = item.pinyin;
             this.everychar = item.everychar;

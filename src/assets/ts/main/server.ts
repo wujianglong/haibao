@@ -339,40 +339,13 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 for (var i = 0, length = list.length; i < length; i++) {
                     var addgroup = false;
                     var conversationitem = webimmodel.Conversation.convertToWebIM(list[i], mainDataServer.loginUser.id);
-                    // if (list[i].conversationType == RongIMLib.ConversationType.DISCUSSION && list[i].latestMessage && list[i].latestMessage.objectName == "RC:DizNtf") {
-                    //     var members = list[i].latestMessage.content.extension.split(',');
-                    //     switch (list[i].latestMessage.content.type) {
-                    //         case 1:
-                    //             var arrMember: string[] = [];
-                    //             for (var j = 0, len = members.length; j < len; j++) {
-                    //                 (function (id: string, conv: webimmodel.Conversation, arrMem: string[], len: number) {
-                    //                   mainServer.user.getInfo(id).success(function (user) {
-                    //                     arrMem.push(user.result.nickname);
-                    //                     if(arrMem.length == len){
-                    //                         conv.lastMsg = arrMem.join('、') + conv.lastMsg;
-                    //                     }
-                    //                   });
-                    //                 }(members[j], conversationitem, arrMember, len));
-                    //             }
-                    //             break;
-                    //         case 2:
-                    //         case 3:
-                    //         case 4:
-                    //             (function (id: string, conv: webimmodel.Conversation) {
-                    //                 mainServer.user.getInfo(id).success(function (user) {
-                    //                     conv.lastMsg = user.result.nickname + conv.lastMsg;
-                    //                 });
-                    //             }(members[0], conversationitem));
-                    //             break;
-                    //         default:
-                    //             break;
-                    //     }
-                    //
-                    // }
 
                     switch (list[i].conversationType) {
                         case RongIMLib.ConversationType.CHATROOM:
                             conversationitem.title = "聊天室" + list[i].targetId;
+                            if (list[i].unreadMessageCount) {
+                                allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+                            }
                             break;
                         // case RongIMLib.ConversationType.CUSTOMER_SERVICE:
                         //     conversationitem.title = "客服";
@@ -405,7 +378,10 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                           listi.conversationTitle = rep.result.name;
                                           conv.title = rep.result.name;
                                           var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
-                                          conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
+                                          var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                          var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+                                          conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+                                          conv.imgSrc = rep.result.portraitUri;
                                       });
                                   }(list[i].targetId, conversationitem, list[i]));
                                 }
@@ -459,7 +435,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                         conv.title = rep.result.nickname + "(非好友)";
                                         conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                                         var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
-                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
+                                        var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
                                         conv.imgSrc = rep.result.portraitUri;
                                     }).error(function() {
                                         conv.title = "非系统用户";
@@ -529,7 +506,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             });
                         })(conversationitem);
                     }
-                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM) continue;
+                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM  || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
                     mainDataServer.conversation.conversations.push(conversationitem);
                 }
                 if(!haveCUSTOMER_SERVICE){
@@ -572,6 +549,10 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         mainServer.group.getById(targetId).success(function(rep) {
                             item.title = rep.result.name;
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+                            var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                            var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+                            item.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+                            item.imgSrc = rep.result.portraitUri;
                         }).error(function() {
 
                         });
@@ -629,7 +610,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
           var type = msg.conversationType , id = msg.targetId;
           var hasCon = false;
-          if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage) {
+          if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
               return;
           }
           if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){

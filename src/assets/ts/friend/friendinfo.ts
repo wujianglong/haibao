@@ -43,7 +43,9 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
                 f.mobile = data.result.user.phone;
                 // f = mainDataServer.contactsList.addFriend(f);
                 f = mainDataServer.contactsList.updateOrAddFriend(f);
-                mainDataServer.conversation.updateConversationDetail(conversationtype, targetid, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
+                if(conversationtype == webimmodel.conversationType.Private){
+                  mainDataServer.conversation.updateConversationDetail(conversationtype, targetid, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
+                }
                 $scope.user.id = f.id;
                 $scope.user.nickName = f.name;
                 $scope.user.portraitUri = f.imgSrc;

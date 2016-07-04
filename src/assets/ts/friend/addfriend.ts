@@ -47,7 +47,7 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
         var groupid = $stateParams["groupid"];
         var targetid = $stateParams["targetid"];
         var conversationtype = $stateParams["conversationtype"];
-        var addfriendinfo = "我是" +  userName;
+        var addfriendinfo = "我是" +  mainDataServer.loginUser.nickName;
 
         $scope.title = userName;
         // $scope.message = '我是' + userName;
@@ -100,7 +100,7 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
         }
         if(groupid){
              var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-             addfriendinfo = "我是“" + groupname + "群”的" + userName;
+             addfriendinfo = "我是“" + groupname + "群”的" + mainDataServer.loginUser.nickName;
         }
         $scope.getInfo = function() {
             return addfriendinfo;
