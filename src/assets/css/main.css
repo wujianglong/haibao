@@ -419,7 +419,7 @@ input::-ms-clear{display:none;}
 }
 
 #functionBox .searchArea div.isfocus input {
-    text-indent: 0;
+    /*text-indent: 0;*/
     text-align: left;
 }
 

@@ -170,7 +170,8 @@ mainDire.directive("searchInput", ["$timeout", function($timeout: angular.ITimeo
             search: "&",
             showText: "@",
             delayTime: "@",
-            focus: "&"
+            focus: "&",
+            control: '='
         },
         template: '<form class="searchArea">' +
         '<div class="form-group">' +
@@ -209,6 +210,11 @@ mainDire.directive("searchInput", ["$timeout", function($timeout: angular.ITimeo
                 }, scope.delayTime);
             })
 
+            scope.internalControl = scope.control || {};
+            scope.internalControl.clear = function () {
+                scope.content = "";
+            };
+
         }
     }
 }]);
@@ -230,6 +236,13 @@ mainDire.directive("inputWrap", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attrs: angular.IAttributes) {
             scope.showplaceholder = true;
             scope.maxlength = scope.maxlength || 64;
+
+            var info = scope.$parent.getInfo();
+            if(info){
+              // angular.element(ele[0].getElementsByClassName("prompt-text")[0]).text(info);
+              scope.message = info;
+            }
+
             if (scope.loadedfocus) {
                 angular.element(ele).find("textarea")[0].focus();
                 scope.showplaceholder = true;

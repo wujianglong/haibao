@@ -398,14 +398,18 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
                             if (!group) {
                                 // addgroup = true;
-                                (function (id: string, conv: webimmodel.Conversation, listi: any) {
-                                    mainServer.group.getById(id).success(function (rep) {
-                                        listi.conversationTitle = rep.result.name;
-                                        conv.title = rep.result.name;
-                                        var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
-                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
-                                    });
-                                }(list[i].targetId, conversationitem, list[i]));
+                                if (list[i].targetId == '__system__') {
+                                }else{
+                                  (function (id: string, conv: webimmodel.Conversation, listi: any) {
+                                      mainServer.group.getById(id).success(function (rep) {
+                                          listi.conversationTitle = rep.result.name;
+                                          conv.title = rep.result.name;
+                                          var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                          conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first});
+                                      });
+                                  }(list[i].targetId, conversationitem, list[i]));
+                                }
+
                             } else {
                                 //TODO:添加最后一条消息的发送人
                                 if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
