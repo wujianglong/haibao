@@ -72,7 +72,13 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
         //查找好友
         //
+        $scope.searchControl = {};
 
+        $scope.$watch('switchbtn.isFriendList', function (newVal: boolean, oldVal: boolean) {
+            if (newVal === oldVal)
+                return;
+            $scope.searchControl.clear();
+        });
         $scope.search = function(content: string) {
             if (content.trim()) {
                 var friendList = [].concat.apply([], mainDataServer.contactsList.subgroupList.map(function(item) { return item.list }));
@@ -284,6 +290,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           }, function(error) {
                               if (error.tokenError) {
                                   //token 错误。
+                                  console.log('token error');
                               }
                               //其他错误
                               //TODO:逻辑未处理
@@ -374,6 +381,22 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         webimutil.NotificationHelper.onclick = function(n) {
             if (n.data)
                 $state.go("main.chat", { targetId: n.data.targetId, targetType: n.data.targetType });
+        }
+        function sendReadReceiptMessage(messageuid: string, sendtime: number, targetType: webimmodel.conversationType, targetId: string){
+          var messageUId = messageuid;
+          var lastMessageSendTime = sendtime;
+          var type = webimmodel.conversationType.Private;
+          // 以上 3 个属性在会话的最后一条消息中可以获得。
+          if(targetType != webimmodel.conversationType.Private){
+            return;
+          }
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
+          // var msg = RongIMLib.TextMessage.obtain('con');
+          RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
+
+          }, function(error) {
+              console.log('sendReadReceiptMessage', error.errorCode);
+          });
         }
 
         RongIMSDKServer.setOnReceiveMessageListener({
@@ -583,6 +606,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.MessageType.LocationMessage:
                     case webimmodel.MessageType.ImageMessage:
                     case webimmodel.MessageType.RichContentMessage:
+                        if ($state.is("main.chat") && !document.hidden){
+                          sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                        }
                         addmessage(msg);
                         var isself = mainDataServer.loginUser.id == msg.senderUserId;
                         if (!isself) {
@@ -758,7 +784,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
                         break;
                     case webimmodel.MessageType.InformationNotificationMessage:
-                           msg.content = data.content;
                            addmessage(msg);
                         break;
                     default:

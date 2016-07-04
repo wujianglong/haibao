@@ -39,7 +39,7 @@
           </div>
           <div class="mainBox pull-left" ng-show="!showState.isPhone||!showState.isChat">
             <div id="search-friend">
-              <search-input search="search(content)" delay-time="0" show-text="搜索"></search-input>
+              <search-input search="search(content)"  control="searchControl" delay-time="0" show-text="搜索"></search-input>
             </div>
               <div id="chatArea" class="chatArea" ng-show="!switchbtn.isFriendList&&!switchbtn.issearchList">
                 <p class="withoutFriends" style="text-align:center;margin-top: 200px;" ng-show="!mainData.conversation.conversations||!mainData.conversation.conversations.length">您还没有添加会话</p>
