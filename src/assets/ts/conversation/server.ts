@@ -217,6 +217,10 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         function addHistoryMessages(id: string, type: string, item: webimmodel.Message) {
             var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
+            var exist = checkMessageExist(id, type, item.messageUId);
+            if(exist){
+              return;
+            }
 
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
                 if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
@@ -290,12 +294,38 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             return item;
         }
 
+        function updateHistoryMessagesCache(id: string, type: string, name: string, portrait: string){
+             var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+             angular.forEach(currenthis, function(value, key){
+               if (value.panelType == webimmodel.PanelType.Message){
+                  value.senderUserName = name;
+                  value.imgSrc = portrait;
+                  //TODO 重新计算头像
+                 //  senderUserImgSrc
+               }
+             });
+        }
+        function checkMessageExist(id: string, type: string, messageuid: string){
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          var keepGoing = true;
+          angular.forEach(currenthis, function (value, key) {
+              if(keepGoing){
+                if (value.panelType == webimmodel.PanelType.Message && value.messageUId == messageuid) {
+                    keepGoing = false;
+                }
+              }
+          });
+          return !keepGoing;
+        }
+
         conversationServer.getHistory = getHistory;
         conversationServer.addHistoryMessages = addHistoryMessages;
         conversationServer.messageAddUserInfo = messageAddUserInfo;
         conversationServer.unshiftHistoryMessages = unshiftHistoryMessages;
         conversationServer.asyncConverGroupNotifition = asyncConverGroupNotifition;
         conversationServer.asyncConverDiscussionNotifition = asyncConverDiscussionNotifition;
+        conversationServer.updateHistoryMessagesCache = updateHistoryMessagesCache;
+        conversationServer.checkMessageExist = checkMessageExist;
 
         return conversationServer;
     }])
@@ -312,4 +342,6 @@ interface conversationServer {
     asyncConverDiscussionNotifition(msgsdk: any, item: any): void
     uploadFileToken: string
     initUpload(): void
+    updateHistoryMessagesCache(id: string, type:number, name: string, portrait: string): void
+    checkMessageExist(id: string, type:number, messageuid: string): boolean
 }

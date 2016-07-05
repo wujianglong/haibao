@@ -799,6 +799,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 let item = this.groupList[i];
                 if (item.id == id) {
                     item.name = name;
+                    var obj = webimutil.ChineseCharacter.convertToABC(name);
+                    var f = webimutil.ChineseCharacter.getPortraitChar(name);
+                    item.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f })
                     return true;
                 }
             }
@@ -995,7 +998,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 var f = webimutil.ChineseCharacter.getPortraitChar(member.name);
 
                 member.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-                item.memberList.push(member);
+                if(member.role == "0"){
+                  item.memberList.unshift(member);
+                }else{
+                  item.memberList.push(member);
+                }
                 item.fact = item.memberList.length;
             } else {
 

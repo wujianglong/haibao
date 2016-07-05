@@ -69,7 +69,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         conversationServer.historyMessagesCache[targetType + "_" + targetId] = conversationServer.historyMessagesCache[targetType + "_" + targetId] || [];
 
         $scope.conversationServer = conversationServer;
-
+        updateTargetDetail();
+        
         var currenthis = conversationServer.historyMessagesCache[targetType + "_" + targetId];
         if (currenthis.length == 0) {
             conversationServer.getHistory(targetId, targetType, 3).then(function(has) {
@@ -150,6 +151,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                        // f = mainDataServer.contactsList.addFriend(f);
                        f = mainDataServer.contactsList.updateOrAddFriend(f);
                        mainDataServer.conversation.updateConversationDetail(targetType, targetId, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
+                       conversationServer.updateHistoryMessagesCache(targetId, targetType, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
                    })
 
                } else if (isself)
@@ -169,7 +171,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             }
         }
-        updateTargetDetail();
 
         function packmysend(msg: any, msgType: string) {
             var msgouter = new RongIMLib.Message();
@@ -220,12 +221,23 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 
             }, function(error) {
-                if(error.errorCode == 405){
-                  var msg = webimutil.Helper.cloneObject(error.message);
-                  msg.content = "您的消息已经发出，但被对方拒收";
-                  msg.panelType = webimmodel.PanelType.InformationNotification;
-                  addmessage(msg);
-                }
+              var content = '';
+              switch (error.errorCode) {
+                case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                   content = "您的消息已经发出，但被对方拒收";
+                   break;
+                case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                   content = "你不在该群组中";
+                   break;
+                default:
+
+              }
+              if(content){
+                var msg = webimutil.Helper.cloneObject(error.message);
+                msg.content = content;
+                msg.panelType = webimmodel.PanelType.InformationNotification;
+                addmessage(msg);
+              }
             });
 
             var msgouter = packmysend(msg, webimmodel.MessageType.TextMessage);
