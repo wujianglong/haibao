@@ -28,6 +28,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         if(groupid){
           $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
         }
+        $scope.selectMember = function(item: webimmodel.Member) {
+             $scope.atShow = false;
+             $scope.currentConversation.draftMsg = $scope.currentConversation.draftMsg + item.name + ' ';
+        }
         if(webimutil.Helper.os.mac){
            if(webimutil.Helper.browser.safari){
              angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
