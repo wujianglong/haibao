@@ -3,6 +3,85 @@
 
 var conversationDire = angular.module("webim.conversation.directive", ["webim.main.server", "webim.conversation.server"]);
 
+conversationDire.directive('atshowDire', function () {
+    return {
+        restrict: 'A',
+        require: '?ngModel',
+        link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
+            scope.atShow = false;
+            element.bind("keypress", function (e) {
+                 var keyCode = e.keyCode;
+                 if(keyCode == 64){
+                   scope.atShow = true;
+                   $('div.arobase').css('left', '150px');
+                 }else{
+                   scope.atShow = false;
+                 }
+            });
+        }
+    };
+});
+
+conversationDire.directive("tagInput",function() {
+    return {
+        restrict: "E",
+        template: '<div class="input-tag" data-ng-repeat=\"tag in tagArray()\">{{tag}}</div>',
+        scope: {
+          inputTags: '=taglist',
+          autocomplete: '=autocomplete'
+        }, link: function($scope: any, ele: angular.IRootElementService, attrs: any) {
+             $scope.defaultWidth = 200;
+             if($scope.autocomplete){
+
+             }
+             $scope.tagArray = function() {
+                if ($scope.inputTags === undefined) {
+                  return [];
+                }
+                return $scope.inputTags.split(',').filter(function(tag: string) {
+                  return tag !== "";
+                });
+            };
+
+            $scope.addTag = function() {
+              var tagArray: string[];
+              if ($scope.tagText.length === 0) {
+                return;
+              }
+              tagArray = $scope.tagArray();
+              tagArray.push($scope.tagText);
+              $scope.inputTags = tagArray.join(',');
+              return $scope.tagText = "";
+            };
+
+            $scope.deleteTag = function(key: number) {
+              var tagArray: string[];
+              tagArray = $scope.tagArray();
+              if (tagArray.length > 0 && $scope.tagText.length === 0 && key === undefined) {
+                tagArray.pop();
+              } else {
+                if (key !== undefined) {
+                  tagArray.splice(key, 1);
+                }
+              }
+              return $scope.inputTags = tagArray.join(',');
+            };
+
+            ele.bind("keydown", function(e) {
+             var key: number;
+             key = e.which;
+             if (key === 9 || key === 13) {
+               e.preventDefault();
+             }
+             if (key === 8) {
+               return $scope.$apply('deleteTag()');
+             }
+           });
+
+        }
+    }
+});
+
 conversationDire.directive("conversationItem", ["$timeout", function($timeout: angular.ITimeoutService) {
     return {
         restrict: "EA",

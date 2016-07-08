@@ -69,6 +69,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                $state.go("main.chat", { targetId: id, targetType: type }, { location: "replace" });
              }
         }
+        $scope.selectMember = function(item: webimmodel.Member){
+          $scope.atShow = false;
+        }
 
         //查找好友
         //

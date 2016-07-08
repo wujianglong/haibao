@@ -217,9 +217,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         function addHistoryMessages(id: string, type: string, item: webimmodel.Message) {
             var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
-            var exist = checkMessageExist(id, type, item.messageUId);
-            if(exist){
-              return;
+            var exist = false;
+            if(item.senderUserId != mainDataServer.loginUser.id){
+              exist = checkMessageExist(id, type, item.messageUId);
+              if (exist) {
+                  return;
+              }
             }
 
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {

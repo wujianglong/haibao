@@ -139,6 +139,10 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
             url: "/groupinfo/:groupid/:conversationtype",
             templateUrl: "assets/views/groupinfo.html",
             controller: "groupinfoController"
+        }).state("main.groupbulletin", {
+            url: "/groupbulletin/:groupid",
+            templateUrl: "assets/views/groupbulletin.html",
+            controller: "groupbulletinController"
         }).state("main.userinfo", {
             url: "/userinfo",
             templateUrl: "assets/views/userinfo.html",

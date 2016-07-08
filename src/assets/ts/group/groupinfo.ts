@@ -82,6 +82,9 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
         $scope.toChat = function() {
             $state.go("main.chat", { targetId: $scope.groupInfo.id, targetType: webimmodel.conversationType.Group }, { location: "replace" });
         }
+        $scope.toBulletin = function() {
+            $state.go("main.groupbulletin", { groupid: groupid });
+        }
         $scope.addmember = function() {
             $state.go("main.groupaddmember", { iscreate: "false", idorname: $scope.groupInfo.id })
         }
@@ -110,6 +113,85 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
             })
         }
 
+    }]);
+
+groupInfo.controller("groupbulletinController", ["$scope", "$state", "$stateParams", "mainServer", "mainDataServer", "RongIMSDKServer", "conversationServer",
+    function($scope: any, $state: angular.ui.IStateService, $stateParams: angular.ui.IStateParamsService, mainServer: mainServer, mainDataServer: mainDataServer, RongIMSDKServer: RongIMSDKServer, conversationServer: conversationServer) {
+
+        var groupid = $stateParams["groupid"], targettype = RongIMLib.ConversationType.GROUP;
+        $scope.isActive = false;
+        $scope.showDialog = false;
+        $scope.groupbulletinbtn = function() {
+          $scope.showDialog = true;
+          if (!$scope.message) {
+              webimutil.Helper.alertMessage.error("消息不可为空！", 2);
+              return;
+          }
+          if (!groupid) {
+              webimutil.Helper.alertMessage.error("群信息不可为空！", 2);
+              return;
+          }
+        };
+        $scope.back = function() {
+            $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
+        }
+        $scope.cancelbtn = function() {
+            $scope.showDialog = false;
+            $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
+        }
+        $scope.publicbtn = function() {
+            $scope.showDialog = false;
+            var msg = RongIMLib.TextMessage.obtain($scope.message);
+            var mentioneds = new RongIMLib.MentionedInfo();
+            mentioneds.type = 1;
+            mentioneds.userList = [""];
+            msg.mentionedInfo = mentioneds;
+
+            RongIMSDKServer.sendMessage(targettype, groupid, msg).then(function (data) {
+               webimutil.Helper.alertMessage.success("发布成功", 2);
+               $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
+            }, function (error) {
+                var content = '';
+                switch (error.errorCode) {
+                    case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                        content = "您的消息已经发出，但被对方拒收";
+                        break;
+                    case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                        content = "你不在该群组中";
+                        break;
+                    default:
+                }
+                if (content) {
+                    var msg = webimutil.Helper.cloneObject(error.message);
+                    msg.content = content;
+                    msg.panelType = webimmodel.PanelType.InformationNotification;
+                }
+            });
+            var msgouter = packmysend(msg, webimmodel.MessageType.TextMessage);
+            conversationServer.addHistoryMessages(groupid, targettype, webimmodel.Message.convertMsg(msgouter));
+            $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msgouter), true, true);
+        }
+        $scope.$watch('message', function(newValue: string, oldValue: string){
+            if(newValue === oldValue){
+                return;
+            }
+            if(newValue.length > 0){
+              $scope.isActive = true;
+            }else{
+              $scope.isActive = false;
+            }
+        });
+        function packmysend(msg: any, msgType: string) {
+            var msgouter = new RongIMLib.Message();
+            msgouter.content = msg;
+            msgouter.conversationType = targettype;
+            msgouter.targetId = groupid;
+            msgouter.sentTime = (new Date()).getTime() - RongIMLib.RongIMClient.getInstance().getDeltaTime();
+            msgouter.messageDirection = RongIMLib.MessageDirection.SEND;
+            msgouter.messageType = msgType;
+            msgouter.senderUserId = mainDataServer.loginUser.id;
+            return msgouter;
+        }
     }]);
 
 groupInfo.directive("member", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
@@ -152,3 +234,60 @@ groupInfo.directive("member", ["$state", "mainDataServer", function($state: angu
         }
     }
 }])
+
+// groupInfo.directive("groupBulletin", [function() {
+//     return {
+//         restrict: "E",
+//         scope: { message: "=", maxlength: "=", loadedfocus: "@" },
+//         template: '<div class="input-wrap">' +
+//         '<div class="textarea-wrap" style="height: 140px;">' +
+//         '<div class="textarea-bg" style="display: block;" ng-show="showplaceholder">' +
+//         '<span class="prompt-text">请编辑群公告</span>' +
+//         '</div>' +
+//         '<textarea class="joinGroupInfo textarea" ng-model="message"></textarea>' +
+//         '</div>' +
+//         // '<i class="iconfont-smile"></i>' +
+//         '<div class="wordsLen"><span class="word_start">{{message.length}}</span>/{{maxlength}}</div>' +
+//         '</div>',
+//         link: function(scope: any, ele: angular.IRootElementService, attrs: angular.IAttributes) {
+//             scope.showplaceholder = true;
+//             scope.maxlength = scope.maxlength || 64;
+//             if (scope.loadedfocus) {
+//                 angular.element(ele).find("textarea")[0].focus();
+//                 scope.showplaceholder = true;
+//             }
+//
+//             ele.find("textarea").bind("focus", function() {
+//                 // scope.showplaceholder = false;
+//                 // scope.$apply();
+//             });
+//
+//             ele.find("textarea").bind("blur", function() {
+//                 if (!scope.message || !scope.message.length) {
+//                     scope.showplaceholder = true;
+//                 }
+//                 scope.$apply();
+//             });
+//
+//             ele.find("textarea").bind('input propertychange', function () {
+//               if (!scope.message || !scope.message.length) {
+//                   scope.showplaceholder = true;
+//               }
+//               else{
+//                  scope.showplaceholder = false;
+//               }
+//               scope.$apply();
+//             });
+//
+//             scope.message = scope.message || "";
+//             if(scope.message){
+//               scope.showplaceholder = false;
+//             }
+//             scope.$watch("message", function(newVal: any, oldVal: any) {
+//                 if (newVal.length > scope.maxlength) {
+//                     scope.message = newVal.substring(0, scope.maxlength);
+//                 }
+//             });
+//         }
+//     }
+// }]);

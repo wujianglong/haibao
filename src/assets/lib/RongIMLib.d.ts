@@ -1734,6 +1734,7 @@ declare module RongIMLib {
         extra: string;
         content: string;
         messageName: string;
+        mentionedInfo: RongIMLib.MentionedInfo;
         constructor(message: any);
         static obtain(text: string): TextMessage;
         encode(): string;
@@ -1823,6 +1824,12 @@ declare module RongIMLib {
 
 }
 declare module RongIMLib {
+    class MentionedInfo {
+        type: number;
+        userList: string[];
+        mentionedContent: string;
+        constructor(type?: number, userList?: string[], mentionedContent?: string);
+    }
     class Conversation {
         conversationTitle: string;
         conversationType: ConversationType;

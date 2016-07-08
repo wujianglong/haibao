@@ -25,6 +25,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var conversation = {};
         var pasteImgFile : any = null;
         var groupid = targetType == webimmodel.conversationType.Private ? "0" : targetId;
+        if(groupid){
+          $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
+        }
         if(webimutil.Helper.os.mac){
            if(webimutil.Helper.browser.safari){
              angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
@@ -70,7 +73,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.conversationServer = conversationServer;
         updateTargetDetail();
-        
+
         var currenthis = conversationServer.historyMessagesCache[targetType + "_" + targetId];
         if (currenthis.length == 0) {
             conversationServer.getHistory(targetId, targetType, 3).then(function(has) {
@@ -217,6 +220,13 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             //发送消息
             var msg = RongIMLib.TextMessage.obtain(con);
+            var atFlag = false;
+            if(atFlag){
+              var mentioneds = new RongIMLib.MentionedInfo();
+              mentioneds.type = 2;  // 1: 全部 2: 部分
+              mentioneds.userList = ["Ts6LljrFY"];
+              msg.mentionedInfo = mentioneds;
+            }
 
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 
