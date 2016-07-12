@@ -8,6 +8,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
         var conversationServer = <any>{};
 
+        conversationServer.atMessagesCache = <any>{};
         conversationServer.historyMessagesCache = <any>{};
         conversationServer.conversationMessageList = <any>[];
         conversationServer.conversationMessageListShow = <any>[];
@@ -216,7 +217,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         }
 
         function addHistoryMessages(id: string, type: string, item: webimmodel.Message) {
-            var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
+            var arr = conversationServer.historyMessagesCache[type + "_" + id] || [];
             var exist = false;
             if(item.senderUserId != mainDataServer.loginUser.id){
               exist = checkMessageExist(id, type, item.messageUId);
@@ -240,6 +241,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             if (type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
               conversationServer.conversationMessageListShow.push(item);
             }
+        }
+
+        function addAtMessage(id: string, type: string, item: webimmodel.Message){
+          var arr = conversationServer.atMessagesCache[type + "_" + id] || [];
+          var atMsg = {"messageUId": item.messageUId, "mentionedInfo": item.mentionedInfo};
+          arr.push(atMsg);
         }
 
         //消息里没有用户信息，要去本地的好友列表里查找
@@ -329,11 +336,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.asyncConverDiscussionNotifition = asyncConverDiscussionNotifition;
         conversationServer.updateHistoryMessagesCache = updateHistoryMessagesCache;
         conversationServer.checkMessageExist = checkMessageExist;
+        conversationServer.addAtMessage = addAtMessage;
 
         return conversationServer;
     }])
 
 interface conversationServer {
+    atMessagesCache: any
     historyMessagesCache: any
     conversationMessageList: any[]
     conversationMessageListShow: any[]
@@ -347,4 +356,5 @@ interface conversationServer {
     initUpload(): void
     updateHistoryMessagesCache(id: string, type:number, name: string, portrait: string): void
     checkMessageExist(id: string, type:number, messageuid: string): boolean
+    addAtMessage(id: string, type: number, item: webimmodel.Message): void
 }

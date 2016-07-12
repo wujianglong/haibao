@@ -613,6 +613,24 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                         }
                         addmessage(msg);
+                        //TODO 判断是@消息时添加
+                        if(msg.mentionedInfo){
+                          var isAtMe = false;
+                          if(msg.mentionedInfo.type == webimmodel.AtTarget.All){
+                            isAtMe = true;
+                          }
+                          if(msg.mentionedInfo.type == webimmodel.AtTarget.Part){
+                            for(var j = 0; j < msg.mentionedInfo.userList.length; j++){
+                               if(msg.mentionedInfo.userList[j] == mainDataServer.loginUser.id){
+                                 isAtMe = true;
+                               }
+                            }
+                          }
+                          if(isAtMe){
+                            conversationServer.addAtMessage(msg.targetId, msg.conversationType, msg);
+                          }
+                        }
+
                         var isself = mainDataServer.loginUser.id == msg.senderUserId;
                         if (!isself) {
                           if(msg.senderUserName){

@@ -58,6 +58,7 @@
             <span class="MessageForm-status ">正在重新连接……</span> -->
         </div>
         <div class="MessageForm-appearance active">
+            <div id="TestInput"></div>
             <pre  id="message-content" style='background-color: rgba(0,0,0,0);
             font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
                 white-space: pre-wrap;'
@@ -66,7 +67,7 @@
             <a class="sendBtn" href="javascript:void 0" ng-click="sendBtn()">发送</a>
             <div class="arobase" ng-show="atShow">
               <ul>
-                  <li ng-repeat="item in groupInfo.memberList" ng-click="selectMember(item)">
+                  <li ng-repeat="item in showGroupList" ng-click="selectMember(item)">
                       <img ng-src="{{item.imgSrc||'assets/img/barBg.png'}}">
                       <span class="involvesName">{{item.name}}</span>
                   </li>

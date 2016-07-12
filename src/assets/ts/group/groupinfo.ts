@@ -119,10 +119,15 @@ groupInfo.controller("groupbulletinController", ["$scope", "$state", "$statePara
     function($scope: any, $state: angular.ui.IStateService, $stateParams: angular.ui.IStateParamsService, mainServer: mainServer, mainDataServer: mainDataServer, RongIMSDKServer: RongIMSDKServer, conversationServer: conversationServer) {
 
         var groupid = $stateParams["groupid"], targettype = RongIMLib.ConversationType.GROUP;
+        // var picBackground = document.getElementsByClassName("previewPicLayer")[0];
+        var picBackground = $('div.previewPicLayer');
         $scope.isActive = false;
-        $scope.showDialog = false;
+        $scope.showDialog1 = false;
+        $scope.showDialog2 = false;
+
         $scope.groupbulletinbtn = function() {
-          $scope.showDialog = true;
+          $scope.showDialog1 = true;
+          picBackground.css('visibility','visible');
           if (!$scope.message) {
               webimutil.Helper.alertMessage.error("消息不可为空！", 2);
               return;
@@ -136,11 +141,24 @@ groupInfo.controller("groupbulletinController", ["$scope", "$state", "$statePara
             $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
         }
         $scope.cancelbtn = function() {
-            $scope.showDialog = false;
+            $scope.showDialog1 = false;
+            $scope.showDialog2 = true;
+            // picBackground.css('visibility','hidden');
+        }
+        $scope.cancelbtn2 = function() {
+            $scope.showDialog1 = false;
+            $scope.showDialog2 = false;
+            picBackground.css('visibility','hidden');
+        }
+        $scope.quitbtn = function() {
+            $scope.showDialog1 = false;
+            $scope.showDialog2 = false;
+            picBackground.css('visibility','hidden');
             $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
         }
         $scope.publicbtn = function() {
-            $scope.showDialog = false;
+            $scope.showDialog1 = false;
+            picBackground.css('visibility','hidden');
             var msg = RongIMLib.TextMessage.obtain($scope.message);
             var mentioneds = new RongIMLib.MentionedInfo();
             mentioneds.type = 1;

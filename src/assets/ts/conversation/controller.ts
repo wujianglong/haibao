@@ -15,8 +15,8 @@ function adjustScrollbars() {
     ele.scrollTop = ele.scrollHeight;
 }
 
-conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http", "$timeout",
-    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService, $timeout: angular.ITimeoutService) {
+conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http", "$timeout", "$location", "$anchorScroll",
+    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService, $timeout: angular.ITimeoutService, $location: angular.ILocationService, $anchorScroll: angular.IAnchorScrollService) {
 
         var targetId = $state.params["targetId"];
         var targetType = Number($state.params["targetType"]);
@@ -25,13 +25,116 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var conversation = {};
         var pasteImgFile : any = null;
         var groupid = targetType == webimmodel.conversationType.Private ? "0" : targetId;
-        if(groupid){
+        var atArray : string[]  = [];  //TODO 删除时 atArray 同步删除
+        var isAtScroll = false;
+        if (groupid != "0") {
           $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
+          $scope.showGroupList = webimutil.Helper.cloneObject($scope.groupInfo.memberList);
         }
         $scope.selectMember = function(item: webimmodel.Member) {
+             var obj = document.getElementById("message-content");
              $scope.atShow = false;
-             $scope.currentConversation.draftMsg = $scope.currentConversation.draftMsg + item.name + ' ';
+             $scope.currentConversation.draftMsg = obj.innerHTML + '<i class="at_function" id="@_' + item.id + '">' + item.name + '</i>' + ' ';
+             atArray.push(item.id);
+             var obj = document.getElementById("message-content");
+             setTimeout(function () {
+                 $scope.setFocus(obj);
+             }, 0);
         }
+        $scope.searchfriend = function(str: string) {
+            if(!$scope.groupInfo.memberList){
+              return
+            }
+            if (str == "") {
+                $scope.showGroupList = webimutil.Helper.cloneObject($scope.groupInfo.memberList);
+            } else {
+                var list = mainDataServer.contactsList.find(str, $scope.groupInfo.memberList);
+                $scope.showGroupList = webimutil.Helper.cloneObject(list);
+            }
+        }
+        if (groupid) {
+          $scope.$watch('searchStr', function (newVal: string, oldVal: string) {
+              if (newVal === oldVal)
+                  return;
+              $scope.searchfriend(newVal);
+          });
+        }
+
+        $scope.setFocus = function(el: any) {
+            el.focus();
+            var range: any;
+            if (typeof window.getSelection != "undefined"
+            && typeof document.createRange != "undefined") {
+              range = document.createRange();
+              range.selectNodeContents(el);
+              range.collapse(false);
+              var sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } else if (typeof document.body.createTextRange != "undefined") {
+              range = document.selection.createRange();
+              this.last = range;
+              range.moveToElementText(el);
+              range.select();
+            }
+        }　
+
+        // function getContentEditableCaretPosition(ctx, selectedNodePosition) {
+        //     var markerEl, range, markerTextChar = "\ufeff",
+        //     markerId = "sel_" + (new Date).getTime() + "_" + Math.random().toString().substr(2),
+        //     sel = getWindowSelection(ctx),
+        //     prevRange = sel.getRangeAt(0);
+        //     range = getDocument(ctx).createRange(),
+        //     range.setStart(sel.anchorNode, selectedNodePosition),
+        //     range.setEnd(sel.anchorNode, selectedNodePosition),
+        //     range.collapse(!1),
+        //     markerEl = getDocument(ctx).createElement("span"),
+        //     markerEl.id = markerId,
+        //     markerEl.appendChild(getDocument(ctx).createTextNode(markerTextChar)),
+        //     range.insertNode(markerEl),
+        //     sel.removeAllRanges(),
+        //     sel.addRange(prevRange);
+        //     var coordinates = {
+        //         left: 0,
+        //         top: markerEl.offsetHeight
+        //     };
+        //     return localToGlobalCoordinates(ctx, markerEl, coordinates), markerEl.parentNode.removeChild(markerEl), coordinates
+        // }
+        //
+        // function getWindowSelection(ctx) {
+        //     return ctx ? ctx.iframe.contentWindow.getSelection() : window.getSelection()
+        // }
+        // function getDocument(ctx) {
+        //     return ctx ? ctx.iframe.contentWindow.document : document
+        // }
+        //
+        // function localToGlobalCoordinates(ctx, element, coordinates) {
+        //     for (var obj = element, iframe = ctx ? ctx.iframe : null; obj;)
+        //         coordinates.left += obj.offsetLeft,
+        //         coordinates.top += obj.offsetTop,
+        //         obj !== getDocument().body && (coordinates.top -= obj.scrollTop, coordinates.left -= obj.scrollLeft),
+        //         obj = obj.offsetParent,
+        //         !obj && iframe && (obj = iframe, iframe = null)
+        // }
+
+        // $scope.getCaretCharacterOffsetWithin = function (element: any) {
+        //     var caretOffset = 0;
+        //     if (typeof window.getSelection != "undefined") {
+        //         var range = window.getSelection().getRangeAt(0);
+        //         var preCaretRange = range.cloneRange();
+        //         preCaretRange.selectNodeContents(element);
+        //         preCaretRange.setEnd(range.endContainer, range.endOffset);
+        //         caretOffset = preCaretRange.toString().length;
+        //     } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+        //         var textRange = document.selection.createRange();
+        //         var preCaretTextRange = document.body.createTextRange();
+        //         preCaretTextRange.moveToElementText(element);
+        //         preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        //         caretOffset = preCaretTextRange.text.length;
+        //     }
+        //     return caretOffset;
+        // }
+
         if(webimutil.Helper.os.mac){
            if(webimutil.Helper.browser.safari){
              angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
@@ -49,6 +152,53 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               $scope.showCutScreen = true;
           }
         }
+
+        $scope.scrollTo = function(id: string) {
+              $location.hash(id);
+              $anchorScroll();
+        }
+        //离线消息中搜at
+        // function findAtInCache(){
+        //    var currentmsg = conversationServer.historyMessagesCache[targetType + "_" + targetId];
+        //    if(!currentmsg){
+        //      return null;
+        //    }
+        //    for(var i=0; i< currentmsg.length; i++){
+        //       if(currentmsg[i].mentionedInfo){
+        //           var isAtMe = false;
+        //           if(currentmsg[i].mentionedInfo.type == webimmodel.AtTarget.All){
+        //             isAtMe = true;
+        //           }
+        //           if(currentmsg[i].mentionedInfo.type == webimmodel.AtTarget.Part){
+        //             for(var j = 0; j < currentmsg[i].mentionedInfo.userList.length; j++){
+        //                if(currentmsg[i].mentionedInfo.userList[j] == mainDataServer.loginUser.id){
+        //                  isAtMe = true;
+        //                }
+        //             }
+        //           }
+        //           if(isAtMe){
+        //             return currentmsg[i].messageUId;
+        //           }
+        //       }
+        //    }
+        //    return null;
+        // }
+
+        var atmsgs = conversationServer.atMessagesCache[targetType + "_" + targetId];
+        if (atmsgs.length > 0) {
+          setTimeout(function () {
+              $scope.scrollTo(atmsgs[0].messageUId);
+          }, 0);
+          atmsgs.length = 0;
+        }
+        // var msgid = findAtInCache();
+        // //TODO 如果是会话有未读@消息进来的,就滚动
+        // if(msgid){
+        //   // $scope.scrollTo(msgid);
+        //   setTimeout(function () {
+        //       $scope.scrollTo(msgid);
+        //   }, 0);
+        // }
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
                 var conv = mainDataServer.conversation.createConversation(targetType, targetId);
@@ -225,15 +375,18 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             //发送消息
             var msg = RongIMLib.TextMessage.obtain(con);
             var atFlag = false;
+            if(con.indexOf('@') > -1){
+              atFlag = true;
+            }
             if(atFlag){
               var mentioneds = new RongIMLib.MentionedInfo();
               mentioneds.type = 2;  // 1: 全部 2: 部分
-              mentioneds.userList = ["Ts6LljrFY"];
+              mentioneds.userList = atArray;
               msg.mentionedInfo = mentioneds;
             }
 
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
-
+               atArray = [];
             }, function(error) {
               var content = '';
               switch (error.errorCode) {
@@ -409,6 +562,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 $scope.$apply(function() {
                     $scope.showemoji = false;
                 });
+            }
+            if($scope.atShow){
+              $scope.$apply(function () {
+                $scope.atShow = false;
+              });
             }
         });
         // $scope.emojiList = RongIMLib.Expression.getAllExpression(60, 0);

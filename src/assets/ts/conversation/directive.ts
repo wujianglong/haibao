@@ -9,14 +9,49 @@ conversationDire.directive('atshowDire', function () {
         require: '?ngModel',
         link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
             scope.atShow = false;
-            element.bind("keypress", function (e) {
+            element.bind("keydown", function (e) {
                  var keyCode = e.keyCode;
-                 if(keyCode == 64){
+                //  e = e || event;
+             　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
                    scope.atShow = true;
-                   $('div.arobase').css('left', '150px');
-                 }else{
-                   scope.atShow = false;
-                 }
+                   scope.searchStr = '';
+                  //  $('div.arobase').css('left', '150px');
+                  var obj = document.getElementById("message-content");
+                  var test = document.getElementById("TestInput");
+                  // var aa = scope.getCaretCharacterOffsetWithin(obj);
+                  var styleObj = window.getComputedStyle(obj, null);
+                  var lineWidth = obj.clientWidth - 80;
+                  var sel = document.getSelection(),
+                      text = obj.textContent.slice(0, sel.focusOffset);
+                  test.style.visibility = 'visible';
+                  test.innerText = text;
+                  test.style.fontSize = styleObj.getPropertyValue('font-size');
+                  test.style.fontFamily = styleObj.getPropertyValue('font-family');
+                  test.style.visibility = 'hidden';
+                  var height = (test.clientHeight + 1) + "px";
+                  var width = (test.clientWidth + 1) + "px";
+                  var actWidth = (test.clientWidth + 1) % lineWidth;
+                  var lineNum = (test.clientWidth + 1) / lineWidth;
+                  var atDivHeight = scope.showGroupList.length > 6 ? 36*6 : 36*scope.showGroupList.length;
+                  $('div.arobase').css('top', $('div.arobase').position().top - atDivHeight + lineNum * test.clientHeight);
+                  $('div.arobase').css('left', actWidth);
+                }
+                else{
+                   if(!scope.atShow){
+                     return;
+                   }
+                   if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
+                      scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+                   }
+                   else if(keyCode == 8 && scope.searchStr){
+                     if(scope.searchStr.length > 0){
+                       scope.searchStr = scope.searchStr.substr(0, scope.searchStr.length - 1);
+                     }
+                   }
+                   else{
+                     scope.atShow = false;
+                   }
+                }
             });
         }
     };
@@ -187,7 +222,7 @@ conversationDire.directive('contenteditableDire', function() {
             webimutil.Helper.browser.msie ? element.bind("keyup paste", read) : element.bind("input", read);
 
             function read() {
-                var html = element.html();
+                var html = element.text();
                 html = html.replace(/^<br>$/i, "");
                 html = html.replace(/<br>/gi, "\n");
                 html = replacemy(html);
@@ -330,7 +365,7 @@ conversationDire.directive("textMessage", [function() {
         scope: {
             item: "="
         },
-        template: '<div class="">' +
+        template: '<div class="" id="{{itemid}}">' +
         '<div class="Message-text">' +
         '<pre class="Message-entry" ng-bind-html="content|trustHtml">' +
         '</pre>' +
@@ -340,6 +375,7 @@ conversationDire.directive("textMessage", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var EMailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/gi
             var EMailArr = <string[]>[];
+            scope.itemid = scope.$parent.messageUId;
             scope.content = scope.item.content.replace(EMailReg, function(str: any) {
                 EMailArr.push(str);
                 return '[email`' + (EMailArr.length - 1) + ']';

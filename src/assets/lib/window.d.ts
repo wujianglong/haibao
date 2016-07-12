@@ -42,6 +42,10 @@ interface Document {
     selection: any
 }
 
+interface HTMLElement{
+  createTextRange:any;
+}
+
 declare var window: Window
 
 interface Notification extends Function {

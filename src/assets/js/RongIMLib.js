@@ -1682,7 +1682,7 @@ var RongIMLib;
                 isUseWebSQLProvider: false,
                 otherDevice: false,
                 custStore: {},
-                converStore: {},
+                converStore: { latestMessage: {} },
                 voipStategy: 0
             };
             RongIMClient._cookieHelper = RongIMLib.CheckParam.getInstance().checkCookieDisable() ? new RongIMLib.MemeoryProvider() : new RongIMLib.CookieProvider();
@@ -2126,8 +2126,8 @@ var RongIMLib;
          * @param  {string}                  pushContent      []
          * @param  {string}                  pushData         []
          */
-        RongIMClient.prototype.sendMessage = function (conversationType, targetId, messageContent, sendCallback) {
-            RongIMLib.CheckParam.getInstance().check(["number", "string", "object", "object"], "sendMessage");
+        RongIMClient.prototype.sendMessage = function (conversationType, targetId, messageContent, sendCallback, mentiondMsg) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "object", "object", "undefined|object|null|global|boolean"], "sendMessage");
             if (!RongIMLib.Bridge._client.channel) {
                 sendCallback.onError(RongIMLib.ErrorCode.RC_NET_UNAVAILABLE, null);
                 return;
@@ -2137,7 +2137,12 @@ var RongIMLib;
                 throw new Error("connect is timeout! postion:sendMessage");
             }
             var modules = new Modules.UpStreamMessage();
-            modules.setSessionId(RongIMClient.MessageParams[messageContent.messageName].msgTag.getMessageTag());
+            if (mentiondMsg) {
+                modules.setSessionId(7);
+            }
+            else {
+                modules.setSessionId(RongIMClient.MessageParams[messageContent.messageName].msgTag.getMessageTag());
+            }
             modules.setClassname(RongIMClient.MessageParams[messageContent.messageName].objectName);
             modules.setContent(messageContent.encode());
             var content = modules.toArrayBuffer();
@@ -4040,7 +4045,7 @@ var RongIMLib;
                         if (!con) {
                             con = RongIMLib.RongIMClient.getInstance().createConversation(message.conversationType, message.targetId, "");
                         }
-                        if (message.messageDirection == RongIMLib.MessageDirection.RECEIVE) {
+                        if (message.messageDirection == RongIMLib.MessageDirection.RECEIVE && (entity.status & 64) == 64) {
                             var mentioneds = RongIMLib.RongIMClient._cookieHelper.getItem("mentioneds_" + Bridge._client.userId);
                             var key = message.conversationType + '_' + message.targetId, info = {};
                             if (message.content && message.content.mentionedInfo) {
@@ -7005,10 +7010,10 @@ var RongIMLib;
     })();
     RongIMLib.PublicServiceProfile = PublicServiceProfile;
     var UserInfo = (function () {
-        function UserInfo(userId, name, icon) {
+        function UserInfo(userId, name, portraitUri) {
             this.userId = userId;
             this.name = name;
-            this.icon = icon;
+            this.portraitUri = portraitUri;
         }
         return UserInfo;
     })();

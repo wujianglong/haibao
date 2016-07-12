@@ -15,6 +15,8 @@ module webimmodel {
         public imgSrc: string;
         public pinyin: string;
         public everychar: string;
+        public mentionedInfo: RongIMLib.MentionedInfo;
+        public atStr: string;
         constructor(item?: {
             title: string,
             targetId: string,
@@ -113,6 +115,10 @@ module webimmodel {
         Other = 0
     }
 
+    export enum AtTarget {
+        All = 1, Part = 2
+    }
+
     export var MessageType = {
         DiscussionNotificationMessage: "DiscussionNotificationMessage",
         TextMessage: "TextMessage",
@@ -182,6 +188,7 @@ module webimmodel {
         senderUserName: string
         senderUserImgSrc: string
         imgSrc: string
+        mentionedInfo: any
 
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);
@@ -211,8 +218,8 @@ module webimmodel {
                         content = RongIMLib.RongIMEmoji.emojiToHTML(content);
                     }
                     texmsg.content = content;
-
                     msg.content = texmsg;
+                    msg.mentionedInfo = SDKmsg.content.mentionedInfo;
                     break;
                 case MessageType.ImageMessage:
                     var image = new ImageMessage();

@@ -2,6 +2,15 @@
 /*
 	------------Reset--------------
 */
+#TestInput
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+    white-space: nowrap; /* Thanks to Herb Caudill comment */
+}
+
 [contenteditable=true]:empty:before{
   content: attr(placeholder);
   display: block; /* For Firefox */
@@ -3076,7 +3085,7 @@ input::-ms-clear{display:none;}
 }
 .arobase ul li span.involvesName{
     line-height: 26px;
-    max-width: 92px;
+    max-width: 77px;
     font-size: 12px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -3093,7 +3102,7 @@ input::-ms-clear{display:none;}
 }
 
 /*             有人at         */
-.chat_item .info .msg .ng-binding .at_show{
+.chat_item .info .msg .at_show{
     color: #cc3333;
 }
 

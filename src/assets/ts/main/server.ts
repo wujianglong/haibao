@@ -356,6 +356,23 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                   } else {
                       //TODO:添加最后一条消息的发送人
                       if (conversationitem.lastMsg && item.latestMessage.objectName != "RC:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
+                          var atStr = '';
+                          if(item.mentionedMsg){
+                             conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
+                             var atType = conversationitem.mentionedInfo.type;
+                             var atUsers = conversationitem.mentionedInfo.userList;
+                             if(atType == webimmodel.AtTarget.All){
+                                atStr = "[@所有人]";
+                             }else if(atType == webimmodel.AtTarget.Part){
+                                  for(var i = 0; i < atUsers.length; i++){
+                                      if(atUsers[i] == mainDataServer.loginUser.id){
+                                         atStr = "[有人@我]";
+                                         break;
+                                      }
+                                  }
+                             }
+                             conversationitem.atStr = atStr;
+                          }
                           var member = mainDataServer.contactsList.getGroupMember(group.id, item.latestMessage.senderUserId);
                           if (member) {
                               conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
@@ -685,6 +702,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               isfirst = true;
                               mainDataServer.conversation.conversations[i].lastMsg = result.item.lastMsg;
                               mainDataServer.conversation.conversations[i].unReadNum = result.item.unReadNum;
+                              mainDataServer.conversation.conversations[i].atStr = result.item.atStr;
                             }
                             else{
                               mainDataServer.conversation.conversations.splice(i, 1);
@@ -696,6 +714,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                        RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                        totalUnreadCount = totalUnreadCount - oldUnread;
                        result.item.unReadNum = 0;
+                       result.item.atStr = '';
                    }else{
                      if(msg.senderUserId == mainDataServer.loginUser.id){}
                      else{
@@ -1314,7 +1333,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
                 }
                 console.log('发送失败:' + info);
             }
-        });
+        }, true);
 
         return defer.promise;
     }

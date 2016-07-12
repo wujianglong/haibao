@@ -1837,6 +1837,7 @@ declare module RongIMLib {
         isTop: boolean;
         latestMessage: any;
         latestMessageId: string;
+        mentionedMsg: any;
         notificationStatus: ConversationNotificationStatus;
         objectName: string;
         receivedStatus: ReceivedStatus;
@@ -1848,7 +1849,7 @@ declare module RongIMLib {
         targetId: string;
         unreadMessageCount: number;
         senderPortraitUri: string;
-        constructor(conversationTitle?: string, conversationType?: ConversationType, draft?: string, isTop?: boolean, latestMessage?: any, latestMessageId?: string, notificationStatus?: ConversationNotificationStatus, objectName?: string, receivedStatus?: ReceivedStatus, receivedTime?: Date, senderUserId?: string, senderUserName?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, unreadMessageCount?: number, senderPortraitUri?: string);
+        constructor(conversationTitle?: string, conversationType?: ConversationType, draft?: string, isTop?: boolean, latestMessage?: any, latestMessageId?: string, mentionedMsg?: any, notificationStatus?: ConversationNotificationStatus, objectName?: string, receivedStatus?: ReceivedStatus, receivedTime?: Date, senderUserId?: string, senderUserName?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, unreadMessageCount?: number, senderPortraitUri?: string);
         setTop(): void;
     }
     class Discussion {

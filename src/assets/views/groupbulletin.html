@@ -19,11 +19,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="previewAnnounce" ng-show="showDialog">
+                <div class="previewAnnounce" ng-show="showDialog1">
                     <h2>该公告会通知全部群成员，是否发布？</h2>
                     <div class="picFooter">
                         <button type="button" class="btn" ng-click="cancelbtn()">取消</button>
                         <button type="button" class="btn cur" ng-click="publicbtn()">发送</button>
+                    </div>
+                </div>
+                <div class="previewAnnounce" ng-show="showDialog2">
+                    <h2>退出本次编辑？</h2>
+                    <div class="picFooter">
+                        <button type="button" class="btn" ng-click="cancelbtn2()">取消</button>
+                        <button type="button" class="btn cur" ng-click="quitbtn()">退出</button>
                     </div>
                 </div>
 
