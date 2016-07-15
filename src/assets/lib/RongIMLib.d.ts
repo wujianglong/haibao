@@ -1734,6 +1734,7 @@ declare module RongIMLib {
         extra: string;
         content: string;
         messageName: string;
+        mentionedInfo: RongIMLib.MentionedInfo;
         constructor(message: any);
         static obtain(text: string): TextMessage;
         encode(): string;
@@ -1823,6 +1824,12 @@ declare module RongIMLib {
 
 }
 declare module RongIMLib {
+    class MentionedInfo {
+        type: number;
+        userList: string[];
+        mentionedContent: string;
+        constructor(type?: number, userList?: string[], mentionedContent?: string);
+    }
     class Conversation {
         conversationTitle: string;
         conversationType: ConversationType;
@@ -1830,6 +1837,7 @@ declare module RongIMLib {
         isTop: boolean;
         latestMessage: any;
         latestMessageId: string;
+        mentionedMsg: any;
         notificationStatus: ConversationNotificationStatus;
         objectName: string;
         receivedStatus: ReceivedStatus;
@@ -1841,7 +1849,7 @@ declare module RongIMLib {
         targetId: string;
         unreadMessageCount: number;
         senderPortraitUri: string;
-        constructor(conversationTitle?: string, conversationType?: ConversationType, draft?: string, isTop?: boolean, latestMessage?: any, latestMessageId?: string, notificationStatus?: ConversationNotificationStatus, objectName?: string, receivedStatus?: ReceivedStatus, receivedTime?: Date, senderUserId?: string, senderUserName?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, unreadMessageCount?: number, senderPortraitUri?: string);
+        constructor(conversationTitle?: string, conversationType?: ConversationType, draft?: string, isTop?: boolean, latestMessage?: any, latestMessageId?: string, mentionedMsg?: any, notificationStatus?: ConversationNotificationStatus, objectName?: string, receivedStatus?: ReceivedStatus, receivedTime?: Date, senderUserId?: string, senderUserName?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, unreadMessageCount?: number, senderPortraitUri?: string);
         setTop(): void;
     }
     class Discussion {

@@ -34,6 +34,7 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         '</h3>' +
         '<p class="msg ng-scope" >' +
         // '<span ng-if="item.unReadNum>0" class="ng-binding ng-scope">[{{item.unReadNum}}条未读]</span>' +
+        '<span class="at_show" ng-show="item.atStr">{{item.atStr}}</span>' +
         '<span ng-bind-html="item.lastMsg|trustHtml" class="ng-binding"></span>' +
         '</p>' +
         '</div>' +
@@ -55,6 +56,7 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
                 scope.$parent.$apply();
                 mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - scope.item.unReadNum;
                 scope.item.unReadNum = 0;
+                scope.item.atStr = '';
                 if (scope.item.targetType == webimmodel.conversationType.System) {
                     $state.go("main.notification");
                     return;

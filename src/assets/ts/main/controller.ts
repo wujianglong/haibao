@@ -69,6 +69,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                $state.go("main.chat", { targetId: id, targetType: type }, { location: "replace" });
              }
         }
+        $scope.selectMember = function(item: webimmodel.Member){
+          $scope.atShow = false;
+        }
 
         //查找好友
         //
@@ -109,6 +112,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             var pic = <any>document.getElementsByClassName("previewPic")[0];
             if(e.keyCode === 13 && pic.style.visibility == 'visible'){
               $scope.uploadPasteImage();
+              e.preventDefault();
             }
         };
 
@@ -610,19 +614,53 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                         }
                         addmessage(msg);
+                        //TODO 判断是@消息时添加
+                        if(msg.mentionedInfo){
+                          var isAtMe = false;
+                          if(msg.mentionedInfo.type == webimmodel.AtTarget.All){
+                            isAtMe = true;
+                          }
+                          if(msg.mentionedInfo.type == webimmodel.AtTarget.Part){
+                            for(var j = 0; j < msg.mentionedInfo.userList.length; j++){
+                               if(msg.mentionedInfo.userList[j] == mainDataServer.loginUser.id){
+                                 isAtMe = true;
+                               }
+                            }
+                          }
+                          if(isAtMe){
+                            conversationServer.addAtMessage(msg.targetId, msg.conversationType, msg);
+                          }
+                        }
+
                         var isself = mainDataServer.loginUser.id == msg.senderUserId;
                         if (!isself) {
-                          webimutil.NotificationHelper.showNotification({
-                              title: msg.senderUserName,
-                              icon: "assets/img/SealTalk.ico",
-                              body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
-                          });
+                          if(msg.senderUserName){
+                            webimutil.NotificationHelper.showNotification({
+                                title: msg.senderUserName,
+                                icon: "assets/img/SealTalk.ico",
+                                body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                            });
+                          }else{
+                            mainServer.user.getInfo(msg.senderUserId).then(function(rep) {
+                                msg.senderUserName = rep.data.result.nickname;
+                                webimutil.NotificationHelper.showNotification({
+                                    title: msg.senderUserName + "(非好友)",
+                                    icon: "assets/img/SealTalk.ico",
+                                    body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                                });
+
+                            })
+                          }
                         }
                         break;
                     case webimmodel.MessageType.UnknownMessage:
                         if (data.objectName == "RC:GrpNtf" && !data.hasReceivedByOtherClient) {
                             //群组信息更新，已经在其他端接收过不做处理。
                             var groupNotification = <any>data.content;
+                            var isself = false;
+                            if(groupNotification.message.content.operatorUserId == mainDataServer.loginUser.id){
+                              isself = true;
+                            }
                             switch (groupNotification.message.content.operation) {
                                 case "Add":
                                     var changemembers = groupNotification.message.content.data.data.targetUserIds.join().split(",");
@@ -644,7 +682,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     } else {
                                         mainServer.group.getById(groupid).success(function(rep) {
 
-                                            var temporarynotifi = new webimmodel.WarningNoticeMessage("邀请进入群" + '"' + rep.result.name + '"');
+                                            var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.message.content.data.data.operatorNickname + "邀请你加入了群组");
                                             mainDataServer.notification.addNotification(temporarynotifi);
                                             if (!$state.is("main.notification")) {
                                                 mainDataServer.notification.hasNewNotification = true;
@@ -700,7 +738,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                             mainDataServer.contactsList.removeGroupMember(groupid, changemembers[a]);
                                         }
                                     } else {
-                                        var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + groupname + '"' + '已将您踢出');
+                                        var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.message.content.data.data.operatorNickname + '将你移出了群组');
                                         mainDataServer.notification.addNotification(temporarynotifi);
                                         if (!$state.is("main.notification")) {
                                             mainDataServer.notification.hasNewNotification = true;
@@ -717,9 +755,11 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     break;
                                 case "Rename":
                                     // console.log("TODO:暂不做修改群组名称");
+
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-                                    var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + groupname + '"' + '已由 ' + groupNotification.message.content.data.data.operatorNickname + ' 更名为' + groupNotification.message.content.data.data.targetGroupName);
+                                    var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
+                                    var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + ' 修改群名称为' + groupNotification.message.content.data.data.targetGroupName);
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {
                                         mainDataServer.notification.hasNewNotification = true;
@@ -730,7 +770,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 case "Create":
                                     var groupid = data.targetId;
                                     mainServer.group.getById(groupid).success(function (rep) {
-                                        var temporarynotifi = new webimmodel.WarningNoticeMessage("邀请进入群" + '"' + rep.result.name + '"');
+                                        var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
+                                        var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + "创建了群组");
                                         mainDataServer.notification.addNotification(temporarynotifi);
                                         if (!$state.is("main.notification")) {
                                             mainDataServer.notification.hasNewNotification = true;
@@ -762,7 +803,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 case "Dismiss":
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-                                    var temporarynotifi = new webimmodel.WarningNoticeMessage("群组" + '"' + mainDataServer.contactsList.getGroupById(groupid).name + '"' + '已解散');
+                                    var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
+                                    var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + "解散了群组");
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {
                                         mainDataServer.notification.hasNewNotification = true;

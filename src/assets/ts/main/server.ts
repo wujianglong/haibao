@@ -324,11 +324,253 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         totalUnreadCount: 0,
         conversations: <webimmodel.Conversation[]>[],
         currentConversation: <webimmodel.Conversation>{},
+        parseConversation: function(item: RongIMLib.Conversation) {
+          var conversationitem = webimmodel.Conversation.convertToWebIM(item, mainDataServer.loginUser.id);
+          var removeUnreadCount = 0;
+          if (item.unreadMessageCount) {
+             removeUnreadCount = item.unreadMessageCount;
+          }
+          switch (item.conversationType) {
+              case RongIMLib.ConversationType.CHATROOM:
+                  conversationitem.title = "聊天室" + item.targetId;
+                  break;
+              case RongIMLib.ConversationType.GROUP:
+                  let group = mainDataServer.contactsList.getGroupById(item.targetId);
+                  removeUnreadCount = 0;
+                  if (!group) {
+                      if (item.targetId == '__system__') {
+                      }else{
+                        (function (id: string, conv: webimmodel.Conversation, listi: any) {
+                            mainServer.group.getById(id).success(function (rep) {
+                                listi.conversationTitle = rep.result.name;
+                                conv.title = rep.result.name;
+                                var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+                                conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+                                conv.imgSrc = rep.result.portraitUri;
+                            });
+                        }(item.targetId, conversationitem, item));
+                      }
+
+                  } else {
+                      //TODO:添加最后一条消息的发送人
+                      if (conversationitem.lastMsg && item.latestMessage.objectName != "RC:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
+                          var atStr = '';
+                          if(item.mentionedMsg){
+                             conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
+                             var atType = conversationitem.mentionedInfo.type;
+                             var atUsers = conversationitem.mentionedInfo.userList;
+                             if(atType == webimmodel.AtTarget.All){
+                                atStr = "[@所有人]";
+                             }else if(atType == webimmodel.AtTarget.Part){
+                                  for(var i = 0; i < atUsers.length; i++){
+                                      if(atUsers[i] == mainDataServer.loginUser.id){
+                                         atStr = "[有人@我]";
+                                         break;
+                                      }
+                                  }
+                             }
+                             conversationitem.atStr = atStr;
+                          }
+                          var member = mainDataServer.contactsList.getGroupMember(group.id, item.latestMessage.senderUserId);
+                          if (member) {
+                              conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
+                          } else {
+                              (function(id: string, conv: webimmodel.Conversation) {
+                                  mainServer.user.getInfo(id).success(function(user) {
+                                      conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
+                                  });
+                              } (item.latestMessage.senderUserId, conversationitem))
+                          }
+                      }
+                      item.conversationTitle = group ? group.name : "未知群组";
+                      conversationitem.title = group ? group.name : "未知群组";
+                  }
+                  // item.conversationTitle = group ? group.name : "未知群组";
+                  // conversationitem.title = group ? group.name : "未知群组";
+                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.message.content.operation == "Create" && item.latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+                       conversationitem.lastMsg = '你 创建了群组';
+                  }
+                  conversationitem.firstchar = group ? group.firstchar : "";
+                  conversationitem.imgSrc = group ? group.imgSrc : "";
+                  conversationitem.firstchar = group ? group.firstchar : "";
+                  conversationitem.everychar = group ? group.everychar : "";
+                  break;
+              case RongIMLib.ConversationType.PRIVATE:
+                  if (item.latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
+                      RongIMSDKServer.removeConversation(RongIMLib.ConversationType.PRIVATE, item.targetId).then(function() {
+
+                      });
+                      break;
+                  }
+                  removeUnreadCount = 0;
+                  var friendinfo = mainDataServer.contactsList.getFriendById(item.targetId || item.senderUserId)
+                  if (friendinfo) {
+                      item.conversationTitle = friendinfo.displayName || friendinfo.name;
+                      conversationitem.title = friendinfo.displayName || friendinfo.name;
+                      conversationitem.firstchar = friendinfo.firstchar;
+                      conversationitem.imgSrc = friendinfo.imgSrc;
+                      conversationitem.firstchar = friendinfo.firstchar;
+                      conversationitem.everychar = friendinfo.everychar;
+                  } else if (item.targetId) {
+                      (function(id: string, conv: webimmodel.Conversation) {
+                          mainServer.user.getInfo(id).success(function(rep) {
+                              conv.title = rep.result.nickname + "(非好友)";
+                              conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                              var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
+                              var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                              conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+                              conv.imgSrc = rep.result.portraitUri;
+                          }).error(function() {
+                              conv.title = "非系统用户";
+                          });
+                      })(item.targetId || item.senderUserId, conversationitem)
+                  }
+
+                  break;
+              case RongIMLib.ConversationType.SYSTEM:
+                  break;
+              case RongIMLib.ConversationType.DISCUSSION:
+                   break;
+              case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+                  break;
+          }
+          return {'item': conversationitem, 'removeUnreadCount': removeUnreadCount};
+        },
+        // updateConversations: function() {
+        //     //更新未读总数
+        //     var defer = $q.defer();
+        //     var allUnreadCount = 0;
+        //     RongIMSDKServer.getTotalUnreadCount().then(function(data) {
+        //         allUnreadCount = data;
+        //     });
+        //
+        //     RongIMSDKServer.getConversationList().then(function(list) {
+        //         RongIMLib.RongIMClient.getInstance().sortConversationList(list);
+        //         mainDataServer.conversation.conversations = [];
+        //         for (var i = 0, length = list.length; i < length; i++) {
+        //             var conversationitem = webimmodel.Conversation.convertToWebIM(list[i], mainDataServer.loginUser.id);
+        //
+        //             switch (list[i].conversationType) {
+        //                 case RongIMLib.ConversationType.CHATROOM:
+        //                     conversationitem.title = "聊天室" + list[i].targetId;
+        //                     if (list[i].unreadMessageCount) {
+        //                         allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+        //                     }
+        //                     break;
+        //                 case RongIMLib.ConversationType.GROUP:
+        //                     let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
+        //                     if (!group) {
+        //                         if (list[i].targetId == '__system__') {
+        //                         }else{
+        //                           (function (id: string, conv: webimmodel.Conversation, listi: any) {
+        //                               mainServer.group.getById(id).success(function (rep) {
+        //                                   listi.conversationTitle = rep.result.name;
+        //                                   conv.title = rep.result.name;
+        //                                   var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+        //                                   var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+        //                                   var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+        //                                   conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+        //                                   conv.imgSrc = rep.result.portraitUri;
+        //                               });
+        //                           }(list[i].targetId, conversationitem, list[i]));
+        //                         }
+        //
+        //                     } else {
+        //                         //TODO:添加最后一条消息的发送人
+        //                         if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
+        //                             var member = mainDataServer.contactsList.getGroupMember(group.id, list[i].latestMessage.senderUserId);
+        //                             if (member) {
+        //                                 conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
+        //                             } else {
+        //                                 (function(id: string, conv: webimmodel.Conversation) {
+        //                                     mainServer.user.getInfo(id).success(function(user) {
+        //                                         conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
+        //                                     });
+        //                                 } (list[i].latestMessage.senderUserId, conversationitem))
+        //                             }
+        //                         }
+        //                         list[i].conversationTitle = group ? group.name : "未知群组";
+        //                         conversationitem.title = group ? group.name : "未知群组";
+        //                     }
+        //                     // list[i].conversationTitle = group ? group.name : "未知群组";
+        //                     // conversationitem.title = group ? group.name : "未知群组";
+        //                     if (conversationitem.lastMsg && list[i].latestMessage.objectName == "RC:GrpNtf" && list[i].latestMessage.content.message.content.operation == "Create" && list[i].latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+        //                          conversationitem.lastMsg = '你 创建了群组';
+        //                     }
+        //                     conversationitem.firstchar = group ? group.firstchar : "";
+        //                     conversationitem.imgSrc = group ? group.imgSrc : "";
+        //                     conversationitem.firstchar = group ? group.firstchar : "";
+        //                     conversationitem.everychar = group ? group.everychar : "";
+        //                     break;
+        //                 case RongIMLib.ConversationType.PRIVATE:
+        //                     if (list[i].latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
+        //                         RongIMSDKServer.removeConversation(RongIMLib.ConversationType.PRIVATE, list[i].targetId).then(function() {
+        //
+        //                         });
+        //                         continue;
+        //                     }
+        //                     var friendinfo = mainDataServer.contactsList.getFriendById(list[i].targetId || list[i].senderUserId)
+        //                     if (friendinfo) {
+        //                         list[i].conversationTitle = friendinfo.displayName || friendinfo.name;
+        //                         conversationitem.title = friendinfo.displayName || friendinfo.name;
+        //                         conversationitem.firstchar = friendinfo.firstchar;
+        //                         conversationitem.imgSrc = friendinfo.imgSrc;
+        //                         conversationitem.firstchar = friendinfo.firstchar;
+        //                         conversationitem.everychar = friendinfo.everychar;
+        //                     } else if (list[i].targetId) {
+        //                         (function(id: string, conv: webimmodel.Conversation) {
+        //                             mainServer.user.getInfo(id).success(function(rep) {
+        //                                 // list[i].conversationTitle = rep.result.nickname;
+        //                                 conv.title = rep.result.nickname + "(非好友)";
+        //                                 conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+        //                                 var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
+        //                                 var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+        //                                 conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+        //                                 conv.imgSrc = rep.result.portraitUri;
+        //                             }).error(function() {
+        //                                 conv.title = "非系统用户";
+        //                             });
+        //                         })(list[i].targetId || list[i].senderUserId, conversationitem)
+        //                     }
+        //
+        //                     break;
+        //                 case RongIMLib.ConversationType.SYSTEM:
+        //                     list[i].conversationTitle = "系统消息";
+        //                     conversationitem.title = "系统消息";
+        //                     if (list[i].unreadMessageCount) {
+        //                         allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+        //                     }
+        //                     break;
+        //
+        //                 case RongIMLib.ConversationType.DISCUSSION:
+        //                      if (list[i].unreadMessageCount) {
+        //                         allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+        //                      }
+        //                      break;
+        //                 case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+        //                     if(list[i].unreadMessageCount){
+        //                         allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
+        //                     }
+        //                     break;
+        //             }
+        //             if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM  || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
+        //             mainDataServer.conversation.conversations.push(conversationitem);
+        //         }
+        //         mainDataServer.conversation.totalUnreadCount = allUnreadCount;
+        //         defer.resolve();
+        //     }, function() {
+        //         defer.reject();
+        //     })
+        //
+        //     return defer.promise;
+        //
+        // },
         updateConversations: function() {
             //更新未读总数
             var defer = $q.defer();
             var allUnreadCount = 0;
-            var haveCUSTOMER_SERVICE = false;
             RongIMSDKServer.getTotalUnreadCount().then(function(data) {
                 allUnreadCount = data;
             });
@@ -337,186 +579,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 RongIMLib.RongIMClient.getInstance().sortConversationList(list);
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
-                    var addgroup = false;
-                    var conversationitem = webimmodel.Conversation.convertToWebIM(list[i], mainDataServer.loginUser.id);
-
-                    switch (list[i].conversationType) {
-                        case RongIMLib.ConversationType.CHATROOM:
-                            conversationitem.title = "聊天室" + list[i].targetId;
-                            if (list[i].unreadMessageCount) {
-                                allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
-                            }
-                            break;
-                        // case RongIMLib.ConversationType.CUSTOMER_SERVICE:
-                        //     conversationitem.title = "客服";
-                        //     break;
-                        // case RongIMLib.ConversationType.DISCUSSION:
-                        //     // conversationitem.title = "讨论组" + list[i].targetId;
-                        //     if (list[i].targetId) {
-                        //       (function (id: string, conv: webimmodel.Conversation) {
-                        //           RongIMSDKServer.getDiscussion(id).then(function (rep) {
-                        //               var discuss = <RongIMLib.Discussion>rep.data;
-                        //               conv.title = discuss.name;
-                        //               conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
-                        //           },function () {
-                        //               conv.title = "未知讨论组";
-                        //           });
-                        //       })(list[i].targetId || list[i].senderUserId, conversationitem);
-                        //     }
-                        //     else{
-                        //       conversationitem.title = "讨论组" + list[i].targetId;
-                        //     }
-                        //     break;
-                        case RongIMLib.ConversationType.GROUP:
-                            let group = mainDataServer.contactsList.getGroupById(list[i].targetId);
-                            if (!group) {
-                                // addgroup = true;
-                                if (list[i].targetId == '__system__') {
-                                }else{
-                                  (function (id: string, conv: webimmodel.Conversation, listi: any) {
-                                      mainServer.group.getById(id).success(function (rep) {
-                                          listi.conversationTitle = rep.result.name;
-                                          conv.title = rep.result.name;
-                                          var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
-                                          var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
-                                          var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
-                                          conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
-                                          conv.imgSrc = rep.result.portraitUri;
-                                      });
-                                  }(list[i].targetId, conversationitem, list[i]));
-                                }
-
-                            } else {
-                                //TODO:添加最后一条消息的发送人
-                                if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
-                                    var member = mainDataServer.contactsList.getGroupMember(group.id, list[i].latestMessage.senderUserId);
-                                    if (member) {
-                                        conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
-                                    } else {
-                                        (function(id: string, conv: webimmodel.Conversation) {
-                                            mainServer.user.getInfo(id).success(function(user) {
-                                                conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
-                                            });
-                                        } (list[i].latestMessage.senderUserId, conversationitem))
-                                    }
-                                }
-                                list[i].conversationTitle = group ? group.name : "未知群组";
-                                conversationitem.title = group ? group.name : "未知群组";
-                            }
-                            // list[i].conversationTitle = group ? group.name : "未知群组";
-                            // conversationitem.title = group ? group.name : "未知群组";
-                            if (conversationitem.lastMsg && list[i].latestMessage.objectName == "RC:GrpNtf" && list[i].latestMessage.content.message.content.operation == "Create" && list[i].latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
-                                 conversationitem.lastMsg = '你 创建了群组';
-                            }
-                            conversationitem.firstchar = group ? group.firstchar : "";
-                            conversationitem.imgSrc = group ? group.imgSrc : "";
-                            conversationitem.firstchar = group ? group.firstchar : "";
-                            conversationitem.everychar = group ? group.everychar : "";
-                            break;
-                        case RongIMLib.ConversationType.PRIVATE:
-                            if (list[i].latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
-                                RongIMSDKServer.removeConversation(RongIMLib.ConversationType.PRIVATE, list[i].targetId).then(function() {
-
-                                });
-                                continue;
-                            }
-                            var friendinfo = mainDataServer.contactsList.getFriendById(list[i].targetId || list[i].senderUserId)
-                            if (friendinfo) {
-                                list[i].conversationTitle = friendinfo.displayName || friendinfo.name;
-                                conversationitem.title = friendinfo.displayName || friendinfo.name;
-                                conversationitem.firstchar = friendinfo.firstchar;
-                                conversationitem.imgSrc = friendinfo.imgSrc;
-                                conversationitem.firstchar = friendinfo.firstchar;
-                                conversationitem.everychar = friendinfo.everychar;
-                            } else if (list[i].targetId) {
-                                (function(id: string, conv: webimmodel.Conversation) {
-                                    mainServer.user.getInfo(id).success(function(rep) {
-                                        // list[i].conversationTitle = rep.result.nickname;
-                                        conv.title = rep.result.nickname + "(非好友)";
-                                        conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                                        var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
-                                        var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                                        conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
-                                        conv.imgSrc = rep.result.portraitUri;
-                                    }).error(function() {
-                                        conv.title = "非系统用户";
-                                    });
-                                })(list[i].targetId || list[i].senderUserId, conversationitem)
-                            }
-
-                            break;
-                        case RongIMLib.ConversationType.SYSTEM:
-                            list[i].conversationTitle = "系统消息";
-                            conversationitem.title = "系统消息";
-                            if (list[i].unreadMessageCount) {
-                                allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
-                            }
-                            break;
-
-                        case RongIMLib.ConversationType.DISCUSSION:
-                             if (list[i].unreadMessageCount) {
-                                allUnreadCount = allUnreadCount - list[i].unreadMessageCount;
-                             }
-                             break;
-                        case RongIMLib.ConversationType.CUSTOMER_SERVICE:
-                            if(list[i].unreadMessageCount){
-                                haveCUSTOMER_SERVICE = true;
-                                mainDataServer.conversation.totalUnreadCount = allUnreadCount - list[i].unreadMessageCount;
-                            }
-                            break;
-                    }
-
-                    //新创建的群组无通知，再此若没有获取到群组信息则去服务器拉取
-                    if (addgroup) {
-                        (function(item: webimmodel.Conversation) {
-                            mainServer.group.getById(item.targetId).success(function(rep) {
-                                item.title = rep.result.name;
-                                item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
-
-                                var group = new webimmodel.Group({
-                                    id: rep.result.id,
-                                    name: rep.result.name,
-                                    imgSrc: rep.result.portraitUri,
-                                    upperlimit: 500,
-                                    fact: 1,
-                                    creater: rep.result.creatorId
-                                });
-                                mainDataServer.contactsList.addGroup(group);
-                                //获取群成员
-                                mainServer.group.getGroupMember(group.id).success(function(rep) {
-                                    var members = rep.result;
-                                    for (var j = 0, len = members.length; j < len; j++) {
-                                        var member = new webimmodel.Member({
-                                            id: members[j].user.id,
-                                            name: members[j].displayName || members[j].user.nickname,
-                                            imgSrc: members[j].user.portraitUri,
-                                            role: members[j].role
-                                        });
-                                        mainDataServer.contactsList.addGroupMember(group.id, member);
-                                    }
-                                });
-
-                                RongIMSDKServer.getConversation(RongIMLib.ConversationType.GROUP, group.id).then(function() {
-
-                                })
-                            }).error(function(err) {
-                                RongIMSDKServer.removeConversation(RongIMLib.ConversationType.GROUP, item.targetId).then(function() {
-
-                                });
-                            });
-                        })(conversationitem);
-                    }
+                    var result = mainDataServer.conversation.parseConversation(list[i]);
+                    allUnreadCount = allUnreadCount - result.removeUnreadCount;
                     if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM  || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
-                    mainDataServer.conversation.conversations.push(conversationitem);
+                    mainDataServer.conversation.conversations.push(result.item);
                 }
-                if(!haveCUSTOMER_SERVICE){
-                   mainDataServer.conversation.totalUnreadCount = allUnreadCount;
-                }
+                mainDataServer.conversation.totalUnreadCount = allUnreadCount;
                 defer.resolve();
             }, function() {
                 defer.reject();
             })
-
             return defer.promise;
 
         },
@@ -531,10 +603,12 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     if (friendinfo) {
                         item.title = friendinfo.displayName || friendinfo.name;
                         item.firstchar = friendinfo.firstchar;
+                        item.imgSrc = friendinfo.imgSrc;
                     } else {
                         mainServer.user.getInfo(targetId).success(function(rep) {
                             item.title = rep.result.nickname + "(非好友)";
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                            item.imgSrc = rep.result.portraitUri;
                         }).error(function() {
 
                         });
@@ -608,109 +682,161 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             return false;
         },
         updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
-          var type = msg.conversationType , id = msg.targetId;
-          var hasCon = false;
-          if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
-              return;
-          }
-          if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
-            return ;
-          }
-          if(add){  //add
-             //updateCon  顺序,最近会话内容,时间
-             var curCon : webimmodel.Conversation = null;
-             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
-                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
-                     curCon = mainDataServer.conversation.conversations[i];
-                     mainDataServer.conversation.conversations.splice(i, 1);
-                     hasCon = true;
-                     break;
-                 }
-             }
-             if(!hasCon){   // create con
-                 curCon = mainDataServer.conversation.createConversation(type, id);
-             }
-             switch (msg.messageType) {
-               case webimmodel.MessageType.VoiceMessage:
-                   curCon.lastMsg = '[声音]';
-                   break;
-               case webimmodel.MessageType.TextMessage:
-                   curCon.lastMsg = msg.content.content;
-                   break;
-               case webimmodel.MessageType.LocationMessage:
-                   curCon.lastMsg = '[位置]';
-                   break;
-               case webimmodel.MessageType.ImageMessage:
-                   curCon.lastMsg = '[图片]';
-                   break;
-               case webimmodel.MessageType.RichContentMessage:
-                   curCon.lastMsg = '[富文本]';
-                   break;
-               case webimmodel.MessageType.ContactNotificationMessage:
-                   break;
-               case webimmodel.MessageType.DiscussionNotificationMessage:
-                   curCon.lastMsg = msg.content;
-                   break;
-               case webimmodel.MessageType.UnknownMessage:
-                   if (msg.objectName == "RC:GrpNtf"){
-                       curCon.lastMsg = msg.content;
-                   }
-                   break;
-               case webimmodel.MessageType.ReadReceiptMessage:
-               case webimmodel.MessageType.TypingStatusMessage:
-                   break;
-               case webimmodel.MessageType.InformationNotificationMessage:
-                  //  curCon.lastMsg = msg.content;
-                   curCon.lastMsg = "[通知消息]";
-                   break;
-               default:
-                   curCon.lastMsg = '未解析';
-             }
-             if (type == webimmodel.conversationType.Group && msg.messageType!=webimmodel.MessageType.UnknownMessage && msg.messageType!=webimmodel.MessageType.InformationNotificationMessage){
-                 //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
-                      var member = mainDataServer.contactsList.getGroupMember(msg.targetId, msg.senderUserId);
-                      if (member) {
-                          curCon.lastMsg = member.name + "：" + curCon.lastMsg;
-                      }
-                      else {
-                          (function (id: string, conv: webimmodel.Conversation) {
-                              mainServer.user.getInfo(id).success(function (user) {
-                                  conv.lastMsg = user.result.nickname + "：" + conv.lastMsg;
-                              });
-                          }(msg.senderUserId, curCon));
-                      }
-                 //  }
-
-             }
-             if(isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId){
-                 RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
-                 mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
-                 curCon.unReadNum = 0;
-             }else{
-               if(msg.senderUserId == mainDataServer.loginUser.id){}
-               else{
-                 if(curCon.unReadNum){
-                   curCon.unReadNum++;
-                 }else{
-                   curCon.unReadNum = 1;
-                 }
-                 mainDataServer.conversation.totalUnreadCount++;
-               }
-             }
-             curCon.lastTime = msg.sentTime;
-             mainDataServer.conversation.conversations.unshift(curCon);
-
-            //如果不是当前会话,则会话未读消息增加;总未读消息增加
-          }else{
-            for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
-                if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
-                    var curCon = mainDataServer.conversation.conversations[i];
-                    mainDataServer.conversation.conversations.splice(i, 1);
-                    break;
-                }
+            var type = msg.conversationType , id = msg.targetId;
+            var hasCon = false;
+            if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
+                return;
             }
-          }
+            if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
+              return ;
+            }
+
+            RongIMSDKServer.getConversation(type, id).then(function (data) {
+                if (data) {
+                    var result = mainDataServer.conversation.parseConversation(data);
+                    var oldUnread = 0, totalUnreadCount = mainDataServer.conversation.totalUnreadCount, isfirst = false;
+                    for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+                        if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+                            oldUnread = mainDataServer.conversation.conversations[i].unReadNum;
+                            if(i == 0){
+                              isfirst = true;
+                              mainDataServer.conversation.conversations[i].lastMsg = result.item.lastMsg;
+                              mainDataServer.conversation.conversations[i].unReadNum = result.item.unReadNum;
+                              mainDataServer.conversation.conversations[i].atStr = result.item.atStr;
+                            }
+                            else{
+                              mainDataServer.conversation.conversations.splice(i, 1);
+                            }
+                            break;
+                        }
+                    }
+                   if(isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId){
+                       RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                       totalUnreadCount = totalUnreadCount - oldUnread;
+                       result.item.unReadNum = 0;
+                       result.item.atStr = '';
+                   }else{
+                     if(msg.senderUserId == mainDataServer.loginUser.id){}
+                     else{
+                       totalUnreadCount = totalUnreadCount - oldUnread + result.item.unReadNum;
+                     }
+                   }
+                    mainDataServer.conversation.totalUnreadCount = totalUnreadCount;
+                    if(add && !isfirst){
+                        mainDataServer.conversation.conversations.unshift(result.item);
+                    }
+                }
+                else {
+                    console.log('无法获取该会话', type, id);
+                }
+            }, function (err) {
+              console.log("RongIMSDKServer.getConversation err:" + err, type, id);
+            });
         },
+        // updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
+        //   var type = msg.conversationType , id = msg.targetId;
+        //   var hasCon = false;
+        //   if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
+        //       return;
+        //   }
+        //   if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
+        //     return ;
+        //   }
+        //   if(add){  //add
+        //      //updateCon  顺序,最近会话内容,时间
+        //      var curCon : webimmodel.Conversation = null;
+        //      for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+        //          if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+        //              curCon = mainDataServer.conversation.conversations[i];
+        //              mainDataServer.conversation.conversations.splice(i, 1);
+        //              hasCon = true;
+        //              break;
+        //          }
+        //      }
+        //      if(!hasCon){   // create con
+        //          curCon = mainDataServer.conversation.createConversation(type, id);
+        //      }
+        //      switch (msg.messageType) {
+        //        case webimmodel.MessageType.VoiceMessage:
+        //            curCon.lastMsg = '[声音]';
+        //            break;
+        //        case webimmodel.MessageType.TextMessage:
+        //            curCon.lastMsg = msg.content.content;
+        //            break;
+        //        case webimmodel.MessageType.LocationMessage:
+        //            curCon.lastMsg = '[位置]';
+        //            break;
+        //        case webimmodel.MessageType.ImageMessage:
+        //            curCon.lastMsg = '[图片]';
+        //            break;
+        //        case webimmodel.MessageType.RichContentMessage:
+        //            curCon.lastMsg = '[富文本]';
+        //            break;
+        //        case webimmodel.MessageType.ContactNotificationMessage:
+        //            break;
+        //        case webimmodel.MessageType.DiscussionNotificationMessage:
+        //            curCon.lastMsg = msg.content;
+        //            break;
+        //        case webimmodel.MessageType.UnknownMessage:
+        //            if (msg.objectName == "RC:GrpNtf"){
+        //                curCon.lastMsg = msg.content;
+        //            }
+        //            break;
+        //        case webimmodel.MessageType.ReadReceiptMessage:
+        //        case webimmodel.MessageType.TypingStatusMessage:
+        //            break;
+        //        case webimmodel.MessageType.InformationNotificationMessage:
+        //           //  curCon.lastMsg = msg.content;
+        //            curCon.lastMsg = "[通知消息]";
+        //            break;
+        //        default:
+        //            curCon.lastMsg = '未解析';
+        //      }
+        //      if (type == webimmodel.conversationType.Group && msg.messageType!=webimmodel.MessageType.UnknownMessage && msg.messageType!=webimmodel.MessageType.InformationNotificationMessage){
+        //          //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
+        //               var member = mainDataServer.contactsList.getGroupMember(msg.targetId, msg.senderUserId);
+        //               if (member) {
+        //                   curCon.lastMsg = member.name + "：" + curCon.lastMsg;
+        //               }
+        //               else {
+        //                   (function (id: string, conv: webimmodel.Conversation) {
+        //                       mainServer.user.getInfo(id).success(function (user) {
+        //                           conv.lastMsg = user.result.nickname + "：" + conv.lastMsg;
+        //                       });
+        //                   }(msg.senderUserId, curCon));
+        //               }
+        //          //  }
+        //
+        //      }
+        //      if(isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId){
+        //          RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+        //          mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
+        //          curCon.unReadNum = 0;
+        //      }else{
+        //        if(msg.senderUserId == mainDataServer.loginUser.id){}
+        //        else{
+        //          if(curCon.unReadNum){
+        //            curCon.unReadNum++;
+        //          }else{
+        //            curCon.unReadNum = 1;
+        //          }
+        //          mainDataServer.conversation.totalUnreadCount++;
+        //        }
+        //      }
+        //      curCon.lastTime = msg.sentTime;
+        //      mainDataServer.conversation.conversations.unshift(curCon);
+        //
+        //     //如果不是当前会话,则会话未读消息增加;总未读消息增加
+        //   }else{
+        //     for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
+        //         if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
+        //             var curCon = mainDataServer.conversation.conversations[i];
+        //             mainDataServer.conversation.conversations.splice(i, 1);
+        //             break;
+        //         }
+        //     }
+        //   }
+        // },
         setDraft: function(type: string, id: string, msg: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
@@ -799,6 +925,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 let item = this.groupList[i];
                 if (item.id == id) {
                     item.name = name;
+                    var obj = webimutil.ChineseCharacter.convertToABC(name);
+                    var f = webimutil.ChineseCharacter.getPortraitChar(name);
+                    item.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f })
                     return true;
                 }
             }
@@ -995,7 +1124,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 var f = webimutil.ChineseCharacter.getPortraitChar(member.name);
 
                 member.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-                item.memberList.push(member);
+                if(member.role == "0"){
+                  item.memberList.unshift(member);
+                }else{
+                  item.memberList.push(member);
+                }
                 item.fact = item.memberList.length;
             } else {
 
@@ -1200,7 +1333,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
                 }
                 console.log('发送失败:' + info);
             }
-        });
+        }, true);
 
         return defer.promise;
     }
@@ -1418,6 +1551,7 @@ interface mainDataServer {
         totalUnreadCount: number
         conversations: webimmodel.Conversation[]
         currentConversation: webimmodel.Conversation,
+        parseConversation(item: RongIMLib.Conversation): any,
         updateConversations(): angular.IPromise<any>
         createConversation(targetType: number, targetId: string): webimmodel.Conversation
         getConversation(type: number, id: string): webimmodel.Conversation

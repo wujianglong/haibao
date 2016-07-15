@@ -3,6 +3,129 @@
 
 var conversationDire = angular.module("webim.conversation.directive", ["webim.main.server", "webim.conversation.server"]);
 
+conversationDire.directive('atshowDire', function () {
+    return {
+        restrict: 'A',
+        require: '?ngModel',
+        link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
+            scope.atShow = false;
+            element.bind("click", function (e) {
+                scope.cursorPos = document.getSelection().focusOffset;
+            });
+            element.bind("keydown", function (e) {
+                 var keyCode = e.keyCode;
+                 var obj = document.getElementById("message-content");
+                 var caretPos = scope.getCaretPosition(obj);
+                //  e = e || event;
+             　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+                  scope.atShow = true;
+                  scope.searchStr = '';
+                  scope.cursorPos = caretPos;
+                  var obj = document.getElementById("message-content");
+                  var hidInput = document.getElementById("TestInput");
+                  var styleObj = window.getComputedStyle(obj, null);
+                  var lineWidth = obj.clientWidth - 80;
+                  var sel = document.getSelection(),
+                      text = obj.textContent.slice(0, sel.focusOffset);
+                  hidInput.style.visibility = 'visible';
+                  hidInput.innerText = text;
+                  hidInput.style.fontSize = styleObj.getPropertyValue('font-size');
+                  hidInput.style.fontFamily = styleObj.getPropertyValue('font-family');
+                  hidInput.style.visibility = 'hidden';
+                  var actWidth = (hidInput.clientWidth + 1) % lineWidth;
+                  var lineNum = (hidInput.clientWidth + 1) / lineWidth;
+                  var atDivHeight = scope.showGroupList.length > 6 ? 36*6 : 36*scope.showGroupList.length;
+                  $('div.arobase').css('bottom', obj.clientHeight - lineNum * hidInput.clientHeight);
+                  $('div.arobase').css('left', actWidth);
+                }
+                else{
+                   if(!scope.atShow){
+                     var obj = document.getElementById("message-content");
+                    //  var caretPos = scope.getCaretPosition(obj);
+                     var text = obj.textContent.slice(0, caretPos);
+                     if (keyCode == 8 && text.indexOf('@') > -1){
+                        // 判断名字是否在列表中,如果在,则删除该@
+                        scope.delAtContent(caretPos);
+                     }
+                     return;
+                   }
+                   if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
+                      scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+                   }
+                   else if(keyCode == 8 && scope.searchStr){
+                     if(scope.searchStr.length > 0){
+                       scope.searchStr = scope.searchStr.substr(0, scope.searchStr.length - 1);
+                     }
+                   }
+                   else{
+                     scope.atShow = false;
+                   }
+                }
+            });
+        }
+    };
+});
+
+conversationDire.directive("tagInput",function() {
+    return {
+        restrict: "E",
+        template: '<div class="input-tag" data-ng-repeat=\"tag in tagArray()\">{{tag}}</div>',
+        scope: {
+          inputTags: '=taglist',
+          autocomplete: '=autocomplete'
+        }, link: function($scope: any, ele: angular.IRootElementService, attrs: any) {
+             $scope.defaultWidth = 200;
+             if($scope.autocomplete){
+
+             }
+             $scope.tagArray = function() {
+                if ($scope.inputTags === undefined) {
+                  return [];
+                }
+                return $scope.inputTags.split(',').filter(function(tag: string) {
+                  return tag !== "";
+                });
+            };
+
+            $scope.addTag = function() {
+              var tagArray: string[];
+              if ($scope.tagText.length === 0) {
+                return;
+              }
+              tagArray = $scope.tagArray();
+              tagArray.push($scope.tagText);
+              $scope.inputTags = tagArray.join(',');
+              return $scope.tagText = "";
+            };
+
+            $scope.deleteTag = function(key: number) {
+              var tagArray: string[];
+              tagArray = $scope.tagArray();
+              if (tagArray.length > 0 && $scope.tagText.length === 0 && key === undefined) {
+                tagArray.pop();
+              } else {
+                if (key !== undefined) {
+                  tagArray.splice(key, 1);
+                }
+              }
+              return $scope.inputTags = tagArray.join(',');
+            };
+
+            ele.bind("keydown", function(e) {
+             var key: number;
+             key = e.which;
+             if (key === 9 || key === 13) {
+               e.preventDefault();
+             }
+             if (key === 8) {
+               return $scope.$apply('deleteTag()');
+             }
+           });
+
+        }
+    }
+});
+
 conversationDire.directive("conversationItem", ["$timeout", function($timeout: angular.ITimeoutService) {
     return {
         restrict: "EA",
@@ -251,9 +374,11 @@ conversationDire.directive("textMessage", [function() {
         scope: {
             item: "="
         },
-        template: '<div class="">' +
+        template: '<div class="" id="{{itemid}}">' +
         '<div class="Message-text">' +
+        '<pre class="at_all_people" ng-show="isAtAll">@所有人</pre>' +
         '<pre class="Message-entry" ng-bind-html="content|trustHtml">' +
+        // '<i class="at_function" ng-show="isAtPart">@****</i>' +
         '</pre>' +
         '<br></span></div>' +
         '</div>',
@@ -261,6 +386,15 @@ conversationDire.directive("textMessage", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var EMailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/gi
             var EMailArr = <string[]>[];
+            scope.isAtAll = false;
+            scope.isAtPart = false;
+            if(scope.$parent.item.mentionedInfo && scope.$parent.item.mentionedInfo.type == webimmodel.AtTarget.All){
+              scope.isAtAll = true;
+            }
+            if(scope.$parent.item.mentionedInfo && scope.$parent.item.mentionedInfo.type == webimmodel.AtTarget.Part){
+              scope.isAtPart = true;
+            }
+            scope.itemid = scope.$parent.item.messageUId;
             scope.content = scope.item.content.replace(EMailReg, function(str: any) {
                 EMailArr.push(str);
                 return '[email`' + (EMailArr.length - 1) + ']';
@@ -279,6 +413,7 @@ conversationDire.directive("textMessage", [function() {
             for (var i = 0, len = EMailArr.length; i < len; i++) {
                 scope.content = scope.content.replace('[email`' + i + ']', '<a href="mailto:' + EMailArr[i] + '">' + EMailArr[i] + '<a>');
             }
+            // TODO 匹配 @ 信息显示消息内容
         }
     }
 }])

@@ -15,8 +15,8 @@ function adjustScrollbars() {
     ele.scrollTop = ele.scrollHeight;
 }
 
-conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http", "$timeout",
-    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService, $timeout: angular.ITimeoutService) {
+conversationCtr.controller("conversationController", ["$scope", "$state", "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "$http", "$timeout", "$location", "$anchorScroll",
+    function($scope: any, $state: angular.ui.IStateService, mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, $http: angular.IHttpService, $timeout: angular.ITimeoutService, $location: angular.ILocationService, $anchorScroll: angular.IAnchorScrollService) {
 
         var targetId = $state.params["targetId"];
         var targetType = Number($state.params["targetType"]);
@@ -25,6 +25,115 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var conversation = {};
         var pasteImgFile : any = null;
         var groupid = targetType == webimmodel.conversationType.Private ? "0" : targetId;
+        var atArray : any[]  = [];  //TODO 删除时 atArray 同步删除
+        var isAtScroll = false;
+        var rawGroutList: webimmodel.Member[];
+        $scope.cursorPos = -1;
+        if (groupid != "0") {
+          $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
+          rawGroutList = webimutil.Helper.cloneObject($scope.groupInfo.memberList);
+
+          for (var i = rawGroutList.length-1; i >= 0; i--) {
+              if (rawGroutList[i].id === mainDataServer.loginUser.id) {
+                  rawGroutList.splice(i, 1);
+              }
+          }
+          $scope.showGroupList = webimutil.Helper.cloneObject(rawGroutList);
+        }
+        $scope.selectMember = function (item: webimmodel.Member) {
+            var obj = document.getElementById("message-content");
+            var curPos = $scope.cursorPos + 1;
+            $scope.atShow = false;
+            if($scope.cursorPos == -1 || obj.textContent.length <= curPos){
+              $scope.currentConversation.draftMsg = obj.innerHTML + item.name + ' ';
+            }
+            else{
+              var regS = new RegExp($scope.searchStr, "i");
+              $scope.currentConversation.draftMsg = obj.textContent.slice(0, curPos) + item.name + ' ' + obj.textContent.slice(curPos).replace(regS,'');
+            }
+            var exitFlag = false;
+            for(var i=0; i<atArray.length;i++){
+               if(atArray[i].id == item.id){
+                 exitFlag = true;
+                 break;
+               }
+            }
+            if(!exitFlag){
+              atArray.push({ "id": item.id, "name": item.name });
+            }
+
+            setTimeout(function () {
+                $scope.setFocus(obj, curPos + item.name.length + 1);
+            }, 0);
+            $scope.cursorPos = -1;
+        };
+        $scope.getCaretPosition = function(editableDiv: any) {
+            var caretPos = 0, containerEl:any = null, sel:any , range:any ;
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    if (range.commonAncestorContainer.parentNode == editableDiv) {
+                        caretPos = range.endOffset;
+                    }
+                }
+            } else if (document.selection && document.selection.createRange) {
+                range = document.selection.createRange();
+                if (range.parentElement() == editableDiv) {
+                    var tempEl = document.createElement("span");
+                    editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+                    var tempRange = range.duplicate();
+                    tempRange.moveToElementText(tempEl);
+                    tempRange.setEndPoint("EndToEnd", range);
+                    caretPos = tempRange.text.length;
+                }
+            }
+            return caretPos;
+        }
+        $scope.searchfriend = function(str: string) {
+            if(!$scope.groupInfo.memberList){
+              return
+            }
+            if (str == "") {
+                $scope.showGroupList = webimutil.Helper.cloneObject(rawGroutList);
+            } else {
+                var list = mainDataServer.contactsList.find(str, rawGroutList);
+                $scope.showGroupList = webimutil.Helper.cloneObject(list);
+            }
+        }
+        if (groupid) {
+          $scope.$watch('searchStr', function (newVal: string, oldVal: string) {
+              if (newVal === oldVal)
+                  return;
+              $scope.searchfriend(newVal);
+          });
+        }
+
+        $scope.setFocus = function(el: any, pos: number) {
+            el.focus();
+            var range: any;
+            var textNode = el.firstChild;
+            if (typeof window.getSelection != "undefined"
+            && typeof document.createRange != "undefined") {
+              range = document.createRange();
+              if(pos == -1){
+                 range.selectNodeContents(el);
+              }else{
+                 range.setStart(textNode, pos);
+                 range.setEnd(textNode, pos);
+              }
+              range.collapse(false);
+              var sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } else if (typeof document.body.createTextRange != "undefined") {
+              range = document.selection.createRange();
+              this.last = range;
+              range.moveToElementText(el);
+              range.select();
+            }
+        }　
+
         if(webimutil.Helper.os.mac){
            if(webimutil.Helper.browser.safari){
              angular.element(document.getElementsByClassName("expressionWrap")).css("top", "-230px");
@@ -42,6 +151,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               $scope.showCutScreen = true;
           }
         }
+
+        $scope.scrollTo = function(id: string) {
+              $location.hash(id);
+              $anchorScroll();
+        }
+
         RongIMSDKServer.getConversation(targetType, targetId).then(function(data) {
             if (!data) {
                 var conv = mainDataServer.conversation.createConversation(targetType, targetId);
@@ -69,6 +184,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         conversationServer.historyMessagesCache[targetType + "_" + targetId] = conversationServer.historyMessagesCache[targetType + "_" + targetId] || [];
 
         $scope.conversationServer = conversationServer;
+        updateTargetDetail();
 
         var currenthis = conversationServer.historyMessagesCache[targetType + "_" + targetId];
         if (currenthis.length == 0) {
@@ -106,6 +222,16 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 adjustScrollbars();
                 $scope.messagesloading = false;
             }, 0)
+        }
+
+
+        var atmsgs = conversationServer.atMessagesCache[targetType + "_" + targetId];
+        if (atmsgs && atmsgs.length > 0) {
+          var msgid = atmsgs[0].messageUId;
+          setTimeout(function () {
+              $scope.scrollTo(msgid);
+          }, 0);
+          atmsgs.length = 0;
         }
 
         $scope.tofriendinfo = function() {
@@ -150,6 +276,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                        // f = mainDataServer.contactsList.addFriend(f);
                        f = mainDataServer.contactsList.updateOrAddFriend(f);
                        mainDataServer.conversation.updateConversationDetail(targetType, targetId, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
+                       conversationServer.updateHistoryMessagesCache(targetId, targetType, data.result.displayName || data.result.user.nickname, data.result.user.portraitUri);
                    })
 
                } else if (isself)
@@ -169,7 +296,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             }
         }
-        updateTargetDetail();
 
         function packmysend(msg: any, msgType: string) {
             var msgouter = new RongIMLib.Message();
@@ -200,6 +326,60 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             }
         }
 
+        function findInSelArr(name: string, arr: any[],isdel: boolean){
+          var result = {'exist': false, 'id': '0'};
+          for(var i=0; i< arr.length; i++){
+             if(arr[i].name == name){
+               result.exist = true;
+               result.id = arr[i].id;
+               if(isdel){
+                 arr.splice(i, 1);
+               }
+               break;
+             }
+          }
+          return result;
+        }
+
+        function getAtArray(item: string){
+            var strTmp = item.split('@');
+            var atUserList: string[] = [];
+            if(strTmp.length > 1){
+              for(var i=1; i< strTmp.length; i++){
+                  var name = strTmp[i].slice(0, strTmp[i].indexOf(' '));
+                  var result = findInSelArr(name, atArray, false);
+                  if(result.exist){
+                    if (atUserList.indexOf(result.id) === -1) {
+                      atUserList.push(result.id);
+                    }
+                  }
+              }
+            }
+            return atUserList;
+        }
+
+        $scope.delAtContent = function (pos: number) {
+           var item = $scope.currentConversation.draftMsg.slice(0, pos);
+           var obj = document.getElementById("message-content");
+           var strTmp = item.split('@');
+           if(strTmp.length > 1){
+              var name = strTmp[strTmp.length - 1];
+              name = name.replace(/(\s*$)/g,'');
+              var result = findInSelArr(name, atArray, true);
+              if(result.exist){
+                //  obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos);
+                 if (pos >= obj.textContent.length) {
+                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos) + 'x';
+                     $scope.setFocus(obj, -1);
+                 }
+                 else {
+                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + 'X' + $scope.currentConversation.draftMsg.slice(pos);
+                     $scope.setFocus(obj, pos - strTmp[strTmp.length - 1].length);
+                 }
+              }
+           }
+        }
+
         $scope.sendBtn = function() {
             $scope.showemoji = false;
 
@@ -216,16 +396,38 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             //发送消息
             var msg = RongIMLib.TextMessage.obtain(con);
+            var atFlag = false;
+            var atUserList = getAtArray(con);
+            if (atUserList && atUserList.length > 0) {
+                atFlag = true;
+            }
+            if(atFlag){
+              var mentioneds = new RongIMLib.MentionedInfo();
+              mentioneds.type = webimmodel.AtTarget.Part;  // 1: 全部 2: 部分
+              mentioneds.userList = atUserList;
+              msg.mentionedInfo = mentioneds;
+            }
 
             RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
-
+               atArray = [];
             }, function(error) {
-                if(error.errorCode == 405){
-                  var msg = webimutil.Helper.cloneObject(error.message);
-                  msg.content = "您的消息已经发出，但被对方拒收";
-                  msg.panelType = webimmodel.PanelType.InformationNotification;
-                  addmessage(msg);
-                }
+              var content = '';
+              switch (error.errorCode) {
+                case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                   content = "您的消息已经发出，但被对方拒收";
+                   break;
+                case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                   content = "你不在该群组中";
+                   break;
+                default:
+
+              }
+              if(content){
+                var msg = webimutil.Helper.cloneObject(error.message);
+                msg.content = content;
+                msg.panelType = webimmodel.PanelType.InformationNotification;
+                addmessage(msg);
+              }
             });
 
             var msgouter = packmysend(msg, webimmodel.MessageType.TextMessage);
@@ -383,6 +585,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 $scope.$apply(function() {
                     $scope.showemoji = false;
                 });
+            }
+            if($scope.atShow){
+              $scope.$apply(function () {
+                $scope.atShow = false;
+              });
             }
         });
         // $scope.emojiList = RongIMLib.Expression.getAllExpression(60, 0);

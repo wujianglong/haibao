@@ -2,6 +2,15 @@
 /*
 	------------Reset--------------
 */
+#TestInput
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+    white-space: nowrap; /* Thanks to Herb Caudill comment */
+}
+
 [contenteditable=true]:empty:before{
   content: attr(placeholder);
   display: block; /* For Firefox */
@@ -219,6 +228,7 @@ input::-ms-clear{display:none;}
     position: relative;
     text-align: center;
     background: url(../img/barBg.png) repeat-y;
+    background-size: 40px 30px;
 }
 
 /*.LeftNav .LeftNav-item:first-child{ margin-top: 20px;}*/
@@ -1871,7 +1881,7 @@ input::-ms-clear{display:none;}
     overflow: hidden;
 }
 .mapBox img{
-    width: 250px;
+    width: 238px;
     height: 140px;
 }
 .mapBox span{
@@ -3005,4 +3015,145 @@ input::-ms-clear{display:none;}
     87.5% {
         box-shadow: 0 -20.8px 0 0 rgba(0, 153, 255, 0.2), 14.4px -14.4px 0 0 rgba(0, 153, 255, 0.2), 20px 0 0 0 rgba(0, 153, 255, 0.2), 14px 14px 0 0 rgba(0, 153, 255, 0.2), 0 20px 0 0 rgba(0, 153, 255, 0.2), -14.4px 14.4px 0 0 rgba(0, 153, 255, 0.5), -20.8px 0 0 0 rgba(0, 153, 255, 0.7), -14.4px -14.4px 0 0 #ffffff;
     }
+}
+
+/*                                 群公告                           */
+.groupAnnouncement{
+    width: 100%;
+    padding: 20px 60px;
+}
+.groupAnnouncement .editContent{
+    width: 100%;
+    height: 224px;
+    background: #fff;
+    border:1px solid #c3c3c3;
+    border-radius: 5px;
+    padding: 10px;
+    outline: none;
+    color: #000;
+}
+.groupAnnouncement .editContent:focus{
+    border-color: #66afe9;
+}
+.groupAnnouncement button.release{
+    width: 79px;
+    height: 37px;
+    text-align: right;
+    text-align: center;
+    background: #f1f1f1;
+    border:1px solid #d9d9da;
+    border-radius: 5px;
+    margin-top: 20px;
+    outline: none;
+    float: right;
+    color: #a9a9a9;
+    font-size: 14px;
+}
+.groupAnnouncement button.editState{
+    background: #0099ff;
+    color: #fff;
+    border:1px solid #0099ff;
+}
+/*                                      @功能                            */
+.arobase{
+    width: 150px;
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0px 2px rgba(17,55,94,0.2);
+    box-shadow: inset 0 0px 2px rgba(17,55,94,0.2);
+    position: absolute;
+    /*top:-80px;*/
+    bottom: 80px;
+    left: 30px;
+    background: #fff;
+    z-index: 9999;
+    max-height: 216px;
+    overflow: auto;
+}
+.arobase ul li{
+    padding: 5px 10px;
+    height: 36px;
+}
+.arobase ul li:hover{
+    background:
+}
+.arobase ul li img{
+    width: 26px;
+    height: 26px;
+    display: block;
+    margin-right: 9px;
+    border-radius: 50%;
+    float: left;
+}
+.arobase ul li span.involvesName{
+    line-height: 26px;
+    max-width: 77px;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    cursor: default;
+}
+#Messages .Message-text pre .at_function{
+    font-style: normal;
+    padding-right: 4px;
+}
+#Messages .Message-text pre .at_all_people{
+    display: block;
+}
+
+/*             有人at         */
+.chat_item .info .msg .at_show{
+    color: #cc3333;
+}
+
+/*                 弹框                 */
+.previewAnnounce{
+    width: 264px;
+    height: 144px;
+    border-radius: 5px;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -132px;
+    margin-top: -72px;
+    padding: 24px 34px;
+    background: #fff;
+    z-index: 99999;
+}
+.previewAnnounce h2{
+    line-height: 1.4;
+    min-height: 42px;
+}
+.previewAnnounce .picFooter {
+    text-align: center;
+    position: absolute;
+    bottom: 24px;
+}
+.previewAnnounce .picFooter .btn {
+    display: inline-block;
+    width: 74px;
+    height: 30px;
+    font-size: 14px;
+    outline: 0;
+    border: 1px solid #cecece;
+    color: #000;
+    background: #ebebeb;
+    border-radius: 5px;
+    padding: 0px;
+    line-height: 30px;
+}
+.previewAnnounce .picFooter .btn:first-child {
+    margin-right: 39px;
+}
+.previewAnnounce .picFooter .btn.cur {
+    color: #fff;
+    background: #008be7;
+    border-color: #008be7;
+}
+.previewAnnounce .picFooter .btn:hover {
+    color: #fff;
+    background: #0099ff;
+    border-color: #0099ff;
 }
