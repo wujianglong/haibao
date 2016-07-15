@@ -112,6 +112,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             var pic = <any>document.getElementsByClassName("previewPic")[0];
             if(e.keyCode === 13 && pic.style.visibility == 'visible'){
               $scope.uploadPasteImage();
+              e.preventDefault();
             }
         };
 

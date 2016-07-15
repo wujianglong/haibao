@@ -20,12 +20,6 @@ bower install
 tsd install
 ```
 
-### 启动测试用例
-
-```
-grunt karma
-```
-
 ### 编译开发代码
 
 ```

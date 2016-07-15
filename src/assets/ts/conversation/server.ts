@@ -244,9 +244,11 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         }
 
         function addAtMessage(id: string, type: string, item: webimmodel.Message){
-          var arr = conversationServer.atMessagesCache[type + "_" + id] || [];
-          var atMsg = {"messageUId": item.messageUId, "mentionedInfo": item.mentionedInfo};
-          arr.push(atMsg);
+          if (!conversationServer.atMessagesCache[type + "_" + id]) {
+              conversationServer.atMessagesCache[type + "_" + id] = [];
+          }
+          var atMsg = { "messageUId": item.messageUId, "mentionedInfo": item.mentionedInfo };
+          conversationServer.atMessagesCache[type + "_" + id].push(atMsg);
         }
 
         //消息里没有用户信息，要去本地的好友列表里查找
