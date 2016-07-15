@@ -98,7 +98,7 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
                 $state.go("main.searchfriend");
             }
         }
-        if(groupid){
+        if(groupid != '0'){
              var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
              addfriendinfo = "我是“" + groupname + "群”的" + mainDataServer.loginUser.nickName;
         }
