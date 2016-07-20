@@ -12,6 +12,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.historyMessagesCache = <any>{};
         conversationServer.conversationMessageList = <any>[];
         conversationServer.conversationMessageListShow = <any>[];
+        conversationServer.pullMessageTime = null;
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content.message.content
@@ -117,7 +118,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             // }
         }
 
-        function getHistory(id: string, type: string, count: number) {
+        function getHistory(id: string, type: string, lastTime: number, count: number) {
             var d = $q.defer();
             var conver = type;
             var currentConversationTargetId = id;
@@ -128,9 +129,10 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
 
             try {
 
-                RongIMSDKServer.getHistoryMessages(+conver, currentConversationTargetId, count).then(function(data) {
+                RongIMSDKServer.getHistoryMessages(+conver, currentConversationTargetId, lastTime, count).then(function(data) {
                     var has = data.has, list = <RongIMLib.Message[]>data.data;
                     var msglen = list.length;
+                    conversationServer.pullMessageTime = list[msglen-1].sentTime;
                     while (msglen--) {
                         var msgsdk = list[msglen];
 
@@ -204,6 +206,19 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             }
             messageAddUserInfo(item);
             arr.unshift(item);
+        }
+//定时清理消息缓存
+        function clearHistoryMessages(id: string, type: string) {
+            //TODO conversationServer.historyMessagesCache  应该删除定位到10条消息之前panel不为时间分割线的消息
+            conversationServer.historyMessagesCache = {};
+            // angular.forEach(conversationServer.historyMessagesCache, function (value, key) {
+            //     if (key != mainDataServer.conversation.currentConversation.targetType + "_" + mainDataServer.conversation.currentConversation.targetId) {
+            //         // if(value && value.length > 10){
+            //         //    value.splice(0, value.length - 10);
+            //         // }
+            //         value.length = 0;
+            //     }
+            // });
         }
 
         function compareDateIsAddSpan(first: Date, second: Date) {
@@ -339,16 +354,18 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.updateHistoryMessagesCache = updateHistoryMessagesCache;
         conversationServer.checkMessageExist = checkMessageExist;
         conversationServer.addAtMessage = addAtMessage;
+        conversationServer.clearHistoryMessages = clearHistoryMessages;
 
         return conversationServer;
     }])
 
 interface conversationServer {
     atMessagesCache: any
+    pullMessageTime: number
     historyMessagesCache: any
     conversationMessageList: any[]
     conversationMessageListShow: any[]
-    getHistory(id: string, type: number, count: number): angular.IPromise<any>
+    getHistory(id: string, type: number, lasttime: number, count: number): angular.IPromise<any>
     addHistoryMessages(id: string, type: number, item: webimmodel.Message): void
     messageAddUserInfo(item: webimmodel.Message): void
     unshiftHistoryMessages(id: string, type: number, item: any): void

@@ -1429,9 +1429,9 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         return RongIMLib.RongIMClient.getInstance().clearTextMessageDraft(type, targetId);
     }
 
-    RongIMSDKServer.getHistoryMessages = function(type: number, targetId: string, num: number) {
+    RongIMSDKServer.getHistoryMessages = function(type: number, targetId: string, lastTime:number, num: number) {
         var defer = $q.defer();
-        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, null, num, {
+        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, lastTime, num, {
             onSuccess: function(data, has) {
                 defer.resolve({
                     data: data,
@@ -1530,7 +1530,7 @@ interface RongIMSDKServer {
     getDraft(type: number, targetId: string): string
     setDraft(type: number, targetId: string, valur: string): boolean
     clearDraft(type: number, targetId: string): boolean
-    getHistoryMessages(type: number, targetId: string, num: number): angular.IPromise<{ data: RongIMLib.Message[], has: boolean }>
+    getHistoryMessages(type: number, targetId: string, lastTime:number, num: number): angular.IPromise<{ data: RongIMLib.Message[], has: boolean }>
     disconnect(): void
     logout(): void
     reconnect(callback?: any): void

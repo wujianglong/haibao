@@ -17,9 +17,16 @@ conversationDire.directive('atshowDire', function () {
                  var obj = document.getElementById("message-content");
                  var caretPos = scope.getCaretPosition(obj);
                 //  e = e || event;
+                if(!scope.showGroupList){
+                   return;
+                }
+                if(obj.textContent.length > 500 && keyCode!= 8){
+                   e.preventDefault();
+                   return;
+                }
              　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
                   scope.atShow = true;
-                  scope.searchStr = '';
+                  scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
                   scope.cursorPos = caretPos;
                   var obj = document.getElementById("message-content");
                   var hidInput = document.getElementById("TestInput");
@@ -46,6 +53,9 @@ conversationDire.directive('atshowDire', function () {
                      if (keyCode == 8 && text.indexOf('@') > -1){
                         // 判断名字是否在列表中,如果在,则删除该@
                         scope.delAtContent(caretPos);
+                     }
+                     else if(keyCode !== 16){
+                       scope.defaultSearch = false;
                      }
                      return;
                    }
@@ -148,7 +158,8 @@ conversationDire.directive('contenteditableDire', function() {
         require: '?ngModel',
         link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
             function replacemy(e: string) {
-                return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
+                // return e.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "");
+                return e.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             }
 
             var domElement = <any>element[0];
@@ -230,8 +241,9 @@ conversationDire.directive('contenteditableDire', function() {
 
             webimutil.Helper.browser.msie ? element.bind("keyup paste", read) : element.bind("input", read);
 
+            //仅转义复制的部分
             function read() {
-                var html = element.text();
+                var html = element.html();
                 html = html.replace(/^<br>$/i, "");
                 html = html.replace(/<br>/gi, "\n");
                 html = replacemy(html);

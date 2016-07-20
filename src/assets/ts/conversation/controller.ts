@@ -28,7 +28,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var atArray : any[]  = [];  //TODO 删除时 atArray 同步删除
         var isAtScroll = false;
         var rawGroutList: webimmodel.Member[];
+        var lastMsgTime: number = null;
         $scope.cursorPos = -1;
+        $scope.searchStr = '';
+        $scope.lastSearchStr = '';
+        $scope.defaultSearch = false;
         if (groupid != "0") {
           $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
           rawGroutList = webimutil.Helper.cloneObject($scope.groupInfo.memberList);
@@ -59,13 +63,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                }
             }
             if(!exitFlag){
-              atArray.push({ "id": item.id, "name": item.name });
+              atArray.push({ "id": item.id, "name": item.name, "everychar": item.everychar });
             }
 
             setTimeout(function () {
                 $scope.setFocus(obj, curPos + item.name.length + 1);
             }, 0);
             $scope.cursorPos = -1;
+            $scope.lastSearchStr = $scope.searchStr;
+            $scope.defaultSearch = false;
         };
         $scope.getCaretPosition = function(editableDiv: any) {
             var caretPos = 0, containerEl:any = null, sel:any , range:any ;
@@ -188,7 +194,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         var currenthis = conversationServer.historyMessagesCache[targetType + "_" + targetId];
         if (currenthis.length == 0) {
-            conversationServer.getHistory(targetId, targetType, 3).then(function(has) {
+            conversationServer.getHistory(targetId, targetType, 0, 5).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -327,11 +333,13 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         function findInSelArr(name: string, arr: any[],isdel: boolean){
-          var result = {'exist': false, 'id': '0'};
+          var result = {'exist': false, 'id': '0', 'name': '', 'everychar':''};
           for(var i=0; i< arr.length; i++){
              if(arr[i].name == name){
                result.exist = true;
                result.id = arr[i].id;
+               result.name = arr[i].name;
+               result.everychar = arr[i].everychar;
                if(isdel){
                  arr.splice(i, 1);
                }
@@ -376,11 +384,18 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                      obj.textContent = item.slice(0, item.lastIndexOf('@')) + 'X' + $scope.currentConversation.draftMsg.slice(pos);
                      $scope.setFocus(obj, pos - strTmp[strTmp.length - 1].length);
                  }
+                 $scope.defaultSearch = true;
               }
            }
         }
 
         $scope.sendBtn = function() {
+            var _message = $scope.currentConversation.draftMsg;
+
+            _message = _message.replace(/&lt;div&gt;/gi,'<br>').replace(/&lt;\/div&gt;/gi,'');
+            _message = _message.replace(/^<br>$/i, "");
+            _message = _message.replace(/<br>/gi, "\n")
+            _message = _message.replace(/&amp;/gi, "&");
             $scope.showemoji = false;
 
             if (!targetType && !targetId) {
@@ -388,7 +403,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 return;
             }
 
-            var con = RongIMLib.RongIMEmoji.symbolToEmoji($scope.currentConversation.draftMsg);
+            var con = RongIMLib.RongIMEmoji.symbolToEmoji(_message);
 
             if (con == "") {
                 return;
@@ -543,7 +558,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            conversationServer.getHistory(targetId, targetType, 20).then(function(has) {
+            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 20).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -557,7 +572,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            conversationServer.getHistory(targetId, targetType, 20).then(function(has) {
+            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 20).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }

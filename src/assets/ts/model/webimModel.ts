@@ -167,7 +167,10 @@ module webimmodel {
         }
     }
 
-
+    // function replacemy(ele: string) {
+    //     return ele.replace(new RegExp("<[\\s\\S.]*?>", "ig"), "<amp>" + ele + "</amp>");
+    //     // return '<xmp>' + e + '</xmp>';
+    // }
 
     export class Message extends ChatPanel {
         content: any;
@@ -214,10 +217,12 @@ module webimmodel {
                 case MessageType.TextMessage:
                     var texmsg = new TextMessage();
                     var content = SDKmsg.content.content;
+
                     if (RongIMLib.RongIMEmoji && RongIMLib.RongIMEmoji.emojiToHTML) {
                         content = RongIMLib.RongIMEmoji.emojiToHTML(content);
                     }
                     texmsg.content = content;
+                    // texmsg.content = '<xmp>' + content + '</xmp>';
                     msg.content = texmsg;
                     msg.mentionedInfo = SDKmsg.content.mentionedInfo;
                     break;

@@ -155,6 +155,7 @@ module webimutil {
                 var target_h: number;
 
                 var imgarea = img.width * img.height;
+                var _y = 0, _x = 0, maxWidth = 240, maxHeight = 240;
                 if (imgarea > area) {
                     var scale = Math.sqrt(imgarea / area);
                     scale = Math.ceil(scale * 100) / 100;
@@ -171,6 +172,19 @@ module webimutil {
                 context.drawImage(img, 0, 0, target_w, target_h);
 
                 try {
+                    if(canvas.width > maxWidth || canvas.height > maxHeight){
+                        if(target_w > maxWidth){
+                          _x = (target_w - maxWidth) / 2;
+                          target_w = maxWidth;
+                        }
+                        if(target_h > maxHeight){
+                          _y = (target_h - maxHeight) / 2;
+                          target_h = maxHeight;
+                        }
+                        var imgData = context.getImageData(_x, _y, target_w, target_h);
+                        context.createImageData(target_w, target_h);
+                        context.putImageData(imgData, 0, 0);
+                    }
                     var _canvas = canvas.toDataURL("image/jpeg", 0.5);
                     callback(obj, _canvas);
                 } catch (e) {
