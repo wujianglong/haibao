@@ -360,7 +360,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                           if(item.mentionedMsg){
                              conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
                              var atType = conversationitem.mentionedInfo.type;
-                             var atUsers = conversationitem.mentionedInfo.userList;
+                             var atUsers = conversationitem.mentionedInfo.userIdList;
                              if(atType == webimmodel.AtTarget.All){
                                 atStr = "[@所有人]";
                              }else if(atType == webimmodel.AtTarget.Part){
@@ -694,15 +694,16 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             RongIMSDKServer.getConversation(type, id).then(function (data) {
                 if (data) {
                     var result = mainDataServer.conversation.parseConversation(data);
-                    var oldUnread = 0, totalUnreadCount = mainDataServer.conversation.totalUnreadCount, isfirst = false;
+                    var oldUnread = 0, totalUnreadCount = mainDataServer.conversation.totalUnreadCount, isfirst = false, conversationItem:webimmodel.Conversation;
                     for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
-                        if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
-                            oldUnread = mainDataServer.conversation.conversations[i].unReadNum;
+                        conversationItem = mainDataServer.conversation.conversations[i];
+                        if (conversationItem.targetType == type && conversationItem.targetId == id) {
+                            oldUnread = conversationItem.unReadNum;
                             if(i == 0){
                               isfirst = true;
-                              mainDataServer.conversation.conversations[i].lastMsg = result.item.lastMsg;
-                              mainDataServer.conversation.conversations[i].unReadNum = result.item.unReadNum;
-                              mainDataServer.conversation.conversations[i].atStr = result.item.atStr;
+                              conversationItem.lastMsg = result.item.lastMsg;
+                              conversationItem.unReadNum = result.item.unReadNum;
+                              conversationItem.atStr = result.item.atStr;
                             }
                             else{
                               mainDataServer.conversation.conversations.splice(i, 1);
@@ -1431,7 +1432,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
 
     RongIMSDKServer.getHistoryMessages = function(type: number, targetId: string, lastTime:number, num: number) {
         var defer = $q.defer();
-        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, lastTime, num, {
+        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, null, num, {
             onSuccess: function(data, has) {
                 defer.resolve({
                     data: data,

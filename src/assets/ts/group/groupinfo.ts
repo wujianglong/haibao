@@ -162,7 +162,7 @@ groupInfo.controller("groupbulletinController", ["$scope", "$state", "$statePara
             var msg = RongIMLib.TextMessage.obtain($scope.message);
             var mentioneds = new RongIMLib.MentionedInfo();
             mentioneds.type = 1;
-            mentioneds.userList = [""];
+            mentioneds.userIdList = [""];
             msg.mentionedInfo = mentioneds;
 
             RongIMSDKServer.sendMessage(targettype, groupid, msg).then(function (data) {

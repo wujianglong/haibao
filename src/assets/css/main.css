@@ -29,6 +29,7 @@ html, body {
 }
 body{
     min-width: 1000px;
+    -webkit-app-region: drag;
 }
 /** 清除内外边距 **/
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
@@ -49,7 +50,7 @@ font {
 body,
 button, input, select, textarea /* for ie */
 {
-    font-family: "Helvetica Neue", Helvetica,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+    font-family: "Helvetica Neue", Helvetica,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif; -webkit-app-region: no-drag;
 }
 
 h1, h2, h3, h4, h5, h6 {

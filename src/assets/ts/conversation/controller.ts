@@ -46,7 +46,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
         $scope.selectMember = function (item: webimmodel.Member) {
             var obj = document.getElementById("message-content");
-            var curPos = $scope.cursorPos + 1;
+            var curPos = $scope.cursorPos;
             $scope.atShow = false;
             if($scope.cursorPos == -1 || obj.textContent.length <= curPos){
               $scope.currentConversation.draftMsg = obj.innerHTML + item.name + ' ';
@@ -265,7 +265,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 
           }, function(error) {
-              console.log('sendReadReceiptMessage', error.errorCode);
+              console.log('sendReadReceiptMessage error', error.errorCode);
           });
         }
         // sendReadReceiptMessage();
@@ -377,12 +377,12 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               if(result.exist){
                 //  obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos);
                  if (pos >= obj.textContent.length) {
-                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos) + 'x';
+                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos);
                      $scope.setFocus(obj, -1);
                  }
                  else {
-                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + 'X' + $scope.currentConversation.draftMsg.slice(pos);
-                     $scope.setFocus(obj, pos - strTmp[strTmp.length - 1].length);
+                     obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos);
+                     $scope.setFocus(obj, pos - strTmp[strTmp.length - 1].length - 1);
                  }
                  $scope.defaultSearch = true;
               }
@@ -419,7 +419,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(atFlag){
               var mentioneds = new RongIMLib.MentionedInfo();
               mentioneds.type = webimmodel.AtTarget.Part;  // 1: 全部 2: 部分
-              mentioneds.userList = atUserList;
+              mentioneds.userIdList = atUserList;
               msg.mentionedInfo = mentioneds;
             }
 
@@ -558,7 +558,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 20).then(function(has) {
+            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -572,7 +572,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 20).then(function(has) {
+            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -686,7 +686,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                         $scope.$apply();
                     },
                     'UploadProgress': function(up: any, file: any) {
-                        console.log(file.name + file.percent);
                         $scope.uploadStatus.progress = file.percent + "%";
                         setTimeout(function() {
                             $scope.$apply();

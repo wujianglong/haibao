@@ -145,6 +145,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                             case webimmodel.MessageType.LocationMessage:
                             case webimmodel.MessageType.ImageMessage:
                             case webimmodel.MessageType.RichContentMessage:
+                            case webimmodel.MessageType.FileMessage:
                                 var item = webimmodel.Message.convertMsg(msgsdk);
                                 if (item) {
                                     unshiftHistoryMessages(currentConversationTargetId, conver, item);

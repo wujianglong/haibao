@@ -610,6 +610,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.MessageType.LocationMessage:
                     case webimmodel.MessageType.ImageMessage:
                     case webimmodel.MessageType.RichContentMessage:
+                    case webimmodel.MessageType.FileMessage:
                         if ($state.is("main.chat") && !document.hidden){
                           sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                         }

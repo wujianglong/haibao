@@ -1826,9 +1826,9 @@ declare module RongIMLib {
 declare module RongIMLib {
     class MentionedInfo {
         type: number;
-        userList: string[];
+        userIdList: string[];
         mentionedContent: string;
-        constructor(type?: number, userList?: string[], mentionedContent?: string);
+        constructor(type?: number, userIdList?: string[], mentionedContent?: string);
     }
     class Conversation {
         conversationTitle: string;

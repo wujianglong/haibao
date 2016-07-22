@@ -12,7 +12,7 @@ conversationDire.directive('atshowDire', function () {
             element.bind("click", function (e) {
                 scope.cursorPos = document.getSelection().focusOffset;
             });
-            element.bind("keydown", function (e) {
+            element.bind("keyup", function (e) {
                  var keyCode = e.keyCode;
                  var obj = document.getElementById("message-content");
                  var caretPos = scope.getCaretPosition(obj);
@@ -25,9 +25,17 @@ conversationDire.directive('atshowDire', function () {
                    return;
                 }
              　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+                   var lastChar = '';
+                   if(caretPos > 1){
+                     lastChar = obj.textContent.substr(caretPos - 2, 1);
+                     if(lastChar != ' '){
+                       return;
+                     }
+                   }
                   scope.atShow = true;
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
                   scope.cursorPos = caretPos;
+                  scope.$apply();
                   var obj = document.getElementById("message-content");
                   var hidInput = document.getElementById("TestInput");
                   var styleObj = window.getComputedStyle(obj, null);
@@ -57,21 +65,85 @@ conversationDire.directive('atshowDire', function () {
                      else if(keyCode !== 16){
                        scope.defaultSearch = false;
                      }
+                     scope.$apply();
                      return;
                    }
                    if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
                       scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+                      scope.$apply();
                    }
                    else if(keyCode == 8 && scope.searchStr){
                      if(scope.searchStr.length > 0){
                        scope.searchStr = scope.searchStr.substr(0, scope.searchStr.length - 1);
+                       scope.$apply();
                      }
                    }
-                   else{
+                   else if(keyCode != 16){
                      scope.atShow = false;
                    }
                 }
             });
+
+            // element.bind("keydown", function (e) {
+            //      var keyCode = e.keyCode;
+            //      var obj = document.getElementById("message-content");
+            //      var caretPos = scope.getCaretPosition(obj);
+            //     //  e = e || event;
+            //     if(!scope.showGroupList){
+            //        return;
+            //     }
+            //     if(obj.textContent.length > 500 && keyCode!= 8){
+            //        e.preventDefault();
+            //        return;
+            //     }
+            //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+            //       scope.atShow = true;
+            //       scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
+            //       scope.cursorPos = caretPos;
+            //       var obj = document.getElementById("message-content");
+            //       var hidInput = document.getElementById("TestInput");
+            //       var styleObj = window.getComputedStyle(obj, null);
+            //       var lineWidth = obj.clientWidth - 80;
+            //       var sel = document.getSelection(),
+            //           text = obj.textContent.slice(0, sel.focusOffset);
+            //       hidInput.style.visibility = 'visible';
+            //       hidInput.innerText = text;
+            //       hidInput.style.fontSize = styleObj.getPropertyValue('font-size');
+            //       hidInput.style.fontFamily = styleObj.getPropertyValue('font-family');
+            //       hidInput.style.visibility = 'hidden';
+            //       var actWidth = (hidInput.clientWidth + 1) % lineWidth;
+            //       var lineNum = (hidInput.clientWidth + 1) / lineWidth;
+            //       var atDivHeight = scope.showGroupList.length > 6 ? 36*6 : 36*scope.showGroupList.length;
+            //       $('div.arobase').css('bottom', obj.clientHeight - lineNum * hidInput.clientHeight);
+            //       $('div.arobase').css('left', actWidth);
+            //     }
+            //     else{
+            //        if(!scope.atShow){
+            //          var obj = document.getElementById("message-content");
+            //         //  var caretPos = scope.getCaretPosition(obj);
+            //          var text = obj.textContent.slice(0, caretPos);
+            //          if (keyCode == 8 && text.indexOf('@') > -1){
+            //             // 判断名字是否在列表中,如果在,则删除该@
+            //             scope.delAtContent(caretPos);
+            //          }
+            //          else if(keyCode !== 16){
+            //            scope.defaultSearch = false;
+            //          }
+            //          return;
+            //        }
+            //        if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
+            //           scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+            //        }
+            //        else if(keyCode == 8 && scope.searchStr){
+            //          if(scope.searchStr.length > 0){
+            //            scope.searchStr = scope.searchStr.substr(0, scope.searchStr.length - 1);
+            //          }
+            //        }
+            //        else{
+            //          scope.atShow = false;
+            //        }
+            //     }
+            // });
         }
     };
 });

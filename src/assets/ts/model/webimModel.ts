@@ -135,7 +135,8 @@ module webimmodel {
         ProfileNotificationMessage: "ProfileNotificationMessage",
         CommandNotificationMessage: "CommandNotificationMessage",
         ReadReceiptMessage: "ReadReceiptMessage",
-        TypingStatusMessage: "TypingStatusMessage"
+        TypingStatusMessage: "TypingStatusMessage",
+        FileMessage: "FileMessage"
     }
 
     export enum conversationType {
@@ -266,6 +267,16 @@ module webimmodel {
                     location.poi = SDKmsg.content.poi;
 
                     msg.content = location;
+                    break;
+                case MessageType.FileMessage:
+                    var file = new FileMessage();
+                    var content = SDKmsg.content.content || "";
+                    file.name = SDKmsg.content.name;
+                    file.size = SDKmsg.content.size;
+                    file.type = SDKmsg.content.type;
+                    file.uri = SDKmsg.content.uri;
+                    file.extra = SDKmsg.content.extra;
+                    msg.content = file;
                     break;
                 case MessageType.InformationNotificationMessage:
                     // var info = new InformationNotificationMessage();
@@ -528,6 +539,17 @@ module webimmodel {
         operation: string;
         extra: string;
         messageName: string;
+    }
+
+    export class FileMessage {
+        userInfo: UserInfo;
+        // content: string;
+        // title: string;
+        name: string;
+        size: number;
+        type: number;
+        uri: string;
+        extra: string;
     }
 
     export class GetHistoryPanel extends ChatPanel {
