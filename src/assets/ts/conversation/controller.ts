@@ -399,6 +399,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             _message = _message.replace(/^<br>$/i, "");
             _message = _message.replace(/<br>/gi, "\n")
             _message = _message.replace(/&amp;/gi, "&");
+            _message = _message.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
             $scope.showemoji = false;
 
             if (!targetType && !targetId) {
