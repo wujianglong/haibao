@@ -347,7 +347,7 @@ module webimmodel {
                         groupnot.content = SDKmsg.content.message;
                         msg.content = groupnot;
                         msg.panelType = webimmodel.PanelType.InformationNotification;
-                    } else if(SDKmsg.objectName == "RC:RLStart" || SDKmsg.objectName == "RC:RL"){
+                    } else if(SDKmsg.objectName == "RC:RLStart" || SDKmsg.objectName == "RC:RL" || SDKmsg.objectName == "RC:RcCmd"){
 
                     }
                     else
