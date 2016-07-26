@@ -22,6 +22,14 @@ declare module RongIMLib {
         static stop(data?: string): void
         static onprogress(): void
     }
+    class RongUploadLib {
+        static init(imgOpts?: any, fileOpts?: any): void
+        static getInstance(): RongUploadLib;
+        setListeners(listener: any): void
+        startUpload(conversationType: string, targetId: string): void
+        stopUpload(): void
+        getThumbnail(): void
+    }
 }
 
 interface JQuery {
@@ -45,7 +53,9 @@ interface Document {
 interface HTMLElement{
   createTextRange:any;
 }
-
+interface Element{
+  children:any;
+}
 declare var window: Window
 
 interface Notification extends Function {

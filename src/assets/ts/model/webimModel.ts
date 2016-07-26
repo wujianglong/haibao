@@ -161,6 +161,10 @@ module webimmodel {
         AcceptApplyGroup = 101, RejectApplyGroup = 102, AcceptInviteAddGroup = 201, RejectInviteAddGroup = 202
     }
 
+    export enum FileState {
+        Uploading = 0, Canceled = 1, Failed = 2, Success = 3
+    }
+
     export class ChatPanel {
         panelType: PanelType
         constructor(type: PanelType) {
@@ -276,6 +280,7 @@ module webimmodel {
                     file.type = SDKmsg.content.type;
                     file.uri = SDKmsg.content.uri;
                     file.extra = SDKmsg.content.extra;
+                    file.state = FileState.Success;
                     msg.content = file;
                     break;
                 case MessageType.InformationNotificationMessage:
@@ -550,6 +555,8 @@ module webimmodel {
         type: number;
         uri: string;
         extra: string;
+        state: FileState;
+        progress: number;  // 0-100
     }
 
     export class GetHistoryPanel extends ChatPanel {

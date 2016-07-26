@@ -616,14 +616,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
                         addmessage(msg);
                         //TODO 判断是@消息时添加
-                        if(msg.mentionedInfo){
+                        if(msg.content.mentionedInfo){
                           var isAtMe = false;
-                          if(msg.mentionedInfo.type == webimmodel.AtTarget.All){
+                          if(msg.content.mentionedInfo.type == webimmodel.AtTarget.All){
                             isAtMe = true;
                           }
-                          if(msg.mentionedInfo.type == webimmodel.AtTarget.Part){
-                            for(var j = 0; j < msg.mentionedInfo.userList.length; j++){
-                               if(msg.mentionedInfo.userList[j] == mainDataServer.loginUser.id){
+                          if(msg.content.mentionedInfo.type == webimmodel.AtTarget.Part){
+                            for(var j = 0; j < msg.content.mentionedInfo.userList.length; j++){
+                               if(msg.content.mentionedInfo.userList[j] == mainDataServer.loginUser.id){
                                  isAtMe = true;
                                }
                             }

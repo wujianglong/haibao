@@ -346,6 +346,21 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
           return !keepGoing;
         }
 
+        function getMessageById(id: string, type: string, messageuid: string){
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          var keepGoing = true;
+          var msg:webimmodel.Message = null;
+          angular.forEach(currenthis, function (value, key) {
+              if(keepGoing){
+                if (value.panelType == webimmodel.PanelType.Message && value.messageUId == messageuid) {
+                    keepGoing = false;
+                    msg = value;
+                }
+              }
+          });
+          return msg;
+        }
+
         conversationServer.getHistory = getHistory;
         conversationServer.addHistoryMessages = addHistoryMessages;
         conversationServer.messageAddUserInfo = messageAddUserInfo;
@@ -356,6 +371,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.checkMessageExist = checkMessageExist;
         conversationServer.addAtMessage = addAtMessage;
         conversationServer.clearHistoryMessages = clearHistoryMessages;
+        conversationServer.getMessageById = getMessageById;
 
         return conversationServer;
     }])
@@ -377,4 +393,5 @@ interface conversationServer {
     updateHistoryMessagesCache(id: string, type:number, name: string, portrait: string): void
     checkMessageExist(id: string, type:number, messageuid: string): boolean
     addAtMessage(id: string, type: number, item: webimmodel.Message): void
+    getMessageById(id: string, type:number, messageuid: string): webimmodel.Message
 }

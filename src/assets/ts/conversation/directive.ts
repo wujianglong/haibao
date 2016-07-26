@@ -603,6 +603,93 @@ conversationDire.directive("locationMessage", [function() {
     }
 }])
 
+conversationDire.directive("fileMessage", [function() {
+    return {
+        restrict: "E",
+        scope: { item: "=" },
+        template: '<div class="" id="{{itemid}}">' +
+        '<div class="upload_file">' +
+         '<div class="out_border">' +
+            '<div class="file_type fl">' +
+              '<img ng-src="{{imgType}}">' +
+            '</div>' +
+            '<div class="file_name fl">' +
+              '<p class="p1">{{item.name}}.{{item.type}}</p>' +
+              '<p class="p2">{{showSize}}</p>' +
+              '<div class="up_process"><div></div></div>' +
+            '</div>' +
+            '<div ng-show="isover"  class="file_btn fr" ng-click="Download()">' +
+            '</div>' +
+            '<div ng-show="isuploading" class="file_btn_close fr" ng-click="Cancel()">' +
+            '</div>' +
+         '</div>' +
+        '</div>' +
+        '</div>',
+        link: function(scope: any, ele: angular.IRootElementService, attr: any) {
+            var imgType = 'undefined', showSize = '';
+            scope.itemid = scope.$parent.item.messageUId;
+            scope.Cancel =  function(){
+              scope.item.state = 1;
+            }
+            scope.Download =  function(){
+              window.open(scope.item.uri, '_self');
+            }
+            function fomate(num: number){
+              var result = Math.ceil(num * 100);
+              return result / 100;
+            }
+            switch(scope.item.type){
+              case 'doc':
+              case 'mp3':
+              case 'mp4':
+              case 'txt':
+              case 'xlsx':
+                 imgType = scope.item.type;
+                 break;
+              case 'docx':
+                 imgType = 'doc';
+                 break;
+            }
+            imgType = 'assets/img/' + scope.imgType + '.png';
+            scope.imgType = imgType;
+
+            updateState();
+            function updateState(){
+              scope.isover = scope.item.state == webimmodel.FileState.Success, scope.isuploading = scope.item.state == webimmodel.FileState.Uploading || scope.item.state == -1;
+              switch (scope.item.state) {
+                case webimmodel.FileState.Canceled:
+                  showSize = '已取消';
+                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                  break;
+                case webimmodel.FileState.Failed:
+                  showSize = '上传失败';
+                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                  break;
+                case -1:
+                case webimmodel.FileState.Uploading:
+                  showSize = scope.item.size >= 1024 ? fomate(scope.item.size / 1024) + 'M' : fomate(scope.item.size) + 'K';
+                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'block');
+                  angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', scope.item.extra);
+                  break;
+                case webimmodel.FileState.Success:
+                  showSize = scope.item.size >= 1024 ? fomate(scope.item.size / 1024) + 'M' : fomate(scope.item.size) + 'K';
+                  angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
+                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                  unbingWatch();
+                  break;
+              }
+              scope.showSize = showSize;
+            }
+
+            var unbingWatch = scope.$watch("item.state", function(newVal: any, oldVal: any) {
+              if (newVal === oldVal)
+                  return;
+              updateState();
+            });
+        }
+    }
+}])
+
 conversationDire.directive("dateMessage", [function() {
     return {
         restrict: "E",

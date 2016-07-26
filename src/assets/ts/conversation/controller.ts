@@ -4,6 +4,7 @@
 
 var conversationCtr = angular.module("webim.conversation.controller", ["webim.main.server", "webim.conversation.server"]);
 var IMGDOMAIN = "http://7xogjk.com1.z0.glb.clouddn.com/";
+var FILEDOMAIN = "http://o83059m7d.bkt.clouddn.com/";
 function adjustScrollbars() {
     var ele = document.getElementById("Messages");
     if (!ele)
@@ -420,6 +421,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               var mentioneds = new RongIMLib.MentionedInfo();
               mentioneds.type = webimmodel.AtTarget.Part;  // 1: 全部 2: 部分
               mentioneds.userIdList = atUserList;
+              mentioneds.mentionedContent = con;
               msg.mentionedInfo = mentioneds;
             }
 
@@ -625,26 +627,102 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         //     uploadFileInit();
         // }
 
-        conversationServer.initUpload = function(){
-          mainServer.user.getImageToken().success(function(rep) {
-              //qiniu上传
-              conversationServer.uploadFileToken = rep.result.token;
-              uploadFileInit();
-          }).error(function() {
-              webimutil.Helper.alertMessage.error("图片上传初始化失败", 2);
-          });
-        }
-        conversationServer.initUpload();
-        $scope.uploadStatus = {
-            show: false,
-            progress: 0,
-            cancle: function() {
-                qiniuuploader.stop && qiniuuploader.stop();
-                $scope.uploadStatus.show = false;
-                $scope.uploadStatus.progress = 0;
-                qiniuuploader.files.pop();
-            }
-        }
+        // conversationServer.initUpload = function(){
+        //   mainServer.user.getImageToken().success(function(rep) {
+        //       //qiniu上传
+        //       conversationServer.uploadFileToken = rep.result.token;
+        //       uploadFileInit();
+        //   }).error(function() {
+        //       webimutil.Helper.alertMessage.error("图片上传初始化失败", 2);
+        //   });
+        // }
+        // conversationServer.initUpload();
+        // $scope.uploadStatus = {
+        //     show: false,
+        //     progress: 0,
+        //     cancle: function() {
+        //         qiniuuploader.stop && qiniuuploader.stop();
+        //         $scope.uploadStatus.show = false;
+        //         $scope.uploadStatus.progress = 0;
+        //         qiniuuploader.files.pop();
+        //     }
+        // }
+        //
+        // RongIMLib.RongUploadLib.init(
+        //   {domain:IMGDOMAIN,drop_element:'Message',container:'MessageForm',browse_button:'upload-file'}
+        //   // {domain:'http://o83059m7d.bkt.clouddn.com/',drop_element:'container2',container:'container2',browse_button:'pickfiles2'}
+        // );
+        //
+        // RongIMLib.RongUploadLib.getInstance().setListeners({
+        //   onFileAdded:function(files: any){
+        //       RongIMLib.RongUploadLib.getInstance().startUpload($scope.currentConversation.targetType,$scope.currentConversation.targetId);
+        //       for (var i = 0, len = files.length; i < len; i++) {
+        //           if (files[i].type.indexOf("image") > -1) {
+        //             continue;
+        //           }
+        //         var msg = new webimmodel.Message();
+        //         msg.conversationType = $scope.currentConversation.targetType;
+        //         msg.objectName = 'RC:FileMsg';
+        //         msg.messageDirection = webimmodel.MessageDirection.SEND;
+        //         msg.messageId = files[i].id;
+        //         msg.messageUId = files[i].id;
+        //         msg.senderUserId = mainDataServer.loginUser.id;
+        //         msg.sentTime = new Date();
+        //         msg.targetId = $scope.currentConversation.targetId;
+        //         msg.messageType = webimmodel.MessageType.FileMessage;
+        //         var file: any = new webimmodel.FileMessage();
+        //         file.name = files[i].name;
+        //         file.size = files[i].size/1024;
+        //         file.type = '';
+        //         // file.uri = SDKmsg.content.uri;
+        //         // file.extra = SDKmsg.content.extra;
+        //         file.state = 0;
+        //         msg.content = file;
+        //         addmessage(msg);
+        //       }
+        //       $scope.$apply();
+        //   },
+        //   onBeforeUpload:function(file: any){
+        //     if(file.type.indexOf('image') > -1){
+        //       $scope.uploadStatus.show = true;
+        //       $scope.$apply();
+        //     }
+        //   },
+        //   onUploadProgress:function(file: any){
+        //     if(file.type.indexOf('image') > -1){
+        //       $scope.uploadStatus.progress = file.percent + "%";
+        //     }else{
+        //       var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
+        //       item.content.extra = file.percent + "%";
+        //       item.content.state = item.content.state == 0 ? -1 : 0;
+        //     }
+        //     // $('#'+file.id).find('div.up_process > div').css('width', file.percent + "%");
+        //     setTimeout(function () {
+        //         $scope.$apply();
+        //     });
+        //   },
+        //   onFileUploaded:function(message: webimmodel.Message){
+        //     var info = JSON.parse(info);
+        //     var item: webimmodel.Message = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
+        //     item.content.uri = IMGDOMAIN + info.key;
+        //     item.content.state = 3;
+        //     $scope.uploadStatus.show = false;
+        //     $scope.uploadStatus.progress = 0;
+        //     $scope.$apply();
+        //   },
+        //   onError:function(err: any, errTip: string){
+        //       // for(var i = 0;i < up.files.lenght; i++){
+        //       //   var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, up.files[i].id);
+        //       //   item.content.state = 2;
+        //       // }
+        //       $scope.uploadStatus.show = false;
+        //       webimutil.Helper.alertMessage.error("上传图片出错！", 2);
+        //
+        //   },
+        //   onUploadComplete:function(){
+        //   }
+        // });
+
         var qiniuuploader: any;
         function uploadFileInit() {
             qiniuuploader = Qiniu.uploader({
