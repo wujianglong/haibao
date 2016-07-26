@@ -375,7 +375,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
            var strTmp = item.split('@');
            if(strTmp.length > 1){
               var name = strTmp[strTmp.length - 1];
-              name = name.replace(/(\s*$)/g,'');
+              // name = name.replace(/(\s*$)/g,'');
               var result = findInSelArr(name, atArray, true);
               if(result.exist){
                 //  obj.textContent = item.slice(0, item.lastIndexOf('@')) + $scope.currentConversation.draftMsg.slice(pos);
@@ -394,6 +394,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.sendBtn = function() {
             var _message = $scope.currentConversation.draftMsg;
+            _message = _message.replace(/(^\s*)|(\s*$)/g,'');  //限制消息不能为空格或者空行
+            if(_message == ''){
+              webimutil.Helper.alertMessage.error("消息内容不能为空", 2);
+              return;
+            }
 
             _message = _message.replace(/&lt;div&gt;/gi,'<br>').replace(/&lt;\/div&gt;/gi,'');
             _message = _message.replace(/^<br>$/i, "");
@@ -440,8 +445,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                    content = "你不在该群组中";
                    break;
                 default:
-
+                  //  webimutil.Helper.alertMessage.error("消息发送失败,错误代码 " + error.errorCode, 2);
               }
+              console.log('消息发送失败,错误代码:' + error.errorCode);
               if(content){
                 var msg = webimutil.Helper.cloneObject(error.message);
                 msg.content = content;
