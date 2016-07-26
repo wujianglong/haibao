@@ -429,7 +429,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               var mentioneds = new RongIMLib.MentionedInfo();
               mentioneds.type = webimmodel.AtTarget.Part;  // 1: 全部 2: 部分
               mentioneds.userIdList = atUserList;
-              mentioneds.mentionedContent = con;
+              // mentioneds.mentionedContent = con;
               msg.mentionedInfo = mentioneds;
             }
 
