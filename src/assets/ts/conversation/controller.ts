@@ -433,7 +433,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               msg.mentionedInfo = mentioneds;
             }
 
-            RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
+            RongIMSDKServer.sendMessage(targetType, targetId, msg, atFlag && (targetType == webimmodel.conversationType.Group || targetType == webimmodel.conversationType.Discussion)).then(function() {
                atArray = [];
             }, function(error) {
               var content = '';

@@ -1298,8 +1298,9 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         RongIMLib.RongIMClient.setConnectionStatusListener(option);
     }
 
-    RongIMSDKServer.sendMessage = function(conver: number, targetId: string, content: any) {
+    RongIMSDKServer.sendMessage = function(conver: number, targetId: string, content: any, isAt: boolean) {
         var defer = $q.defer();
+        var isAtMsg = isAt || false;
 
         RongIMLib.RongIMClient.getInstance().sendMessage(+conver, targetId, content, {
             onSuccess: function(data) {
@@ -1334,7 +1335,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
                 }
                 console.log('发送失败:' + info);
             }
-        }, true);
+        }, isAtMsg);
 
         return defer.promise;
     }
@@ -1523,7 +1524,7 @@ interface RongIMSDKServer {
     removeConversation(type: number, targetId: string): angular.IPromise<boolean>
     clearUnreadCount(type: number, targetid: string): angular.IPromise<boolean>
     getTotalUnreadCount(): angular.IPromise<number>
-    sendMessage(conver: number, targetId: string, content: any): angular.IPromise<RongIMLib.Message>
+    sendMessage(conver: number, targetId: string, content: any, isAt?: boolean): angular.IPromise<RongIMLib.Message>
     // conversationList(): any
     getConversationList(): angular.IPromise<RongIMLib.Conversation[]>
     getConversation(type: number, targetId: string): angular.IPromise<RongIMLib.Conversation>
