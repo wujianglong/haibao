@@ -3232,9 +3232,14 @@ input::-ms-clear{display:none;}
     background: url(../img/icons.png) -60px -672px/100px auto no-repeat;
 }
 /*                             没有网络                           */
+
 .no_network{
     text-align: center;
-    display: none;
+    position: fixed;
+    top:54px;
+    width: 100%;
+    z-index: 9999;
+    visibility:hidden;
 }
 .no_network span{
     padding:11px;

@@ -183,14 +183,25 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                 }
             }
 
+            function adjustNoNet() {
+                var ele = document.getElementById("Messages");
+                var err = <any>document.getElementsByClassName("no_network");
+                if (!ele || !err)
+                    return;
+                err[0].style.width = getComputedStyle(document.querySelector('#Messages')).width;
+            }
+
             pageLayout();
+            adjustNoNet();
 
             $window.onresize = function() {
                 pageLayout();
+                adjustNoNet();
                 $scope.$apply();
             }
 
         });
+
 
         //初始化好友数据   邀请通知一起通过好友关系表获取解析
         mainDataServer.notification.notificationList = [];
@@ -372,6 +383,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     //网络不可用
                     case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
                         console.log('网络不可用');
+                        showDisconnectErr(true);
                         checkNetwork({
                             onSuccess: function() {
                                 reconnectServer();
@@ -859,6 +871,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         }
 
 
+        function showDisconnectErr(flag: boolean){
+          var ele = <any>document.querySelector(".no_network");
+          if (ele) {
+              ele.style.visibility = flag ? 'visible' : 'hidden';
+          }
+        }
 
         var reconnectTimes = 0, timeInterval = 20;
         function reconnectServer() {
@@ -867,6 +885,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     onSuccess: function() {
                         reconnectTimes = 0;
                         console.log("reconnectSuccess");
+                        showDisconnectErr(false);
                         RongIMSDKServer.getConversationList().then(function() {
                             mainDataServer.conversation.updateConversations();
                         });
