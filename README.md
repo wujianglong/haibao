@@ -59,4 +59,5 @@ https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 1.修改 /src/assets/app.config 中 serverUrl 和 appkey 的值（ ServerUrl 为后台 Server 地址，AppKey 为从融云注册的应用 key）
 2.项目根目录执行命令 grunt release
 3.将 dist 目录下的文件以静态文件形式部署在服务器上。程序入口页面 index.html。
+4.本代码不能直接运行,需要结合后台 Sever 一起使用。Server 源码参考 https://github.com/sealtalk/sealtalk-server
 ```
