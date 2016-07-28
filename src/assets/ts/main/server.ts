@@ -703,7 +703,12 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               isfirst = true;
                               conversationItem.lastMsg = result.item.lastMsg;
                               conversationItem.unReadNum = result.item.unReadNum;
-                              conversationItem.atStr = result.item.atStr;
+                              if (msg.senderUserId == mainDataServer.loginUser.id) {
+                                conversationItem.atStr = '';
+                              }
+                              else{
+                                conversationItem.atStr = result.item.atStr;
+                              }
                             }
                             else{
                               mainDataServer.conversation.conversations.splice(i, 1);
@@ -717,7 +722,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                        result.item.unReadNum = 0;
                        result.item.atStr = '';
                    }else{
-                     if(msg.senderUserId == mainDataServer.loginUser.id){}
+                     if(msg.senderUserId == mainDataServer.loginUser.id){
+                       result.item.atStr = '';
+                     }
                      else{
                        totalUnreadCount = totalUnreadCount - oldUnread + result.item.unReadNum;
                      }
