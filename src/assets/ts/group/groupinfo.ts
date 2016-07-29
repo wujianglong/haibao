@@ -159,13 +159,13 @@ groupInfo.controller("groupbulletinController", ["$scope", "$state", "$statePara
         $scope.publicbtn = function() {
             $scope.showDialog1 = false;
             picBackground.css('visibility','hidden');
-            var msg = RongIMLib.TextMessage.obtain($scope.message);
+            var msg = RongIMLib.TextMessage.obtain('@所有人\n' + $scope.message);
             var mentioneds = new RongIMLib.MentionedInfo();
-            mentioneds.type = 1;
+            mentioneds.type = webimmodel.AtTarget.All;
             mentioneds.userIdList = [""];
             msg.mentionedInfo = mentioneds;
 
-            RongIMSDKServer.sendMessage(targettype, groupid, msg).then(function (data) {
+            RongIMSDKServer.sendMessage(targettype, groupid, msg, true).then(function (data) {
                webimutil.Helper.alertMessage.success("发布成功", 2);
                $state.go("main.groupinfo", { groupid: groupid, conversationtype: targettype });
             }, function (error) {

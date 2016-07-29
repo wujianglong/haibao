@@ -362,7 +362,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                              var atType = conversationitem.mentionedInfo.type;
                              var atUsers = conversationitem.mentionedInfo.userIdList;
                              if(atType == webimmodel.AtTarget.All){
-                                atStr = "[@所有人]";
+                                atStr = "[有人@我]";
                              }else if(atType == webimmodel.AtTarget.Part){
                                   for(var i = 0; i < atUsers.length; i++){
                                       if(atUsers[i] == mainDataServer.loginUser.id){

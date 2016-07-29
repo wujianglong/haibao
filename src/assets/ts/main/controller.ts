@@ -186,7 +186,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             function adjustNoNet() {
                 var ele = document.getElementById("Messages");
                 var err = <any>document.getElementsByClassName("no_network");
-                if (!ele || !err)
+                if (!ele || !err[0])
                     return;
                 err[0].style.width = getComputedStyle(document.querySelector('#Messages')).width;
             }
@@ -345,7 +345,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
 
 
-        var isReconnect = true;
+        var isReconnect = true, isConnecting = false;
         RongIMSDKServer.setConnectionStatusListener({
             onChanged: function(status: number) {
                 switch (status) {
@@ -384,11 +384,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
                         console.log('网络不可用');
                         showDisconnectErr(true);
-                        checkNetwork({
-                            onSuccess: function() {
-                                reconnectServer();
-                            }
-                        })
+                        if(!isConnecting){
+                          isConnecting = true;
+                          checkNetwork({
+                              onSuccess: function() {
+                                  reconnectServer();
+                              }
+                          })
+                        }
                         break;
                 }
             }
@@ -623,7 +626,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.MessageType.ImageMessage:
                     case webimmodel.MessageType.RichContentMessage:
                     case webimmodel.MessageType.FileMessage:
-                        if ($state.is("main.chat") && !document.hidden){
+                        if ($state.is("main.chat") && !document.hidden && msg.senderUserId != mainDataServer.loginUser.id){
                           sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                         }
                         addmessage(msg);
@@ -876,6 +879,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           if (ele) {
               ele.style.visibility = flag ? 'visible' : 'hidden';
           }
+          var sendBtn = document.querySelector(".sendBtn");
+          if (sendBtn) {
+              sendBtn.className = flag ? 'sendBtn disabled' : 'sendBtn';
+          }
         }
 
         var reconnectTimes = 0, timeInterval = 20;
@@ -886,6 +893,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         reconnectTimes = 0;
                         console.log("reconnectSuccess");
                         showDisconnectErr(false);
+                        isConnecting = false;
                         RongIMSDKServer.getConversationList().then(function() {
                             mainDataServer.conversation.updateConversations();
                         });
@@ -909,6 +917,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }).success(function() {
                 callback && callback.onSuccess && callback.onSuccess();
             }).error(function() {
+                showDisconnectErr(true);
                 setTimeout(function() {
                     checkNetwork(callback);
                 }, 5000);
