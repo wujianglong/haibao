@@ -327,7 +327,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function updateHistoryMessagesCache(id: string, type: string, name: string, portrait: string){
              var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
              angular.forEach(currenthis, function(value, key){
-               if (value.panelType == webimmodel.PanelType.Message){
+               if (value.panelType == webimmodel.PanelType.Message && value.senderUserId == id){
                   value.senderUserName = name;
                   value.imgSrc = portrait;
                   //TODO 重新计算头像

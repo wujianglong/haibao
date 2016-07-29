@@ -202,6 +202,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow.length = 0;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
@@ -213,6 +214,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 }
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
+                conversationServer.conversationMessageListShow.length = 0;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
                 setTimeout(function() {
                     adjustScrollbars();
@@ -222,6 +224,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         } else {
             //有未读消息
             conversationServer.conversationMessageList = currenthis;
+            conversationServer.conversationMessageListShow.length = 0;
             conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(currenthis);
             var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
             if(lastItem && lastItem.messageUId && lastItem.sentTime){
@@ -318,7 +321,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             return msgouter;
         }
 
-        function addmessage(msg: webimmodel.Message) {
+        function appendmessage(msg: webimmodel.Message) {
             var hislist = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] = conversationServer.historyMessagesCache[msg.conversationType + "_" + msg.targetId] || []
             if (hislist.length == 0) {
                 hislist.push(new webimmodel.GetHistoryPanel());
@@ -357,7 +360,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             var atUserList: string[] = [];
             if(strTmp.length > 1){
               for(var i=1; i< strTmp.length; i++){
-                  var name = strTmp[i].slice(0, strTmp[i].indexOf(' '));
+                  // var name = strTmp[i].slice(0, strTmp[i].indexOf(' '));
+                  var name = strTmp[i];
+                  if(name.indexOf(' ') > -1){
+                    name = name.slice(0, name.indexOf(' '));
+                  }
                   var result = findInSelArr(name, atArray, false);
                   if(result.exist){
                     if (atUserList.indexOf(result.id) === -1) {
@@ -393,6 +400,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         $scope.sendBtn = function() {
+            var ele = <any>document.querySelector(".no_network");
+            if(ele && ele.style.visibility == 'visible'){
+              return;
+            }
             var _message = $scope.currentConversation.draftMsg;
             _message = _message.replace(/(^\s*)|(\s*$)/g,'');  //限制消息不能为空格或者空行
             if(_message == ''){
@@ -452,7 +463,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 var msg = webimutil.Helper.cloneObject(error.message);
                 msg.content = content;
                 msg.panelType = webimmodel.PanelType.InformationNotification;
-                addmessage(msg);
+                appendmessage(msg);
               }
             });
 
@@ -574,6 +585,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
+                conversationServer.conversationMessageListShow.length = 0;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(conversationServer.conversationMessageList);
                 // setTimeout(function() {
                 //     adjustScrollbars();
@@ -591,6 +603,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if (!ele)
                     return;
                 var scrollRemaining = ele.scrollHeight - ele.scrollTop;
+                conversationServer.conversationMessageListShow.length = 0;
                 conversationServer.conversationMessageListShow = webimutil.Helper.cloneObject(conversationServer.conversationMessageList);
                 $timeout(function(){
                       ele.scrollTop = ele.scrollHeight - scrollRemaining;

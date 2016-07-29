@@ -605,6 +605,9 @@ var Polling = {
             this.setMsg = function(b){
                 a.msg = b;
             };
+            this.setCount = function(b){
+              a.count = b;
+            };
             this.toArrayBuffer = function () {
                 return a
             };
@@ -956,13 +959,18 @@ var Polling = {
 
 var RongIMLib;
 (function (RongIMLib) {
+    (function (MentionedType) {
+        MentionedType[MentionedType["ALL"] = 1] = "ALL";
+        MentionedType[MentionedType["PART"] = 2] = "PART";
+    })(RongIMLib.MentionedType || (RongIMLib.MentionedType = {}));
+    var MentionedType = RongIMLib.MentionedType;
     (function (BlacklistStatus) {
         /**
-         * �ں������С�
+         * 在黑名单中。
          */
         BlacklistStatus[BlacklistStatus["IN_BLACK_LIST"] = 0] = "IN_BLACK_LIST";
         /**
-         * ���ں������С�
+         * 不在黑名单中。
          */
         BlacklistStatus[BlacklistStatus["NOT_IN_BLACK_LIST"] = 1] = "NOT_IN_BLACK_LIST";
     })(RongIMLib.BlacklistStatus || (RongIMLib.BlacklistStatus = {}));
@@ -970,9 +978,9 @@ var RongIMLib;
     (function (ConnectionChannel) {
         ConnectionChannel[ConnectionChannel["XHR_POLLING"] = 0] = "XHR_POLLING";
         ConnectionChannel[ConnectionChannel["WEBSOCKET"] = 1] = "WEBSOCKET";
-        //�ⲿ����
+        //外部调用
         ConnectionChannel[ConnectionChannel["HTTP"] = 0] = "HTTP";
-        //�ⲿ����
+        //外部调用
         ConnectionChannel[ConnectionChannel["HTTPS"] = 1] = "HTTPS";
     })(RongIMLib.ConnectionChannel || (RongIMLib.ConnectionChannel = {}));
     var ConnectionChannel = RongIMLib.ConnectionChannel;
@@ -991,38 +999,42 @@ var RongIMLib;
     var GetChatRoomType = RongIMLib.GetChatRoomType;
     (function (ConnectionStatus) {
         /**
-         * ���ӳɹ���
+         * 连接成功。
          */
         ConnectionStatus[ConnectionStatus["CONNECTED"] = 0] = "CONNECTED";
         /**
-         * �����С�
+         * 连接中。
          */
         ConnectionStatus[ConnectionStatus["CONNECTING"] = 1] = "CONNECTING";
         /**
-         * �Ͽ����ӡ�
+         * 断开连接。
          */
         ConnectionStatus[ConnectionStatus["DISCONNECTED"] = 2] = "DISCONNECTED";
         /**
-         * �û��˻��������豸��¼�������ᱻ�ߵ��ߡ�
+         * 用户账户在其他设备登录，本机会被踢掉线。
          */
         ConnectionStatus[ConnectionStatus["KICKED_OFFLINE_BY_OTHER_CLIENT"] = 6] = "KICKED_OFFLINE_BY_OTHER_CLIENT";
         /**
-         * ���粻���á�
+         * 网络不可用。
          */
         ConnectionStatus[ConnectionStatus["NETWORK_UNAVAILABLE"] = 3] = "NETWORK_UNAVAILABLE";
         /**
-         * ���粻���á�
+         * 网络不可用。
          */
         ConnectionStatus[ConnectionStatus["DOMAIN_INCORRECT"] = 12] = "DOMAIN_INCORRECT";
+        /**
+        *  连接关闭。
+        */
+        ConnectionStatus[ConnectionStatus["CONNECTION_CLOSED"] = 4] = "CONNECTION_CLOSED";
     })(RongIMLib.ConnectionStatus || (RongIMLib.ConnectionStatus = {}));
     var ConnectionStatus = RongIMLib.ConnectionStatus;
     (function (ConversationNotificationStatus) {
         /**
-         * ������״̬���رն�Ӧ�Ự��֪ͨ���ѡ�
+         * 免打扰状态，关闭对应会话的通知提醒。
          */
         ConversationNotificationStatus[ConversationNotificationStatus["DO_NOT_DISTURB"] = 0] = "DO_NOT_DISTURB";
         /**
-         * ���ѡ�
+         * 提醒。
          */
         ConversationNotificationStatus[ConversationNotificationStatus["NOTIFY"] = 1] = "NOTIFY";
     })(RongIMLib.ConversationNotificationStatus || (RongIMLib.ConversationNotificationStatus = {}));
@@ -1035,328 +1047,440 @@ var RongIMLib;
         ConversationType[ConversationType["CHATROOM"] = 4] = "CHATROOM";
         ConversationType[ConversationType["CUSTOMER_SERVICE"] = 5] = "CUSTOMER_SERVICE";
         ConversationType[ConversationType["SYSTEM"] = 6] = "SYSTEM";
-        //Ĭ�Ϲ�ע MC
+        //默认关注 MC
         ConversationType[ConversationType["APP_PUBLIC_SERVICE"] = 7] = "APP_PUBLIC_SERVICE";
-        //�ֹ���ע MP
+        //手工关注 MP
         ConversationType[ConversationType["PUBLIC_SERVICE"] = 8] = "PUBLIC_SERVICE";
     })(RongIMLib.ConversationType || (RongIMLib.ConversationType = {}));
     var ConversationType = RongIMLib.ConversationType;
     (function (DiscussionInviteStatus) {
         /**
-         * �������롣
+         * 开放邀请。
          */
         DiscussionInviteStatus[DiscussionInviteStatus["OPENED"] = 0] = "OPENED";
         /**
-         * �ر����롣
+         * 关闭邀请。
          */
         DiscussionInviteStatus[DiscussionInviteStatus["CLOSED"] = 1] = "CLOSED";
     })(RongIMLib.DiscussionInviteStatus || (RongIMLib.DiscussionInviteStatus = {}));
     var DiscussionInviteStatus = RongIMLib.DiscussionInviteStatus;
     (function (ErrorCode) {
-        ErrorCode[ErrorCode["TIMEOUT"] = -1] = "TIMEOUT";
         /**
-         * δ֪ԭ��ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["UNKNOWN"] = -2] = "UNKNOWN";
-        /**
-         * ����Ƶ�ʹ���
+         * 发送频率过快
          */
         ErrorCode[ErrorCode["SEND_FREQUENCY_TOO_FAST"] = 20604] = "SEND_FREQUENCY_TOO_FAST";
+        ErrorCode[ErrorCode["RC_MSG_UNAUTHORIZED"] = 20406] = "RC_MSG_UNAUTHORIZED";
         /**
-         * ���������顣
+         * 群组 Id 无效
          */
-        ErrorCode[ErrorCode["NOT_IN_DISCUSSION"] = 21406] = "NOT_IN_DISCUSSION";
+        ErrorCode[ErrorCode["RC_DISCUSSION_GROUP_ID_INVALID"] = 20407] = "RC_DISCUSSION_GROUP_ID_INVALID";
         /**
-         * ��������ʧ��
-         */
-        ErrorCode[ErrorCode["JOIN_IN_DISCUSSION"] = 21407] = "JOIN_IN_DISCUSSION";
-        /**
-         * ����������ʧ��
-         */
-        ErrorCode[ErrorCode["CREATE_DISCUSSION"] = 21408] = "CREATE_DISCUSSION";
-        /**
-         * ��������������״̬ʧ��
-         */
-        ErrorCode[ErrorCode["INVITE_DICUSSION"] = 21409] = "INVITE_DICUSSION";
-        /**
-         * ����Ⱥ�顣
-         */
-        ErrorCode[ErrorCode["NOT_IN_GROUP"] = 22406] = "NOT_IN_GROUP";
-        /**
-         * ���������ҡ�
-         */
-        ErrorCode[ErrorCode["NOT_IN_CHATROOM"] = 23406] = "NOT_IN_CHATROOM";
-        /**
-         *��ȡ�û�ʧ��
-         */
-        ErrorCode[ErrorCode["GET_USERINFO_ERROR"] = 23407] = "GET_USERINFO_ERROR";
-        /**
-         *��ȡ�û�ʧ��
-         */
-        ErrorCode[ErrorCode["FORBIDDEN_IN_CHATROOM"] = 23408] = "FORBIDDEN_IN_CHATROOM";
-        /**
-         * �ں������С�
-         */
-        ErrorCode[ErrorCode["REJECTED_BY_BLACKLIST"] = 405] = "REJECTED_BY_BLACKLIST";
-        /**
-         * ͨ�Ź����У���ǰ Socket �����ڡ�
-         */
-        ErrorCode[ErrorCode["RC_NET_CHANNEL_INVALID"] = 30001] = "RC_NET_CHANNEL_INVALID";
-        /**
-         * Socket ���Ӳ����á�
-         */
-        ErrorCode[ErrorCode["RC_NET_UNAVAILABLE"] = 30002] = "RC_NET_UNAVAILABLE";
-        /**
-         * ͨ�ų�ʱ��
-         */
-        ErrorCode[ErrorCode["RC_MSG_RESP_TIMEOUT"] = 30003] = "RC_MSG_RESP_TIMEOUT";
-        /**
-         * ��������ʱ��Http ����ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_HTTP_SEND_FAIL"] = 30004] = "RC_HTTP_SEND_FAIL";
-        /**
-         * HTTP ����ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_HTTP_REQ_TIMEOUT"] = 30005] = "RC_HTTP_REQ_TIMEOUT";
-        /**
-         * HTTP ����ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_HTTP_RECV_FAIL"] = 30006] = "RC_HTTP_RECV_FAIL";
-        /**
-         * ���������� HTTP ���󣬷��ز���200��
-         */
-        ErrorCode[ErrorCode["RC_NAVI_RESOURCE_ERROR"] = 30007] = "RC_NAVI_RESOURCE_ERROR";
-        /**
-         * �������ݽ����������в�������Ч���ݡ�
-         */
-        ErrorCode[ErrorCode["RC_NODE_NOT_FOUND"] = 30008] = "RC_NODE_NOT_FOUND";
-        /**
-         * �������ݽ����������в�������Ч IP ��ַ��
-         */
-        ErrorCode[ErrorCode["RC_DOMAIN_NOT_RESOLVE"] = 30009] = "RC_DOMAIN_NOT_RESOLVE";
-        /**
-         * ���� Socket ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_SOCKET_NOT_CREATED"] = 30010] = "RC_SOCKET_NOT_CREATED";
-        /**
-         * Socket ���Ͽ���
-         */
-        ErrorCode[ErrorCode["RC_SOCKET_DISCONNECTED"] = 30011] = "RC_SOCKET_DISCONNECTED";
-        /**
-         * PING ����ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_PING_SEND_FAIL"] = 30012] = "RC_PING_SEND_FAIL";
-        /**
-         * PING ��ʱ��
-         */
-        ErrorCode[ErrorCode["RC_PONG_RECV_FAIL"] = 30013] = "RC_PONG_RECV_FAIL";
-        /**
-         * ��Ϣ����ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["RC_MSG_SEND_FAIL"] = 30014] = "RC_MSG_SEND_FAIL";
-        /**
-         * �� connect ����ʱ���յ��� ACK ��ʱ��
-         */
-        ErrorCode[ErrorCode["RC_CONN_ACK_TIMEOUT"] = 31000] = "RC_CONN_ACK_TIMEOUT";
-        /**
-         * ����������
-         */
-        ErrorCode[ErrorCode["RC_CONN_PROTO_VERSION_ERROR"] = 31001] = "RC_CONN_PROTO_VERSION_ERROR";
-        /**
-         * ����������App Id ������
-         */
-        ErrorCode[ErrorCode["RC_CONN_ID_REJECT"] = 31002] = "RC_CONN_ID_REJECT";
-        /**
-         * �����������á�
-         */
-        ErrorCode[ErrorCode["RC_CONN_SERVER_UNAVAILABLE"] = 31003] = "RC_CONN_SERVER_UNAVAILABLE";
-        /**
-         * Token ������
-         */
-        ErrorCode[ErrorCode["RC_CONN_USER_OR_PASSWD_ERROR"] = 31004] = "RC_CONN_USER_OR_PASSWD_ERROR";
-        /**
-         * App Id �� Token ��ƥ�䡣
-         */
-        ErrorCode[ErrorCode["RC_CONN_NOT_AUTHRORIZED"] = 31005] = "RC_CONN_NOT_AUTHRORIZED";
-        /**
-         * �ض��򣬵�ַ������
-         */
-        ErrorCode[ErrorCode["RC_CONN_REDIRECTED"] = 31006] = "RC_CONN_REDIRECTED";
-        /**
-         * NAME ����̨ע����Ϣ��һ�¡�
-         */
-        ErrorCode[ErrorCode["RC_CONN_PACKAGE_NAME_INVALID"] = 31007] = "RC_CONN_PACKAGE_NAME_INVALID";
-        /**
-         * APP �����Ρ�ɾ���򲻴��ڡ�
-         */
-        ErrorCode[ErrorCode["RC_CONN_APP_BLOCKED_OR_DELETED"] = 31008] = "RC_CONN_APP_BLOCKED_OR_DELETED";
-        /**
-         * �û������Ρ�
-         */
-        ErrorCode[ErrorCode["RC_CONN_USER_BLOCKED"] = 31009] = "RC_CONN_USER_BLOCKED";
-        /**
-         * Disconnect���ɷ��������أ������û����ߡ�
-         */
-        ErrorCode[ErrorCode["RC_DISCONN_KICK"] = 31010] = "RC_DISCONN_KICK";
-        /**
-         * Disconnect���ɷ��������أ������û����ߡ�
-         */
-        ErrorCode[ErrorCode["RC_DISCONN_EXCEPTION"] = 31011] = "RC_DISCONN_EXCEPTION";
-        /**
-         * Э�����ڲ�������query���ϴ����ع��������ݴ�����
-         */
-        ErrorCode[ErrorCode["RC_QUERY_ACK_NO_DATA"] = 32001] = "RC_QUERY_ACK_NO_DATA";
-        /**
-         * Э�����ڲ�������
-         */
-        ErrorCode[ErrorCode["RC_MSG_DATA_INCOMPLETE"] = 32002] = "RC_MSG_DATA_INCOMPLETE";
-        /**
-         * δ���� init ��ʼ��������
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_CLIENT_NOT_INIT"] = 33001] = "BIZ_ERROR_CLIENT_NOT_INIT";
-        /**
-         * ���ݿ���ʼ��ʧ�ܡ�
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_DATABASE_ERROR"] = 33002] = "BIZ_ERROR_DATABASE_ERROR";
-        /**
-         * ����������Ч��
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_INVALID_PARAMETER"] = 33003] = "BIZ_ERROR_INVALID_PARAMETER";
-        /**
-         * ͨ����Ч��
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_NO_CHANNEL"] = 33004] = "BIZ_ERROR_NO_CHANNEL";
-        /**
-         * �������ӳɹ���
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_RECONNECT_SUCCESS"] = 33005] = "BIZ_ERROR_RECONNECT_SUCCESS";
-        /**
-         * �����У��ٵ��� connect ���ܾ���
-         */
-        ErrorCode[ErrorCode["BIZ_ERROR_CONNECTING"] = 33006] = "BIZ_ERROR_CONNECTING";
-        /**
-         * ��Ϣ���η���δ��ͨ
-         */
-        ErrorCode[ErrorCode["MSG_ROAMING_SERVICE_UNAVAILABLE"] = 33007] = "MSG_ROAMING_SERVICE_UNAVAILABLE";
-        /**
-         * Ⱥ�鱻����
+         * 群组被禁言
          */
         ErrorCode[ErrorCode["FORBIDDEN_IN_GROUP"] = 22408] = "FORBIDDEN_IN_GROUP";
         /**
-         * ɾ���Ựʧ��
+         * 不在讨论组。
+         */
+        ErrorCode[ErrorCode["NOT_IN_DISCUSSION"] = 21406] = "NOT_IN_DISCUSSION";
+        /**
+         * 不在群组。
+         */
+        ErrorCode[ErrorCode["NOT_IN_GROUP"] = 22406] = "NOT_IN_GROUP";
+        /**
+         * 不在聊天室。
+         */
+        ErrorCode[ErrorCode["NOT_IN_CHATROOM"] = 23406] = "NOT_IN_CHATROOM";
+        /**
+         *聊天室被禁言
+         */
+        ErrorCode[ErrorCode["FORBIDDEN_IN_CHATROOM"] = 23408] = "FORBIDDEN_IN_CHATROOM";
+        /**
+         * 聊天室中成员被踢出
+         */
+        ErrorCode[ErrorCode["RC_CHATROOM_USER_KICKED"] = 23409] = "RC_CHATROOM_USER_KICKED";
+        /**
+         * 聊天室不存在
+         */
+        ErrorCode[ErrorCode["RC_CHATROOM_NOT_EXIST"] = 23410] = "RC_CHATROOM_NOT_EXIST";
+        /**
+         * 聊天室成员已满
+         */
+        ErrorCode[ErrorCode["RC_CHATROOM_IS_FULL"] = 23411] = "RC_CHATROOM_IS_FULL";
+        /**
+         * 获取聊天室信息参数无效
+         */
+        ErrorCode[ErrorCode["RC_CHATROOM_PATAMETER_INVALID"] = 23412] = "RC_CHATROOM_PATAMETER_INVALID";
+        ErrorCode[ErrorCode["TIMEOUT"] = -1] = "TIMEOUT";
+        /**
+         * 未知原因失败。
+         */
+        ErrorCode[ErrorCode["UNKNOWN"] = -2] = "UNKNOWN";
+        /**
+         * 加入讨论失败
+         */
+        ErrorCode[ErrorCode["JOIN_IN_DISCUSSION"] = 21407] = "JOIN_IN_DISCUSSION";
+        /**
+         * 创建讨论组失败
+         */
+        ErrorCode[ErrorCode["CREATE_DISCUSSION"] = 21408] = "CREATE_DISCUSSION";
+        /**
+         * 设置讨论组邀请状态失败
+         */
+        ErrorCode[ErrorCode["INVITE_DICUSSION"] = 21409] = "INVITE_DICUSSION";
+        /**
+         *获取用户失败
+         */
+        ErrorCode[ErrorCode["GET_USERINFO_ERROR"] = 23407] = "GET_USERINFO_ERROR";
+        /**
+         * 在黑名单中。
+         */
+        ErrorCode[ErrorCode["REJECTED_BY_BLACKLIST"] = 405] = "REJECTED_BY_BLACKLIST";
+        /**
+         * 通信过程中，当前 Socket 不存在。
+         */
+        ErrorCode[ErrorCode["RC_NET_CHANNEL_INVALID"] = 30001] = "RC_NET_CHANNEL_INVALID";
+        /**
+         * Socket 连接不可用。
+         */
+        ErrorCode[ErrorCode["RC_NET_UNAVAILABLE"] = 30002] = "RC_NET_UNAVAILABLE";
+        /**
+         * 通信超时。
+         */
+        ErrorCode[ErrorCode["RC_MSG_RESP_TIMEOUT"] = 30003] = "RC_MSG_RESP_TIMEOUT";
+        /**
+         * 导航操作时，Http 请求失败。
+         */
+        ErrorCode[ErrorCode["RC_HTTP_SEND_FAIL"] = 30004] = "RC_HTTP_SEND_FAIL";
+        /**
+         * HTTP 请求失败。
+         */
+        ErrorCode[ErrorCode["RC_HTTP_REQ_TIMEOUT"] = 30005] = "RC_HTTP_REQ_TIMEOUT";
+        /**
+         * HTTP 接收失败。
+         */
+        ErrorCode[ErrorCode["RC_HTTP_RECV_FAIL"] = 30006] = "RC_HTTP_RECV_FAIL";
+        /**
+         * 导航操作的 HTTP 请求，返回不是200。
+         */
+        ErrorCode[ErrorCode["RC_NAVI_RESOURCE_ERROR"] = 30007] = "RC_NAVI_RESOURCE_ERROR";
+        /**
+         * 导航数据解析后，其中不存在有效数据。
+         */
+        ErrorCode[ErrorCode["RC_NODE_NOT_FOUND"] = 30008] = "RC_NODE_NOT_FOUND";
+        /**
+         * 导航数据解析后，其中不存在有效 IP 地址。
+         */
+        ErrorCode[ErrorCode["RC_DOMAIN_NOT_RESOLVE"] = 30009] = "RC_DOMAIN_NOT_RESOLVE";
+        /**
+         * 创建 Socket 失败。
+         */
+        ErrorCode[ErrorCode["RC_SOCKET_NOT_CREATED"] = 30010] = "RC_SOCKET_NOT_CREATED";
+        /**
+         * Socket 被断开。
+         */
+        ErrorCode[ErrorCode["RC_SOCKET_DISCONNECTED"] = 30011] = "RC_SOCKET_DISCONNECTED";
+        /**
+         * PING 操作失败。
+         */
+        ErrorCode[ErrorCode["RC_PING_SEND_FAIL"] = 30012] = "RC_PING_SEND_FAIL";
+        /**
+         * PING 超时。
+         */
+        ErrorCode[ErrorCode["RC_PONG_RECV_FAIL"] = 30013] = "RC_PONG_RECV_FAIL";
+        /**
+         * 消息发送失败。
+         */
+        ErrorCode[ErrorCode["RC_MSG_SEND_FAIL"] = 30014] = "RC_MSG_SEND_FAIL";
+        /**
+         * 做 connect 连接时，收到的 ACK 超时。
+         */
+        ErrorCode[ErrorCode["RC_CONN_ACK_TIMEOUT"] = 31000] = "RC_CONN_ACK_TIMEOUT";
+        /**
+         * 参数错误。
+         */
+        ErrorCode[ErrorCode["RC_CONN_PROTO_VERSION_ERROR"] = 31001] = "RC_CONN_PROTO_VERSION_ERROR";
+        /**
+         * 参数错误，App Id 错误。
+         */
+        ErrorCode[ErrorCode["RC_CONN_ID_REJECT"] = 31002] = "RC_CONN_ID_REJECT";
+        /**
+         * 服务器不可用。
+         */
+        ErrorCode[ErrorCode["RC_CONN_SERVER_UNAVAILABLE"] = 31003] = "RC_CONN_SERVER_UNAVAILABLE";
+        /**
+         * Token 错误。
+         */
+        ErrorCode[ErrorCode["RC_CONN_USER_OR_PASSWD_ERROR"] = 31004] = "RC_CONN_USER_OR_PASSWD_ERROR";
+        /**
+         * App Id 与 Token 不匹配。
+         */
+        ErrorCode[ErrorCode["RC_CONN_NOT_AUTHRORIZED"] = 31005] = "RC_CONN_NOT_AUTHRORIZED";
+        /**
+         * 重定向，地址错误。
+         */
+        ErrorCode[ErrorCode["RC_CONN_REDIRECTED"] = 31006] = "RC_CONN_REDIRECTED";
+        /**
+         * NAME 与后台注册信息不一致。
+         */
+        ErrorCode[ErrorCode["RC_CONN_PACKAGE_NAME_INVALID"] = 31007] = "RC_CONN_PACKAGE_NAME_INVALID";
+        /**
+         * APP 被屏蔽、删除或不存在。
+         */
+        ErrorCode[ErrorCode["RC_CONN_APP_BLOCKED_OR_DELETED"] = 31008] = "RC_CONN_APP_BLOCKED_OR_DELETED";
+        /**
+         * 用户被屏蔽。
+         */
+        ErrorCode[ErrorCode["RC_CONN_USER_BLOCKED"] = 31009] = "RC_CONN_USER_BLOCKED";
+        /**
+         * Disconnect，由服务器返回，比如用户互踢。
+         */
+        ErrorCode[ErrorCode["RC_DISCONN_KICK"] = 31010] = "RC_DISCONN_KICK";
+        /**
+         * Disconnect，由服务器返回，比如用户互踢。
+         */
+        ErrorCode[ErrorCode["RC_DISCONN_EXCEPTION"] = 31011] = "RC_DISCONN_EXCEPTION";
+        /**
+         * 协议层内部错误。query，上传下载过程中数据错误。
+         */
+        ErrorCode[ErrorCode["RC_QUERY_ACK_NO_DATA"] = 32001] = "RC_QUERY_ACK_NO_DATA";
+        /**
+         * 协议层内部错误。
+         */
+        ErrorCode[ErrorCode["RC_MSG_DATA_INCOMPLETE"] = 32002] = "RC_MSG_DATA_INCOMPLETE";
+        /**
+         * 未调用 init 初始化函数。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_CLIENT_NOT_INIT"] = 33001] = "BIZ_ERROR_CLIENT_NOT_INIT";
+        /**
+         * 数据库初始化失败。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_DATABASE_ERROR"] = 33002] = "BIZ_ERROR_DATABASE_ERROR";
+        /**
+         * 传入参数无效。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_INVALID_PARAMETER"] = 33003] = "BIZ_ERROR_INVALID_PARAMETER";
+        /**
+         * 通道无效。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_NO_CHANNEL"] = 33004] = "BIZ_ERROR_NO_CHANNEL";
+        /**
+         * 重新连接成功。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_RECONNECT_SUCCESS"] = 33005] = "BIZ_ERROR_RECONNECT_SUCCESS";
+        /**
+         * 连接中，再调用 connect 被拒绝。
+         */
+        ErrorCode[ErrorCode["BIZ_ERROR_CONNECTING"] = 33006] = "BIZ_ERROR_CONNECTING";
+        /**
+         * 消息漫游服务未开通
+         */
+        ErrorCode[ErrorCode["MSG_ROAMING_SERVICE_UNAVAILABLE"] = 33007] = "MSG_ROAMING_SERVICE_UNAVAILABLE";
+        /**
+         * 删除会话失败
          */
         ErrorCode[ErrorCode["CONVER_REMOVE_ERROR"] = 34001] = "CONVER_REMOVE_ERROR";
         /**
-         *��ȡ��ʷ��Ϣ
+         *拉取历史消息
          */
         ErrorCode[ErrorCode["CONVER_GETLIST_ERROR"] = 34002] = "CONVER_GETLIST_ERROR";
         /**
-         * �Ựָ���쳣
+         * 会话指定异常
          */
         ErrorCode[ErrorCode["CONVER_SETOP_ERROR"] = 34003] = "CONVER_SETOP_ERROR";
         /**
-         * ��ȡ�Ựδ����Ϣ����ʧ��
+         * 获取会话未读消息总数失败
          */
         ErrorCode[ErrorCode["CONVER_TOTAL_UNREAD_ERROR"] = 34004] = "CONVER_TOTAL_UNREAD_ERROR";
         /**
-         * ��ȡָ���Ự����δ����Ϣ���쳣
+         * 获取指定会话类型未读消息数异常
          */
         ErrorCode[ErrorCode["CONVER_TYPE_UNREAD_ERROR"] = 34005] = "CONVER_TYPE_UNREAD_ERROR";
         /**
-         * ��ȡָ���û�ID&�Ự����δ����Ϣ���쳣
+         * 获取指定用户ID&会话类型未读消息数异常
          */
         ErrorCode[ErrorCode["CONVER_ID_TYPE_UNREAD_ERROR"] = 34006] = "CONVER_ID_TYPE_UNREAD_ERROR";
-        //Ⱥ���쳣��Ϣ
+        //群组异常信息
         /**
          *
          */
         ErrorCode[ErrorCode["GROUP_SYNC_ERROR"] = 35001] = "GROUP_SYNC_ERROR";
         /**
-         * ƥ��Ⱥ��Ϣϵ�쳣
+         * 匹配群信息系异常
          */
         ErrorCode[ErrorCode["GROUP_MATCH_ERROR"] = 35002] = "GROUP_MATCH_ERROR";
-        //�������쳣
+        //聊天室异常
         /**
-         * ����������IdΪ��
+         * 加入聊天室Id为空
          */
         ErrorCode[ErrorCode["CHATROOM_ID_ISNULL"] = 36001] = "CHATROOM_ID_ISNULL";
         /**
-         * ����������ʧ��
+         * 加入聊天室失败
          */
         ErrorCode[ErrorCode["CHARTOOM_JOIN_ERROR"] = 36002] = "CHARTOOM_JOIN_ERROR";
         /**
-         * ��ȡ��������ʷ��Ϣʧ��
+         * 拉取聊天室历史消息失败
          */
         ErrorCode[ErrorCode["CHATROOM_HISMESSAGE_ERROR"] = 36003] = "CHATROOM_HISMESSAGE_ERROR";
-        //�������쳣
+        //黑名单异常
         /**
-         * �����������쳣
+         * 加入黑名单异常
          */
         ErrorCode[ErrorCode["BLACK_ADD_ERROR"] = 37001] = "BLACK_ADD_ERROR";
         /**
-         * ����ָ����Ա�ٺ������е�״̬�쳣
+         * 获得指定人员再黑名单中的状态异常
          */
         ErrorCode[ErrorCode["BLACK_GETSTATUS_ERROR"] = 37002] = "BLACK_GETSTATUS_ERROR";
         /**
-         * �Ƴ��������쳣
+         * 移除黑名单异常
          */
         ErrorCode[ErrorCode["BLACK_REMOVE_ERROR"] = 37003] = "BLACK_REMOVE_ERROR";
         /**
-         * ��ȡ�ݸ�ʧ��
+         * 获取草稿失败
          */
         ErrorCode[ErrorCode["DRAF_GET_ERROR"] = 38001] = "DRAF_GET_ERROR";
         /**
-         * �����ݸ�ʧ��
+         * 保存草稿失败
          */
         ErrorCode[ErrorCode["DRAF_SAVE_ERROR"] = 38002] = "DRAF_SAVE_ERROR";
         /**
-         * ɾ���ݸ�ʧ��
+         * 删除草稿失败
          */
         ErrorCode[ErrorCode["DRAF_REMOVE_ERROR"] = 38003] = "DRAF_REMOVE_ERROR";
         /**
-         * ��ע���ں�ʧ��
+         * 关注公众号失败
          */
         ErrorCode[ErrorCode["SUBSCRIBE_ERROR"] = 39001] = "SUBSCRIBE_ERROR";
         /**
-         * ��ע���ں�ʧ��
+         * 关注公众号失败
          */
         ErrorCode[ErrorCode["QNTKN_FILETYPE_ERROR"] = 41001] = "QNTKN_FILETYPE_ERROR";
         /**
-         * ��ȡ��ţtokenʧ��
+         * 获取七牛token失败
          */
         ErrorCode[ErrorCode["QNTKN_GET_ERROR"] = 41002] = "QNTKN_GET_ERROR";
         /**
-         * cookie������
+         * cookie被禁用
          */
         ErrorCode[ErrorCode["COOKIE_ENABLE"] = 51001] = "COOKIE_ENABLE";
+        // 没有注册DeviveId 也就是用户没有登陆
+        ErrorCode[ErrorCode["HAVNODEVICEID"] = 24001] = "HAVNODEVICEID";
+        // 已经存在
+        ErrorCode[ErrorCode["DEVICEIDISHAVE"] = 24002] = "DEVICEIDISHAVE";
+        // 成功
+        ErrorCode[ErrorCode["SUCCESS"] = 0] = "SUCCESS";
+        // 没有对应的用户或token
+        ErrorCode[ErrorCode["FEILD"] = 24009] = "FEILD";
+        // voip为空
+        ErrorCode[ErrorCode["VOIPISNULL"] = 24013] = "VOIPISNULL";
+        // 不支持的Voip引擎
+        ErrorCode[ErrorCode["NOENGINETYPE"] = 24010] = "NOENGINETYPE";
+        // channleName 是空
+        ErrorCode[ErrorCode["NULLCHANNELNAME"] = 24011] = "NULLCHANNELNAME";
+        // 生成Voipkey失败
+        ErrorCode[ErrorCode["VOIPDYANMICERROR"] = 24012] = "VOIPDYANMICERROR";
+        // 没有配置voip
+        ErrorCode[ErrorCode["NOVOIP"] = 24014] = "NOVOIP";
+        // 服务器内部错误
+        ErrorCode[ErrorCode["INTERNALERRROR"] = 24015] = "INTERNALERRROR";
+        //VOIP close
+        ErrorCode[ErrorCode["VOIPCLOSE"] = 24016] = "VOIPCLOSE";
+        ErrorCode[ErrorCode["CLOSE_BEFORE_OPEN"] = 51001] = "CLOSE_BEFORE_OPEN";
+        ErrorCode[ErrorCode["ALREADY_IN_USE"] = 51002] = "ALREADY_IN_USE";
+        ErrorCode[ErrorCode["INVALID_CHANNEL_NAME"] = 51003] = "INVALID_CHANNEL_NAME";
+        ErrorCode[ErrorCode["VIDEO_CONTAINER_IS_NULL"] = 51004] = "VIDEO_CONTAINER_IS_NULL";
+        /*!
+        己方取消已发出的通话请求
+        */
+        ErrorCode[ErrorCode["CANCEL"] = 1] = "CANCEL";
+        /*!
+         己方拒绝收到的通话请求
+         */
+        ErrorCode[ErrorCode["REJECT"] = 2] = "REJECT";
+        /*!
+         己方挂断
+         */
+        ErrorCode[ErrorCode["HANGUP"] = 3] = "HANGUP";
+        /*!
+         己方忙碌
+         */
+        ErrorCode[ErrorCode["BUSYLINE"] = 4] = "BUSYLINE";
+        /*!
+         己方未接听
+         */
+        ErrorCode[ErrorCode["NO_RESPONSE"] = 5] = "NO_RESPONSE";
+        /*!
+         己方不支持当前引擎
+         */
+        ErrorCode[ErrorCode["ENGINE_UN_SUPPORTED"] = 6] = "ENGINE_UN_SUPPORTED";
+        /*!
+         己方网络出错
+         */
+        ErrorCode[ErrorCode["NETWORK_ERROR"] = 7] = "NETWORK_ERROR";
+        /*!
+         对方取消已发出的通话请求
+         */
+        ErrorCode[ErrorCode["REMOTE_CANCEL"] = 11] = "REMOTE_CANCEL";
+        /*!
+         对方拒绝收到的通话请求
+         */
+        ErrorCode[ErrorCode["REMOTE_REJECT"] = 12] = "REMOTE_REJECT";
+        /*!
+         通话过程对方挂断
+         */
+        ErrorCode[ErrorCode["REMOTE_HANGUP"] = 13] = "REMOTE_HANGUP";
+        /*!
+         对方忙碌
+         */
+        ErrorCode[ErrorCode["REMOTE_BUSYLINE"] = 14] = "REMOTE_BUSYLINE";
+        /*!
+         对方未接听
+         */
+        ErrorCode[ErrorCode["REMOTE_NO_RESPONSE"] = 15] = "REMOTE_NO_RESPONSE";
+        /*!
+         对方网络错误
+         */
+        ErrorCode[ErrorCode["REMOTE_ENGINE_UN_SUPPORTED"] = 16] = "REMOTE_ENGINE_UN_SUPPORTED";
+        /*!
+         对方网络错误
+         */
+        ErrorCode[ErrorCode["REMOTE_NETWORK_ERROR"] = 17] = "REMOTE_NETWORK_ERROR";
+        /*!
+         VoIP 不可用
+         */
+        ErrorCode[ErrorCode["VOIP_NOT_AVALIABLE"] = 18] = "VOIP_NOT_AVALIABLE";
     })(RongIMLib.ErrorCode || (RongIMLib.ErrorCode = {}));
     var ErrorCode = RongIMLib.ErrorCode;
+    (function (VoIPMediaType) {
+        VoIPMediaType[VoIPMediaType["MEDIA_AUDIO"] = 1] = "MEDIA_AUDIO";
+        VoIPMediaType[VoIPMediaType["MEDIA_VEDIO"] = 2] = "MEDIA_VEDIO";
+    })(RongIMLib.VoIPMediaType || (RongIMLib.VoIPMediaType = {}));
+    var VoIPMediaType = RongIMLib.VoIPMediaType;
     (function (MediaType) {
         /**
-         * ͼƬ��
+         * 图片。
          */
         MediaType[MediaType["IMAGE"] = 1] = "IMAGE";
         /**
-         * ������
+         * 声音。
          */
         MediaType[MediaType["AUDIO"] = 2] = "AUDIO";
         /**
-         * ��Ƶ��
+         * 视频。
          */
         MediaType[MediaType["VIDEO"] = 3] = "VIDEO";
         /**
-         * ͨ���ļ���
+         * 通用文件。
          */
         MediaType[MediaType["FILE"] = 100] = "FILE";
     })(RongIMLib.MediaType || (RongIMLib.MediaType = {}));
     var MediaType = RongIMLib.MediaType;
     (function (MessageDirection) {
         /**
-         * ������Ϣ��
+         * 发送消息。
          */
         MessageDirection[MessageDirection["SEND"] = 1] = "SEND";
         /**
-         * ������Ϣ��
+         * 接收消息。
          */
         MessageDirection[MessageDirection["RECEIVE"] = 2] = "RECEIVE";
     })(RongIMLib.MessageDirection || (RongIMLib.MessageDirection = {}));
@@ -1365,74 +1489,75 @@ var RongIMLib;
         FileType[FileType["IMAGE"] = 1] = "IMAGE";
         FileType[FileType["AUDIO"] = 2] = "AUDIO";
         FileType[FileType["VIDEO"] = 3] = "VIDEO";
+        FileType[FileType["FILE"] = 4] = "FILE";
     })(RongIMLib.FileType || (RongIMLib.FileType = {}));
     var FileType = RongIMLib.FileType;
     (function (RealTimeLocationErrorCode) {
         /**
-         * δ��ʼ�� RealTimeLocation ʵ��
+         * 未初始化 RealTimeLocation 实例
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_NOT_INIT"] = -1] = "RC_REAL_TIME_LOCATION_NOT_INIT";
         /**
-         * ִ�гɹ���
+         * 执行成功。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_SUCCESS"] = 0] = "RC_REAL_TIME_LOCATION_SUCCESS";
         /**
-         * ��ȡ RealTimeLocation ʵ��ʱ����
-         * GPS δ�򿪡�
+         * 获取 RealTimeLocation 实例时返回
+         * GPS 未打开。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_GPS_DISABLED"] = 1] = "RC_REAL_TIME_LOCATION_GPS_DISABLED";
         /**
-         * ��ȡ RealTimeLocation ʵ��ʱ����
-         * ��ǰ�Ự��֧��λ�ù�����
+         * 获取 RealTimeLocation 实例时返回
+         * 当前会话不支持位置共享。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_CONVERSATION_NOT_SUPPORT"] = 2] = "RC_REAL_TIME_LOCATION_CONVERSATION_NOT_SUPPORT";
         /**
-         * ��ȡ RealTimeLocation ʵ��ʱ����
-         * �Է��ѷ���λ�ù�����
+         * 获取 RealTimeLocation 实例时返回
+         * 对方已发起位置共享。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_IS_ON_GOING"] = 3] = "RC_REAL_TIME_LOCATION_IS_ON_GOING";
         /**
-         * Join ʱ����
-         * ��ǰλ�ù����ѳ�������֧��������
+         * Join 时返回
+         * 当前位置共享已超过最大支持人数。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_EXCEED_MAX_PARTICIPANT"] = 4] = "RC_REAL_TIME_LOCATION_EXCEED_MAX_PARTICIPANT";
         /**
-         * Join ʱ����
-         * ����λ�ù���ʧ�ܡ�
+         * Join 时返回
+         * 加入位置共享失败。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_JOIN_FAILURE"] = 5] = "RC_REAL_TIME_LOCATION_JOIN_FAILURE";
         /**
-         * Start ʱ����
-         * ����λ�ù���ʧ�ܡ�
+         * Start 时返回
+         * 发起位置共享失败。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_START_FAILURE"] = 6] = "RC_REAL_TIME_LOCATION_START_FAILURE";
         /**
-         * ���粻���á�
+         * 网络不可用。
          */
         RealTimeLocationErrorCode[RealTimeLocationErrorCode["RC_REAL_TIME_LOCATION_NETWORK_UNAVAILABLE"] = 7] = "RC_REAL_TIME_LOCATION_NETWORK_UNAVAILABLE";
     })(RongIMLib.RealTimeLocationErrorCode || (RongIMLib.RealTimeLocationErrorCode = {}));
     var RealTimeLocationErrorCode = RongIMLib.RealTimeLocationErrorCode;
     (function (RealTimeLocationStatus) {
         /**
-         * ����״̬ ��Ĭ��״̬��
-         * �Է������Լ���δ����λ�ù���ҵ�񣬻���λ�ù���ҵ���ѽ�����
+         * 空闲状态 （默认状态）
+         * 对方或者自己都未发起位置共享业务，或者位置共享业务已结束。
          */
         RealTimeLocationStatus[RealTimeLocationStatus["RC_REAL_TIME_LOCATION_STATUS_IDLE"] = 0] = "RC_REAL_TIME_LOCATION_STATUS_IDLE";
         /**
-         * ����״̬ �������룩
-         * 1. �Է�������λ�ù���ҵ�񣬴�״̬�£��Լ�ֻ��ѡ�����롣
-         * 2. �Լ��������ӵ�λ�ù������˳���
+         * 呼入状态 （待加入）
+         * 1. 对方发起了位置共享业务，此状态下，自己只能选择加入。
+         * 2. 自己从已连接的位置共享中退出。
          */
         RealTimeLocationStatus[RealTimeLocationStatus["RC_REAL_TIME_LOCATION_STATUS_INCOMING"] = 1] = "RC_REAL_TIME_LOCATION_STATUS_INCOMING";
         /**
-         * ����״̬ =���Լ�������
-         * 1. �Լ�����λ�ù���ҵ�񣬶Է�ֻ��ѡ�����롣
-         * 2. �Է��������ӵ�λ�ù���ҵ�����˳���
+         * 呼出状态 =（自己创建）
+         * 1. 自己发起位置共享业务，对方只能选择加入。
+         * 2. 对方从已连接的位置共享业务中退出。
          */
         RealTimeLocationStatus[RealTimeLocationStatus["RC_REAL_TIME_LOCATION_STATUS_OUTGOING"] = 2] = "RC_REAL_TIME_LOCATION_STATUS_OUTGOING";
         /**
-         * ����״̬ ���Լ����룩
-         * �Է��������Լ�������λ�ù����������Լ������˶Է�������λ�ù�����
+         * 连接状态 （自己加入）
+         * 对方加入了自己发起的位置共享，或者自己加入了对方发起的位置共享。
          */
         RealTimeLocationStatus[RealTimeLocationStatus["RC_REAL_TIME_LOCATION_STATUS_CONNECTED"] = 3] = "RC_REAL_TIME_LOCATION_STATUS_CONNECTED";
     })(RongIMLib.RealTimeLocationStatus || (RongIMLib.RealTimeLocationStatus = {}));
@@ -1446,38 +1571,38 @@ var RongIMLib;
     var ReceivedStatus = RongIMLib.ReceivedStatus;
     (function (SearchType) {
         /**
-         * ��ȷ��
+         * 精确。
          */
         SearchType[SearchType["EXACT"] = 0] = "EXACT";
         /**
-         * ģ����
+         * 模糊。
          */
         SearchType[SearchType["FUZZY"] = 1] = "FUZZY";
     })(RongIMLib.SearchType || (RongIMLib.SearchType = {}));
     var SearchType = RongIMLib.SearchType;
     (function (SentStatus) {
         /**
-         * �����С�
+         * 发送中。
          */
         SentStatus[SentStatus["SENDING"] = 10] = "SENDING";
         /**
-         * ����ʧ�ܡ�
+         * 发送失败。
          */
         SentStatus[SentStatus["FAILED"] = 20] = "FAILED";
         /**
-         * �ѷ��͡�
+         * 已发送。
          */
         SentStatus[SentStatus["SENT"] = 30] = "SENT";
         /**
-         * �Է��ѽ��ա�
+         * 对方已接收。
          */
         SentStatus[SentStatus["RECEIVED"] = 40] = "RECEIVED";
         /**
-         * �Է��Ѷ���
+         * 对方已读。
          */
         SentStatus[SentStatus["READ"] = 50] = "READ";
         /**
-         * �Է������١�
+         * 对方已销毁。
          */
         SentStatus[SentStatus["DESTROYED"] = 60] = "DESTROYED";
     })(RongIMLib.SentStatus || (RongIMLib.SentStatus = {}));
@@ -1488,7 +1613,7 @@ var RongIMLib;
         ConnectionState[ConnectionState["IDENTIFIER_REJECTED"] = 2] = "IDENTIFIER_REJECTED";
         ConnectionState[ConnectionState["SERVER_UNAVAILABLE"] = 3] = "SERVER_UNAVAILABLE";
         /**
-         * token��Ч
+         * token无效
          */
         ConnectionState[ConnectionState["TOKEN_INCORRECT"] = 4] = "TOKEN_INCORRECT";
         ConnectionState[ConnectionState["NOT_AUTHORIZED"] = 5] = "NOT_AUTHORIZED";
@@ -1513,9 +1638,9 @@ var RongIMLib;
             return RongIMClient._instance;
         };
         /**
-         * ��ʼ�� SDK��������Ӧ��ȫ��ֻ��Ҫ����һ�Ρ�
-         * @param appKey    �����ߺ�̨������ AppKey��������ʶӦ�á�
-         * @param dataAccessProvider ������DataAccessProvider��ʵ��
+         * 初始化 SDK，在整个应用全局只需要调用一次。
+         * @param appKey    开发者后台申请的 AppKey，用来标识应用。
+         * @param dataAccessProvider 必须是DataAccessProvider的实例
          */
         RongIMClient.init = function (appKey, dataAccessProvider) {
             if (!RongIMClient._instance) {
@@ -1565,7 +1690,10 @@ var RongIMLib;
                 isUseWebSQLProvider: false,
                 otherDevice: false,
                 custStore: {},
-                converStore: {}
+                converStore: { latestMessage: {} },
+                connectAckTime: 0,
+                voipStategy: 0,
+                isFirstPingMsg: true
             };
             RongIMClient._cookieHelper = RongIMLib.CheckParam.getInstance().checkCookieDisable() ? new RongIMLib.MemeoryProvider() : new RongIMLib.CookieProvider();
             if (dataAccessProvider && Object.prototype.toString.call(dataAccessProvider) == "[object Object]") {
@@ -1581,6 +1709,7 @@ var RongIMLib;
                 DiscussionNotificationMessage: { objectName: "RC:DizNtf", msgTag: new RongIMLib.MessageTag(true, true) },
                 VoiceMessage: { objectName: "RC:VcMsg", msgTag: new RongIMLib.MessageTag(true, true) },
                 RichContentMessage: { objectName: "RC:ImgTextMsg", msgTag: new RongIMLib.MessageTag(true, true) },
+                FileMessage: { objectName: "RC:FileMsg", msgTag: new RongIMLib.MessageTag(true, true) },
                 HandshakeMessage: { objectName: "", msgTag: new RongIMLib.MessageTag(true, true) },
                 UnknownMessage: { objectName: "", msgTag: new RongIMLib.MessageTag(true, true) },
                 LocationMessage: { objectName: "RC:LBSMsg", msgTag: new RongIMLib.MessageTag(true, true) },
@@ -1593,6 +1722,7 @@ var RongIMLib;
                 ChangeModeResponseMessage: { objectName: "RC:CsChaR", msgTag: new RongIMLib.MessageTag(false, false) },
                 ChangeModeMessage: { objectName: "RC:CSCha", msgTag: new RongIMLib.MessageTag(false, false) },
                 EvaluateMessage: { objectName: "RC:CsEva", msgTag: new RongIMLib.MessageTag(false, false) },
+                CustomerContact: { objectName: "RC:CsContact", msgTag: new RongIMLib.MessageTag(false, false) },
                 HandShakeMessage: { objectName: "RC:CsHs", msgTag: new RongIMLib.MessageTag(false, false) },
                 HandShakeResponseMessage: { objectName: "RC:CsHsR", msgTag: new RongIMLib.MessageTag(false, false) },
                 SuspendMessage: { objectName: "RC:CsSp", msgTag: new RongIMLib.MessageTag(false, false) },
@@ -1600,6 +1730,15 @@ var RongIMLib;
                 CustomerStatusUpdateMessage: { objectName: "RC:CsUpdate", msgTag: new RongIMLib.MessageTag(false, false) },
                 ReadReceiptMessage: { objectName: "RC:ReadNtf", msgTag: new RongIMLib.MessageTag(false, false) }
             };
+            // if ('RongCallLib' in RongIMLib) {
+            RongIMClient.MessageParams["AcceptMessage"] = { objectName: "RC:VCAccept", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["RingingMessage"] = { objectName: "RC:VCRinging", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["SummaryMessage"] = { objectName: "RC:VCSummary", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["HungupMessage"] = { objectName: "RC:VCHangup", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["InviteMessage"] = { objectName: "RC:VCInvite", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["MediaModifyMessage"] = { objectName: "RC:VCModifyMedia", msgTag: new RongIMLib.MessageTag(false, false) };
+            RongIMClient.MessageParams["MemberModifyMessage"] = { objectName: "RC:VCModifyMem", msgTag: new RongIMLib.MessageTag(false, false) };
+            // }
             RongIMClient.MessageType = {
                 TextMessage: "TextMessage",
                 ImageMessage: "ImageMessage",
@@ -1622,14 +1761,22 @@ var RongIMLib;
                 HandShakeResponseMessage: "HandShakeResponseMessage",
                 SuspendMessage: "SuspendMessage",
                 TerminateMessage: "TerminateMessage",
-                CustomerStatusUpdateMessage: "CustomerStatusUpdateMessage"
+                CustomerContact: "CustomerContact",
+                CustomerStatusUpdateMessage: "CustomerStatusUpdateMessage",
+                AcceptMessage: "AcceptMessage",
+                RingingMessage: "RingingMessage",
+                SummaryMessage: "SummaryMessage",
+                HungupMessage: "HungupMessage",
+                InviteMessage: "InviteMessage",
+                MediaModifyMessage: "MediaModifyMessage",
+                MemberModifyMessage: "MemberModifyMessage"
             };
         };
         /**
-         * ���ӷ�������������Ӧ��ȫ��ֻ��Ҫ����һ�Σ����ߺ� SDK ���Զ�������
+         * 连接服务器，在整个应用全局只需要调用一次，断线后 SDK 会自动重连。
          *
-         * @param token     �ӷ����˻�ȡ���û��������ƣ�Token����
-         * @param callback  ���ӻص����������ӵĳɹ�����ʧ��״̬��
+         * @param token     从服务端获取的用户身份令牌（Token）。
+         * @param callback  连接回调，返回连接的成功或者失败状态。
          */
         RongIMClient.connect = function (token, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "connect", true);
@@ -1661,7 +1808,7 @@ var RongIMLib;
                     }
                 }
             });
-            //ѭ�����ü����¼���׷��֮�����մ����¼�����
+            //循环设置监听事件，追加之后清空存放事件数据
             for (var i = 0, len = RongIMClient._memoryStore.listenerList.length; i < len; i++) {
                 RongIMClient.bridge["setListener"](RongIMClient._memoryStore.listenerList[i]);
             }
@@ -1672,10 +1819,10 @@ var RongIMLib;
             RongIMClient.bridge.reconnect(callback);
         };
         /**
-         * ע����Ϣ���ͣ�����ע���û��Զ�������Ϣ��
-         * �ڽ�����Ϣ�����Ѿ�ע����������Ҫ�ٴ�ע�ᡣ
-         * �Զ�����Ϣ����������ִ��˳�����ߵ�λ�ã���RongIMClient.init(appkey)֮�󼴿ɣ�
-         * @param objectName  ��Ϣ��������
+         * 注册消息类型，用于注册用户自定义的消息。
+         * 内建的消息类型已经注册过，不需要再次注册。
+         * 自定义消息声明需放在执行顺序最高的位置（在RongIMClient.init(appkey)之后即可）
+         * @param objectName  消息内置名称
          */
         RongIMClient.registerMessageType = function (messageType, objectName, messageTag, messageContent) {
             if (!messageType) {
@@ -1705,9 +1852,9 @@ var RongIMLib;
             registerMessageTypeMapping[objectName] = messageType;
         };
         /**
-         * ��������״̬�仯�ļ�������
+         * 设置连接状态变化的监听器。
          *
-         * @param listener  ����״̬�仯�ļ�������
+         * @param listener  连接状态变化的监听器。
          */
         RongIMClient.setConnectionStatusListener = function (listener) {
             if (RongIMClient.bridge) {
@@ -1718,9 +1865,9 @@ var RongIMLib;
             }
         };
         /**
-         * ���ý�����Ϣ�ļ�������
+         * 设置接收消息的监听器。
          *
-         * @param listener  ������Ϣ�ļ�������
+         * @param listener  接收消息的监听器。
          */
         RongIMClient.setOnReceiveMessageListener = function (listener) {
             if (RongIMClient.bridge) {
@@ -1731,14 +1878,14 @@ var RongIMLib;
             }
         };
         /**
-         * ���������������صı���
+         * 清理所有连接相关的变量
          */
         RongIMClient.prototype.logout = function () {
             RongIMClient.bridge.disconnect();
             RongIMClient.bridge = null;
         };
         /**
-         * �Ͽ����ӡ�
+         * 断开连接。
          */
         RongIMClient.prototype.disconnect = function () {
             RongIMClient.bridge.disconnect();
@@ -1748,7 +1895,7 @@ var RongIMLib;
                 return;
             var msg = new RongIMLib.HandShakeMessage();
             var me = this;
-            RongIMClient._memoryStore.custStore["isInit"] = true;
+            RongIMLib.RongIMClient._memoryStore.custStore["isInit"] = true;
             RongIMClient.getInstance().sendMessage(RongIMLib.ConversationType.CUSTOMER_SERVICE, custId, msg, {
                 onSuccess: function (data) {
                     if (data.isBlack) {
@@ -1759,7 +1906,6 @@ var RongIMLib;
                         });
                     }
                     else {
-                        RongIMClient._memoryStore.custStore[custId] = data;
                         callback.onSuccess();
                     }
                 },
@@ -1772,7 +1918,6 @@ var RongIMLib;
             if (!custId || !callback)
                 return;
             var session = RongIMClient._memoryStore.custStore[custId];
-            RongIMClient._memoryStore.custStore["isInit"] = false;
             if (!session)
                 return;
             var msg = new RongIMLib.SuspendMessage({ sid: session.sid, uid: session.uid, pid: session.pid });
@@ -1828,13 +1973,13 @@ var RongIMLib;
             });
         };
         /**
-         * ��ȡ��ǰ���ӵ�״̬��
+         * 获取当前连接的状态。
          */
         RongIMClient.prototype.getCurrentConnectionStatus = function () {
             return RongIMLib.Bridge._client.channel.connectionStatus;
         };
         /**
-         * ��ȡ��ǰʹ�õ�����ͨ����
+         * 获取当前使用的连接通道。
          */
         RongIMClient.prototype.getConnectionChannel = function () {
             if (RongIMLib.Transportations._TransportType == RongIMLib.Socket.XHR_POLLING) {
@@ -1845,7 +1990,7 @@ var RongIMLib;
             }
         };
         /**
-         * ��ȡ��ǰʹ�õı��ش����ṩ�ߡ� TODO
+         * 获取当前使用的本地储存提供者。 TODO
          */
         RongIMClient.prototype.getStorageProvider = function () {
             if (RongIMClient._memoryStore.providerType == 1) {
@@ -1856,7 +2001,7 @@ var RongIMLib;
             }
         };
         /**
-         * ������������Ϣ����ȡ����������Ϣ��
+         * 过滤聊天室消息（拉取最近聊天消息）
          * @param {string[]} msgFilterNames
          */
         RongIMClient.prototype.setFilterMessages = function (msgFilterNames) {
@@ -1864,24 +2009,31 @@ var RongIMLib;
                 RongIMClient._memoryStore.filterMessages = msgFilterNames;
             }
         };
+        RongIMClient.prototype.getAgoraDynamicKey = function (engineType, channelName, callback) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "getAgoraDynamicKey");
+            var modules = new Modules.VoipDynamicInput();
+            modules.setEngineType(engineType);
+            modules.setChannelName(channelName);
+            RongIMClient.bridge.queryMsg(32, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, callback, "VoipDynamicOutput");
+        };
         /**
-         * ��ȡ��ǰ�����û��� UserId��
+         * 获取当前连接用户的 UserId。
          */
         RongIMClient.prototype.getCurrentUserId = function () {
             return RongIMLib.Bridge._client.userId;
         };
         /**
-         * [getCurrentUserInfo ��ȡ��ǰ�û���Ϣ]
-         * @param  {ResultCallback<UserInfo>} callback [�ص�����]
+         * [getCurrentUserInfo 获取当前用户信息]
+         * @param  {ResultCallback<UserInfo>} callback [回调函数]
          */
         // getCurrentUserInfo(callback: ResultCallback<UserInfo>) {
         //     CheckParam.getInstance().check(["object"], "getCurrentUserInfo");
         //     this.getUserInfo(Bridge._client.userId, callback);
         // }
         /**
-         * �����û���Ϣ
-         * @param  {string}                   userId [�û�Id]
-         * @param  {ResultCallback<UserInfo>} callback [�ص�����]
+         * 获得用户信息
+         * @param  {string}                   userId [用户Id]
+         * @param  {ResultCallback<UserInfo>} callback [回调函数]
          */
         // getUserInfo(userId: string, callback: ResultCallback<UserInfo>) {
         //     CheckParam.getInstance().check(["string", "object"], "getUserInfo");
@@ -1898,9 +2050,9 @@ var RongIMLib;
         //     }, "GetUserInfoOutput");
         // }
         /**
-         * ��ȡ������ʱ���뱾��ʱ���Ĳ�ֵ����λΪ���롣
-         * ���㹫ʽ����ֵ = ����ʱ�������� - ������ʱ��������
-         * @param callback  ��ȡ�Ļص������ز�ֵ��
+         * 获取服务器时间与本地时间的差值，单位为毫秒。
+         * 计算公式：差值 = 本地时间毫秒数 - 服务器时间毫秒数
+         * @param callback  获取的回调，返回差值。
          */
         RongIMClient.prototype.getDeltaTime = function () {
             return RongIMClient._memoryStore.deltaTime;
@@ -1929,11 +2081,11 @@ var RongIMLib;
                 }
             });
         };
-        /**TODO �������ش洢��δ����Ϣ��Ŀǰ�����ڴ��е�δ����Ϣ
-         * [clearMessagesUnreadStatus ����ָ���Ựδ����Ϣ]
-         * @param  {ConversationType}        conversationType [�Ự����]
-         * @param  {string}                  targetId         [�û�id]
-         * @param  {ResultCallback<boolean>} callback         [����ֵ�������ص�]
+        /**TODO 清楚本地存储的未读消息，目前清空内存中的未读消息
+         * [clearMessagesUnreadStatus 清空指定会话未读消息]
+         * @param  {ConversationType}        conversationType [会话类型]
+         * @param  {string}                  targetId         [用户id]
+         * @param  {ResultCallback<boolean>} callback         [返回值，参数回调]
          */
         RongIMClient.prototype.clearMessagesUnreadStatus = function (conversationType, targetId, callback) {
             RongIMClient._dataAccessProvider.updateMessages(conversationType, targetId, "readStatus", null, {
@@ -1950,7 +2102,7 @@ var RongIMLib;
             });
         };
         /**
-         * [deleteMessages ɾ����Ϣ��¼��]
+         * [deleteMessages 删除消息记录。]
          * @param  {ConversationType}        conversationType [description]
          * @param  {string}                  targetId         [description]
          * @param  {number[]}                messageIds       [description]
@@ -1976,17 +2128,17 @@ var RongIMLib;
             this.sendMessage(message.conversationType, message.targetId, message.content, callback);
         };
         /**
-         * [sendMessage ������Ϣ��]
-         * @param  {ConversationType}        conversationType [�Ự����]
-         * @param  {string}                  targetId         [Ŀ��Id]
-         * @param  {MessageContent}          messageContent   [��Ϣ����]
+         * [sendMessage 发送消息。]
+         * @param  {ConversationType}        conversationType [会话类型]
+         * @param  {string}                  targetId         [目标Id]
+         * @param  {MessageContent}          messageContent   [消息类型]
          * @param  {SendMessageCallback}     sendCallback     []
-         * @param  {ResultCallback<Message>} resultCallback   [����ֵ�������ص�]
+         * @param  {ResultCallback<Message>} resultCallback   [返回值，函数回调]
          * @param  {string}                  pushContent      []
          * @param  {string}                  pushData         []
          */
-        RongIMClient.prototype.sendMessage = function (conversationType, targetId, messageContent, sendCallback) {
-            RongIMLib.CheckParam.getInstance().check(["number", "string", "object", "object"], "sendMessage");
+        RongIMClient.prototype.sendMessage = function (conversationType, targetId, messageContent, sendCallback, mentiondMsg) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "object", "object", "undefined|object|null|global|boolean"], "sendMessage");
             if (!RongIMLib.Bridge._client.channel) {
                 sendCallback.onError(RongIMLib.ErrorCode.RC_NET_UNAVAILABLE, null);
                 return;
@@ -1996,7 +2148,12 @@ var RongIMLib;
                 throw new Error("connect is timeout! postion:sendMessage");
             }
             var modules = new Modules.UpStreamMessage();
-            modules.setSessionId(RongIMClient.MessageParams[messageContent.messageName].msgTag.getMessageTag());
+            if (mentiondMsg && (conversationType == RongIMLib.ConversationType.DISCUSSION || conversationType == RongIMLib.ConversationType.GROUP)) {
+                modules.setSessionId(7);
+            }
+            else {
+                modules.setSessionId(RongIMClient.MessageParams[messageContent.messageName].msgTag.getMessageTag());
+            }
             modules.setClassname(RongIMClient.MessageParams[messageContent.messageName].objectName);
             modules.setContent(messageContent.encode());
             var content = modules.toArrayBuffer();
@@ -2048,6 +2205,7 @@ var RongIMLib;
                         });
                     }
                     setTimeout(function () {
+                        msg.sentTime = data.timestamp;
                         sendCallback.onSuccess(msg);
                     });
                 },
@@ -2094,16 +2252,16 @@ var RongIMLib;
             throw new Error("Not implemented yet");
         };
         /**
-         * [sendTextMessage ����TextMessage���ݷ�ʽ]
-         * @param  {string}                  content        [��Ϣ����]
-         * @param  {ResultCallback<Message>} resultCallback [����ֵ�������ص�]
+         * [sendTextMessage 发送TextMessage快捷方式]
+         * @param  {string}                  content        [消息内容]
+         * @param  {ResultCallback<Message>} resultCallback [返回值，参数回调]
          */
         RongIMClient.prototype.sendTextMessage = function (conversationType, targetId, content, sendMessageCallback) {
             var msgContent = RongIMLib.TextMessage.obtain(content);
             this.sendMessage(conversationType, targetId, msgContent, sendMessageCallback);
         };
         /**
-         * [insertMessage �򱾵ز���һ����Ϣ�������͵���������]
+         * [insertMessage 向本地插入一条消息，不发送到服务器。]
          * @param  {ConversationType}        conversationType [description]
          * @param  {string}                  targetId         [description]
          * @param  {string}                  senderUserId     [description]
@@ -2121,12 +2279,12 @@ var RongIMLib;
             RongIMClient._dataAccessProvider.addMessage(conversationType, targetId, msg, callback);
         };
         /**
-         * [getHistoryMessages ��ȡ��ʷ��Ϣ��¼��]
-         * @param  {ConversationType}          conversationType [�Ự����]
-         * @param  {string}                    targetId         [�û�Id]
-         * @param  {number|null}               pullMessageTime  [��ȡ��ʷ��Ϣ��ʼλ��(��ʽΪ������)������Ϊnull]
-         * @param  {number}                    count            [��ʷ��Ϣ����]
-         * @param  {ResultCallback<Message[]>} callback         [�ص�����]
+         * [getHistoryMessages 拉取历史消息记录。]
+         * @param  {ConversationType}          conversationType [会话类型]
+         * @param  {string}                    targetId         [用户Id]
+         * @param  {number|null}               pullMessageTime  [拉取历史消息起始位置(格式为毫秒数)，可以为null]
+         * @param  {number}                    count            [历史消息数量]
+         * @param  {ResultCallback<Message[]>} callback         [回调函数]
          * @param  {string}                    objectName       [objectName]
          */
         RongIMClient.prototype.getHistoryMessages = function (conversationType, targetId, timestamp, count, callback) {
@@ -2140,7 +2298,7 @@ var RongIMLib;
             RongIMClient._dataAccessProvider.getHistoryMessages(conversationType, targetId, timestamp, count, callback);
         };
         /**
-         * [getRemoteHistoryMessages ��ȡĳ��ʱ����֮ǰ����Ϣ]
+         * [getRemoteHistoryMessages 拉取某个时间戳之前的消息]
          * @param  {ConversationType}          conversationType [description]
          * @param  {string}                    targetId         [description]
          * @param  {Date}                      dateTime         [description]
@@ -2190,10 +2348,10 @@ var RongIMLib;
             }, "HistoryMessagesOuput");
         };
         /**
-         * [hasRemoteUnreadMessages �Ƿ���δ���յ���Ϣ��jsonp����]
+         * [hasRemoteUnreadMessages 是否有未接收的消息，jsonp方法]
          * @param  {string}          appkey   [appkey]
          * @param  {string}          token    [token]
-         * @param  {ConnectCallback} callback [����ֵ�������ص�]
+         * @param  {ConnectCallback} callback [返回值，参数回调]
          */
         RongIMClient.prototype.hasRemoteUnreadMessages = function (token, callback) {
             var xss = null;
@@ -2224,9 +2382,9 @@ var RongIMLib;
             });
         };
         /**
-         * [getConversationUnreadCount ָ�����ֻỰ���ͻ�ȡδ����Ϣ��]
-         * @param  {ResultCallback<number>} callback             [����ֵ�������ص���]
-         * @param  {ConversationType[]}     ...conversationTypes [�Ự���͡�]
+         * [getConversationUnreadCount 指定多种会话类型获取未读消息数]
+         * @param  {ResultCallback<number>} callback             [返回值，参数回调。]
+         * @param  {ConversationType[]}     ...conversationTypes [会话类型。]
          */
         RongIMClient.prototype.getConversationUnreadCount = function (conversationTypes, callback) {
             RongIMClient._dataAccessProvider.getConversationUnreadCount(conversationTypes, {
@@ -2243,9 +2401,9 @@ var RongIMLib;
             });
         };
         /**
-         * [getUnreadCount ָ���û����Ự���͵�δ����Ϣ������]
-         * @param  {ConversationType} conversationType [�Ự����]
-         * @param  {string}           targetId         [�û�Id]
+         * [getUnreadCount 指定用户、会话类型的未读消息总数。]
+         * @param  {ConversationType} conversationType [会话类型]
+         * @param  {string}           targetId         [用户Id]
          */
         RongIMClient.prototype.getUnreadCount = function (conversationType, targetId, callback) {
             RongIMClient._dataAccessProvider.getUnreadCount(conversationType, targetId, {
@@ -2262,10 +2420,10 @@ var RongIMLib;
             });
         };
         /**
-         * �����Ựδ����Ϣ��
-         * @param  {ConversationType}        conversationType �Ự����
-         * @param  {string}                  targetId         Ŀ��Id
-         * @param  {ResultCallback<boolean>} callback         ����ֵ�������ص�
+         * 清楚会话未读消息数
+         * @param  {ConversationType}        conversationType 会话类型
+         * @param  {string}                  targetId         目标Id
+         * @param  {ResultCallback<boolean>} callback         返回值，函数回调
          */
         RongIMClient.prototype.clearUnreadCount = function (conversationType, targetId, callback) {
             RongIMClient._dataAccessProvider.clearUnreadCount(conversationType, targetId, {
@@ -2326,9 +2484,9 @@ var RongIMLib;
         // #endregion Message
         // #region TextMessage Draft
         /**
-         * clearTextMessageDraft ����ָ���Ự����Ϣ���͵Ĳݸ塣
-         * @param  {ConversationType}        conversationType �Ự����
-         * @param  {string}                  targetId         Ŀ��Id
+         * clearTextMessageDraft 清除指定会话和消息类型的草稿。
+         * @param  {ConversationType}        conversationType 会话类型
+         * @param  {string}                  targetId         目标Id
          */
         RongIMClient.prototype.clearTextMessageDraft = function (conversationType, targetId) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "clearTextMessageDraft");
@@ -2337,9 +2495,9 @@ var RongIMLib;
             return true;
         };
         /**
-         * [getTextMessageDraft ��ȡָ����Ϣ�ͻỰ�Ĳݸ塣]
-         * @param  {ConversationType}       conversationType [�Ự����]
-         * @param  {string}                 targetId         [Ŀ��Id]
+         * [getTextMessageDraft 获取指定消息和会话的草稿。]
+         * @param  {ConversationType}       conversationType [会话类型]
+         * @param  {string}                 targetId         [目标Id]
          */
         RongIMClient.prototype.getTextMessageDraft = function (conversationType, targetId) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "getTextMessageDraft");
@@ -2351,9 +2509,9 @@ var RongIMLib;
         };
         /**
          * [saveTextMessageDraft description]
-         * @param  {ConversationType}        conversationType [�Ự����]
-         * @param  {string}                  targetId         [Ŀ��Id]
-         * @param  {string}                  value            [�ݸ�ֵ]
+         * @param  {ConversationType}        conversationType [会话类型]
+         * @param  {string}                  targetId         [目标Id]
+         * @param  {string}                  value            [草稿值]
          */
         RongIMClient.prototype.saveTextMessageDraft = function (conversationType, targetId, value) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "string", "object"], "saveTextMessageDraft");
@@ -2392,10 +2550,10 @@ var RongIMLib;
             });
         };
         /**
-         * [getConversation ��ȡָ���Ự���˷�������getConversationList֮��ִ��]
-         * @param  {ConversationType}             conversationType [�Ự����]
-         * @param  {string}                       targetId         [Ŀ��Id]
-         * @param  {ResultCallback<Conversation>} callback         [����ֵ�������ص�]
+         * [getConversation 获取指定会话，此方法需在getConversationList之后执行]
+         * @param  {ConversationType}             conversationType [会话类型]
+         * @param  {string}                       targetId         [目标Id]
+         * @param  {ResultCallback<Conversation>} callback         [返回值，函数回调]
          */
         RongIMClient.prototype.getConversation = function (conversationType, targetId, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "getConversation");
@@ -2413,8 +2571,8 @@ var RongIMLib;
             });
         };
         /**
-         * [pottingConversation ��װ�Ự�б�]
-         * @param {any} tempConver [��ʱ�Ự]
+         * [pottingConversation 组装会话列表]
+         * @param {any} tempConver [临时会话]
          * conver_conversationType_targetId_no.
          * msg_conversationType_targetId_no.
          */
@@ -2437,6 +2595,11 @@ var RongIMLib;
                     conver.receivedTime = conver.latestMessage.receiveTime;
                     conver.sentStatus = conver.latestMessage.sentStatus;
                     conver.sentTime = conver.latestMessage.sentTime;
+                    var mentioneds = RongIMClient._cookieHelper.getItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conver.conversationType + '_' + conver.targetId);
+                    if (mentioneds) {
+                        var info = JSON.parse(mentioneds);
+                        conver.mentionedMsg = info[tempConver.type + "_" + tempConver.userId];
+                    }
                     if (!isUseReplace) {
                         if (RongIMLib.MessageUtil.supportLargeStorage()) {
                             var count = RongIMLib.LocalStorageProvider.getInstance().getItem("cu" + RongIMLib.Bridge._client.userId + tempConver.type + tempConver.userId);
@@ -2488,8 +2651,8 @@ var RongIMLib;
             }
             RongIMClient._memoryStore.conversationList = convers.concat(conversationList);
         };
-        RongIMClient.prototype.getConversationList = function (callback, conversationTypes) {
-            RongIMLib.CheckParam.getInstance().check(["object", "null|array|object|global"], "getConversationList");
+        RongIMClient.prototype.getConversationList = function (callback, conversationTypes, count) {
+            RongIMLib.CheckParam.getInstance().check(["object", "null|array|object|global", "number|undefined"], "getConversationList");
             var me = this;
             RongIMClient._dataAccessProvider.getConversationList({
                 onSuccess: function (data) {
@@ -2515,15 +2678,23 @@ var RongIMLib;
                         callback.onSuccess([]);
                     }
                 }
-            }, conversationTypes);
+            }, conversationTypes, count);
         };
-        RongIMClient.prototype.getRemoteConversationList = function (callback, conversationTypes) {
-            RongIMLib.CheckParam.getInstance().check(["object", "null|array|object|global"], "getRemoteConversationList");
+        RongIMClient.prototype.getRemoteConversationList = function (callback, conversationTypes, count) {
+            RongIMLib.CheckParam.getInstance().check(["object", "null|array|object|global", "number|undefined"], "getRemoteConversationList");
             var modules = new Modules.RelationsInput(), self = this;
             modules.setType(1);
+            if (typeof count == 'undefined') {
+                modules.setCount(0);
+            }
+            else {
+                modules.setCount(count);
+            }
             RongIMClient.bridge.queryMsg(26, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, {
                 onSuccess: function (list) {
+                    RongIMClient._memoryStore.conversationList.length = 0;
                     if (list.info) {
+                        list.info = list.info.reverse();
                         for (var i = 0, len = list.info.length; i < len; i++) {
                             self.pottingConversation(list.info[i]);
                         }
@@ -2557,11 +2728,11 @@ var RongIMLib;
             return RongIMClient._dataAccessProvider.updateConversation(conversation);
         };
         /**
-         * [createConversation �����Ự��]
-         * @param  {number}  conversationType [�Ự����]
-         * @param  {string}  targetId         [Ŀ��Id]
-         * @param  {string}  converTitle      [�Ự����]
-         * @param  {boolean} islocal          [�Ƿ�ͬ������������ture��ͬ����false:��ͬ��]
+         * [createConversation 创建会话。]
+         * @param  {number}  conversationType [会话类型]
+         * @param  {string}  targetId         [目标Id]
+         * @param  {string}  converTitle      [会话标题]
+         * @param  {boolean} islocal          [是否同步到服务器，ture：同步，false:不同步]
          */
         RongIMClient.prototype.createConversation = function (conversationType, targetId, converTitle) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "string"], "createConversation");
@@ -2573,7 +2744,7 @@ var RongIMLib;
             conver.unreadMessageCount = 0;
             return conver;
         };
-        //TODO ɾ�����غͷ�������ɾ�����غͷ������ֿ�
+        //TODO 删除本地和服务器、删除本地和服务器分开
         RongIMClient.prototype.removeConversation = function (conversationType, targetId, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "removeConversation");
             var mod = new Modules.RelationsInput();
@@ -2617,40 +2788,40 @@ var RongIMLib;
         // #endregion Conversation
         // #region Notifications
         /**
-         * [getConversationNotificationStatus ��ȡָ���û��ͻỰ���������ѡ�]
-         * @param  {ConversationType}                               conversationType [�Ự����]
-         * @param  {string}                                         targetId         [Ŀ��Id]
-         * @param  {ResultCallback<ConversationNotificationStatus>} callback         [����ֵ�������ص�]
+         * [getConversationNotificationStatus 获取指定用户和会话类型免提醒。]
+         * @param  {ConversationType}                               conversationType [会话类型]
+         * @param  {string}                                         targetId         [目标Id]
+         * @param  {ResultCallback<ConversationNotificationStatus>} callback         [返回值，函数回调]
          */
         RongIMClient.prototype.getConversationNotificationStatus = function (conversationType, targetId, callback) {
             throw new Error("Not implemented yet");
         };
         /**
-         * [setConversationNotificationStatus ����ָ���û��ͻỰ���������ѡ�]
-         * @param  {ConversationType}                               conversationType [�Ự����]
-         * @param  {string}                                         targetId         [Ŀ��Id]
-         * @param  {ResultCallback<ConversationNotificationStatus>} callback         [����ֵ�������ص�]
+         * [setConversationNotificationStatus 设置指定用户和会话类型免提醒。]
+         * @param  {ConversationType}                               conversationType [会话类型]
+         * @param  {string}                                         targetId         [目标Id]
+         * @param  {ResultCallback<ConversationNotificationStatus>} callback         [返回值，函数回调]
          */
         RongIMClient.prototype.setConversationNotificationStatus = function (conversationType, targetId, notificationStatus, callback) {
             throw new Error("Not implemented yet");
         };
         /**
-         * [getNotificationQuietHours ��ȡ��������Ϣʱ�䡣]
-         * @param  {GetNotificationQuietHoursCallback} callback [����ֵ�������ص�]
+         * [getNotificationQuietHours 获取免提醒消息时间。]
+         * @param  {GetNotificationQuietHoursCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.getNotificationQuietHours = function (callback) {
             throw new Error("Not implemented yet");
         };
         /**
-         * [removeNotificationQuietHours �Ƴ���������Ϣʱ�䡣]
-         * @param  {GetNotificationQuietHoursCallback} callback [����ֵ�������ص�]
+         * [removeNotificationQuietHours 移除免提醒消息时间。]
+         * @param  {GetNotificationQuietHoursCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.removeNotificationQuietHours = function (callback) {
             throw new Error("Not implemented yet");
         };
         /**
-         * [setNotificationQuietHours ������������Ϣʱ�䡣]
-         * @param  {GetNotificationQuietHoursCallback} callback [����ֵ�������ص�]
+         * [setNotificationQuietHours 设置免提醒消息时间。]
+         * @param  {GetNotificationQuietHoursCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.setNotificationQuietHours = function (startTime, spanMinutes, callback) {
             throw new Error("Not implemented yet");
@@ -2658,10 +2829,10 @@ var RongIMLib;
         // #endregion Notifications
         // #region Discussion
         /**
-         * [addMemberToDiscussion   ����������]
-         * @param  {string}            discussionId [������Id]
-         * @param  {string[]}          userIdList   [�����г�Ա]
-         * @param  {OperationCallback} callback     [����ֵ�������ص�]
+         * [addMemberToDiscussion   加入讨论组]
+         * @param  {string}            discussionId [讨论组Id]
+         * @param  {string[]}          userIdList   [讨论中成员]
+         * @param  {OperationCallback} callback     [返回值，函数回调]
          */
         RongIMClient.prototype.addMemberToDiscussion = function (discussionId, userIdList, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "array", "object"], "addMemberToDiscussion");
@@ -2681,10 +2852,10 @@ var RongIMLib;
             });
         };
         /**
-         * [createDiscussion ����������]
-         * @param  {string}                   name       [����������]
-         * @param  {string[]}                 userIdList [��������Ա]
-         * @param  {CreateDiscussionCallback} callback   [����ֵ�������ص�]
+         * [createDiscussion 创建讨论组]
+         * @param  {string}                   name       [讨论组名称]
+         * @param  {string[]}                 userIdList [讨论组成员]
+         * @param  {CreateDiscussionCallback} callback   [返回值，函数回调]
          */
         RongIMClient.prototype.createDiscussion = function (name, userIdList, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "array", "object"], "createDiscussion");
@@ -2714,9 +2885,9 @@ var RongIMLib;
             }, "CreateDiscussionOutput");
         };
         /**
-         * [getDiscussion ��ȡ��������Ϣ]
-         * @param  {string}                     discussionId [������Id]
-         * @param  {ResultCallback<Discussion>} callback     [����ֵ�������ص�]
+         * [getDiscussion 获取讨论组信息]
+         * @param  {string}                     discussionId [讨论组Id]
+         * @param  {ResultCallback<Discussion>} callback     [返回值，函数回调]
          */
         RongIMClient.prototype.getDiscussion = function (discussionId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "getDiscussion");
@@ -2736,9 +2907,9 @@ var RongIMLib;
             }, "ChannelInfoOutput");
         };
         /**
-         * [quitDiscussion �˳�������]
-         * @param  {string}            discussionId [������Id]
-         * @param  {OperationCallback} callback     [����ֵ�������ص�]
+         * [quitDiscussion 退出讨论组]
+         * @param  {string}            discussionId [讨论组Id]
+         * @param  {OperationCallback} callback     [返回值，函数回调]
          */
         RongIMClient.prototype.quitDiscussion = function (discussionId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "quitDiscussion");
@@ -2747,10 +2918,10 @@ var RongIMLib;
             RongIMClient.bridge.queryMsg(7, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), discussionId, callback);
         };
         /**
-         * [removeMemberFromDiscussion ��ָ����Ա�Ƴ�������]
-         * @param  {string}            discussionId [������Id]
-         * @param  {string}            userId       [���Ƴ����û�Id]
-         * @param  {OperationCallback} callback     [����ֵ�������ص�]
+         * [removeMemberFromDiscussion 将指定成员移除讨论租]
+         * @param  {string}            discussionId [讨论组Id]
+         * @param  {string}            userId       [被移除的用户Id]
+         * @param  {OperationCallback} callback     [返回值，参数回调]
          */
         RongIMClient.prototype.removeMemberFromDiscussion = function (discussionId, userId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "string", "object"], "removeMemberFromDiscussion");
@@ -2759,10 +2930,10 @@ var RongIMLib;
             RongIMClient.bridge.queryMsg(9, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), discussionId, callback);
         };
         /**
-         * [setDiscussionInviteStatus ��������������״̬]
-         * @param  {string}                 discussionId [������Id]
-         * @param  {DiscussionInviteStatus} status       [����״̬]
-         * @param  {OperationCallback}      callback     [����ֵ�������ص�]
+         * [setDiscussionInviteStatus 设置讨论组邀请状态]
+         * @param  {string}                 discussionId [讨论组Id]
+         * @param  {DiscussionInviteStatus} status       [邀请状态]
+         * @param  {OperationCallback}      callback     [返回值，函数回调]
          */
         RongIMClient.prototype.setDiscussionInviteStatus = function (discussionId, status, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "number", "object"], "setDiscussionInviteStatus");
@@ -2781,10 +2952,10 @@ var RongIMLib;
             });
         };
         /**
-         * [setDiscussionName ��������������]
-         * @param  {string}            discussionId [������Id]
-         * @param  {string}            name         [����������]
-         * @param  {OperationCallback} callback     [����ֵ�������ص�]
+         * [setDiscussionName 设置讨论组名称]
+         * @param  {string}            discussionId [讨论组Id]
+         * @param  {string}            name         [讨论组名称]
+         * @param  {OperationCallback} callback     [返回值，函数回调]
          */
         RongIMClient.prototype.setDiscussionName = function (discussionId, name, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "string", "object"], "setDiscussionName");
@@ -2804,10 +2975,10 @@ var RongIMLib;
         // #endregion Discussion
         // #region Group
         /**
-         * [����Ⱥ��]
-         * @param  {string}            groupId   [Ⱥ��Id]
-         * @param  {string}            groupName [Ⱥ������]
-         * @param  {OperationCallback} callback  [����ֵ�������ص�]
+         * [加入群组]
+         * @param  {string}            groupId   [群组Id]
+         * @param  {string}            groupName [群组名称]
+         * @param  {OperationCallback} callback  [返回值，函数回调]
          */
         RongIMClient.prototype.joinGroup = function (groupId, groupName, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "string", "object"], "joinGroup");
@@ -2828,9 +2999,9 @@ var RongIMLib;
             }, "GroupOutput");
         };
         /**
-         * [�˳�Ⱥ��]
-         * @param  {string}            groupId  [Ⱥ��Id]
-         * @param  {OperationCallback} callback [����ֵ�������ص�]
+         * [退出群组]
+         * @param  {string}            groupId  [群组Id]
+         * @param  {OperationCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.quitGroup = function (groupId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "quitGroup");
@@ -2848,13 +3019,13 @@ var RongIMLib;
             });
         };
         /**
-         * [ͬ��Ⱥ����Ϣ]
-         * @param  {Array<Group>}      groups   [Ⱥ���б�]
-         * @param  {OperationCallback} callback [����ֵ�������ص�]
+         * [同步群组信息]
+         * @param  {Array<Group>}      groups   [群组列表]
+         * @param  {OperationCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.syncGroup = function (groups, callback) {
             RongIMLib.CheckParam.getInstance().check(["array", "object"], "syncGroup");
-            //ȥ�ز���
+            //去重操作
             for (var i = 0, part = [], info = [], len = groups.length; i < len; i++) {
                 if (part.length === 0 || !(groups[i].id in part)) {
                     part.push(groups[i].id);
@@ -2869,7 +3040,7 @@ var RongIMLib;
             modules.setGroupHashCode(md5(part.sort().join("")));
             RongIMClient.bridge.queryMsg(13, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, {
                 onSuccess: function (result) {
-                    //1ΪȺ��Ϣ��ƥ����Ҫ���͸�����������ͬ����0����Ҫͬ��
+                    //1为群信息不匹配需要发送给服务器进行同步，0不需要同步
                     if (result === 1) {
                         var val = new Modules.GroupInput();
                         val.setGroupInfo(info);
@@ -2902,10 +3073,10 @@ var RongIMLib;
         // #endregion Group
         // #region ChatRoom
         /**
-         * [���������ҡ�]
-         * @param  {string}            chatroomId   [������Id]
-         * @param  {number}            messageCount [��ȡ��Ϣ������-1Ϊ����ȥ��Ϣ]
-         * @param  {OperationCallback} callback     [����ֵ�������ص�]
+         * [加入聊天室。]
+         * @param  {string}            chatroomId   [聊天室Id]
+         * @param  {number}            messageCount [拉取消息数量，-1为不拉去消息]
+         * @param  {OperationCallback} callback     [返回值，函数回调]
          */
         RongIMClient.prototype.joinChatRoom = function (chatroomId, messageCount, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "number", "object"], "joinChatRoom");
@@ -2976,9 +3147,9 @@ var RongIMLib;
             }, "QueryChatroomInfoOutput");
         };
         /**
-         * [�˳�������]
-         * @param  {string}            chatroomId [������Id]
-         * @param  {OperationCallback} callback   [����ֵ�������ص�]
+         * [退出聊天室]
+         * @param  {string}            chatroomId [聊天室Id]
+         * @param  {OperationCallback} callback   [返回值，函数回调]
          */
         RongIMClient.prototype.quitChatRoom = function (chatroomId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "quitChatRoom");
@@ -3008,7 +3179,7 @@ var RongIMLib;
             modules.setMpid("");
             RongIMClient.bridge.queryMsg(28, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, {
                 onSuccess: function (data) {
-                    //TODO �ҳ�����ʱ��
+                    //TODO 找出最大时间
                     // self.lastReadTime.set(conversationType + targetId, MessageUtil.int64ToTimestamp(data.syncTime));
                     RongIMClient._memoryStore.publicServiceMap.publicServiceList.length = 0;
                     RongIMClient._memoryStore.publicServiceMap.publicServiceList = data;
@@ -3017,18 +3188,18 @@ var RongIMLib;
             }, "PullMpOutput");
         };
         /**
-         * [getPublicServiceList ]��ȡ�Ѿ��Ĺ����˺��б�
-         * @param  {ResultCallback<PublicServiceProfile[]>} callback [����ֵ�������ص�]
+         * [getPublicServiceList ]获取已经的公共账号列表
+         * @param  {ResultCallback<PublicServiceProfile[]>} callback [返回值，参数回调]
          */
         RongIMClient.prototype.getPublicServiceList = function (callback) {
             RongIMLib.CheckParam.getInstance().check(["object"], "getPublicServiceList");
             callback.onSuccess(RongIMClient._memoryStore.publicServiceMap.publicServiceList);
         };
         /**
-         * [getPublicServiceProfile ]   ��ȡĳ����������Ϣ��
-         * @param  {PublicServiceType}                    publicServiceType [���ڷ������͡�]
-         * @param  {string}                               publicServiceId   [�������� Id��]
-         * @param  {ResultCallback<PublicServiceProfile>} callback          [�����˺���Ϣ�ص���]
+         * [getPublicServiceProfile ]   获取某公共服务信息。
+         * @param  {PublicServiceType}                    publicServiceType [公众服务类型。]
+         * @param  {string}                               publicServiceId   [公共服务 Id。]
+         * @param  {ResultCallback<PublicServiceProfile>} callback          [公共账号信息回调。]
          */
         RongIMClient.prototype.getPublicServiceProfile = function (publicServiceType, publicServiceId, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "getPublicServiceProfile");
@@ -3036,7 +3207,7 @@ var RongIMLib;
             callback.onSuccess(profile);
         };
         /**
-         * [pottingPublicSearchType ] ���ںò�ѯ����
+         * [pottingPublicSearchType ] 公众好查询类型
          * @param  {number} bussinessType [ 0-all 1-mp 2-mc]
          * @param  {number} searchType    [0-exact 1-fuzzy]
          */
@@ -3072,10 +3243,10 @@ var RongIMLib;
             return bits;
         };
         /**
-         * [searchPublicService ]�����ڷ��������������ڷ�����
-         * @param  {SearchType}                             searchType [��������ö�١�]
-         * @param  {string}                                 keywords   [�����ؼ��֡�]
-         * @param  {ResultCallback<PublicServiceProfile[]>} callback   [���������ص���]
+         * [searchPublicService ]按公众服务类型搜索公众服务。
+         * @param  {SearchType}                             searchType [搜索类型枚举。]
+         * @param  {string}                                 keywords   [搜索关键字。]
+         * @param  {ResultCallback<PublicServiceProfile[]>} callback   [搜索结果回调。]
          */
         RongIMClient.prototype.searchPublicService = function (searchType, keywords, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "searchPublicService");
@@ -3085,11 +3256,11 @@ var RongIMLib;
             RongIMClient.bridge.queryMsg(29, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, callback, "SearchMpOutput");
         };
         /**
-         * [searchPublicServiceByType ]�����ڷ��������������ڷ�����
-         * @param  {PublicServiceType}                      publicServiceType [���ڷ������͡�]
-         * @param  {SearchType}                             searchType        [��������ö�١�]
-         * @param  {string}                                 keywords          [�����ؼ��֡�]
-         * @param  {ResultCallback<PublicServiceProfile[]>} callback          [���������ص���]
+         * [searchPublicServiceByType ]按公众服务类型搜索公众服务。
+         * @param  {PublicServiceType}                      publicServiceType [公众服务类型。]
+         * @param  {SearchType}                             searchType        [搜索类型枚举。]
+         * @param  {string}                                 keywords          [搜索关键字。]
+         * @param  {ResultCallback<PublicServiceProfile[]>} callback          [搜索结果回调。]
          */
         RongIMClient.prototype.searchPublicServiceByType = function (publicServiceType, searchType, keywords, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "number", "string", "object"], "searchPublicServiceByType");
@@ -3100,10 +3271,10 @@ var RongIMLib;
             RongIMClient.bridge.queryMsg(29, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, callback, "SearchMpOutput");
         };
         /**
-         * [subscribePublicService ] ���Ĺ��ںš�
-         * @param  {PublicServiceType} publicServiceType [���ڷ������͡�]
-         * @param  {string}            publicServiceId   [�������� Id��]
-         * @param  {OperationCallback} callback          [���Ĺ��ںŻص���]
+         * [subscribePublicService ] 订阅公众号。
+         * @param  {PublicServiceType} publicServiceType [公众服务类型。]
+         * @param  {string}            publicServiceId   [公共服务 Id。]
+         * @param  {OperationCallback} callback          [订阅公众号回调。]
          */
         RongIMClient.prototype.subscribePublicService = function (publicServiceType, publicServiceId, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "subscribePublicService");
@@ -3123,10 +3294,10 @@ var RongIMLib;
             }, "MPFollowOutput");
         };
         /**
-         * [unsubscribePublicService ] ȡ�����Ĺ��ںš�
-         * @param  {PublicServiceType} publicServiceType [���ڷ������͡�]
-         * @param  {string}            publicServiceId   [�������� Id��]
-         * @param  {OperationCallback} callback          [ȡ�����Ĺ��ںŻص���]
+         * [unsubscribePublicService ] 取消订阅公众号。
+         * @param  {PublicServiceType} publicServiceType [公众服务类型。]
+         * @param  {string}            publicServiceId   [公共服务 Id。]
+         * @param  {OperationCallback} callback          [取消订阅公众号回调。]
          */
         RongIMClient.prototype.unsubscribePublicService = function (publicServiceType, publicServiceId, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "unsubscribePublicService");
@@ -3145,9 +3316,9 @@ var RongIMLib;
         // #endregion Public Service
         // #region Blacklist
         /**
-         * [����������]
-         * @param  {string}            userId   [�����������������û�Id]
-         * @param  {OperationCallback} callback [����ֵ�������ص�]
+         * [加入黑名单]
+         * @param  {string}            userId   [将被加入黑名单的用户Id]
+         * @param  {OperationCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.addToBlacklist = function (userId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "addToBlacklist");
@@ -3163,8 +3334,8 @@ var RongIMLib;
             });
         };
         /**
-         * [��ȡ�������б�]
-         * @param  {GetBlacklistCallback} callback [����ֵ�������ص�]
+         * [获取黑名单列表]
+         * @param  {GetBlacklistCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.getBlacklist = function (callback) {
             RongIMLib.CheckParam.getInstance().check(["object"], "getBlacklist");
@@ -3173,11 +3344,11 @@ var RongIMLib;
             RongIMClient.bridge.queryMsg(23, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), RongIMLib.Bridge._client.userId, callback, "QueryBlackListOutput");
         };
         /**
-         * [�õ�ָ����Ա�ٺ������е�״̬]
+         * [得到指定人员再黑名单中的状态]
          * @param  {string}                          userId   [description]
-         * @param  {ResultCallback<BlacklistStatus>} callback [����ֵ�������ص�]
+         * @param  {ResultCallback<BlacklistStatus>} callback [返回值，函数回调]
          */
-        //TODO ������Ա���ں������У���ȡ״̬�������쳣
+        //TODO 如果人员不在黑名单中，获取状态会出现异常
         RongIMClient.prototype.getBlacklistStatus = function (userId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "getBlacklistStatus");
             var modules = new Modules.BlackListStatusInput();
@@ -3195,9 +3366,9 @@ var RongIMLib;
             });
         };
         /**
-         * [��ָ���û��Ƴ�������]
-         * @param  {string}            userId   [�����Ƴ����û�Id]
-         * @param  {OperationCallback} callback [����ֵ�������ص�]
+         * [将指定用户移除黑名单]
+         * @param  {string}            userId   [将被移除的用户Id]
+         * @param  {OperationCallback} callback [返回值，函数回调]
          */
         RongIMClient.prototype.removeFromBlacklist = function (userId, callback) {
             RongIMLib.CheckParam.getInstance().check(["string", "object"], "removeFromBlacklist");
@@ -3214,7 +3385,7 @@ var RongIMLib;
         };
         RongIMClient.prototype.getFileToken = function (fileType, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "object"], "getQnTkn");
-            if (!(/(1|2|3)/.test(fileType.toString()))) {
+            if (!(/(1|2|3|4)/.test(fileType.toString()))) {
                 callback.onError(RongIMLib.ErrorCode.QNTKN_FILETYPE_ERROR);
                 return;
             }
@@ -3233,7 +3404,7 @@ var RongIMLib;
         };
         RongIMClient.prototype.getFileUrl = function (fileType, fileName, callback) {
             RongIMLib.CheckParam.getInstance().check(["number", "string", "object"], "getQnTkn");
-            if (!(/(1|2|3)/.test(fileType.toString()))) {
+            if (!(/(1|2|3|4)/.test(fileType.toString()))) {
                 setTimeout(function () {
                     callback.onError(RongIMLib.ErrorCode.QNTKN_FILETYPE_ERROR);
                 });
@@ -3280,6 +3451,41 @@ var RongIMLib;
         RongIMClient.prototype.updateRealTimeLocationStatus = function (conversationType, targetId, latitude, longitude) {
             throw new Error("Not implemented yet");
         };
+        // #endregion Real-time Location Service
+        // # startVoIP
+        RongIMClient.prototype.startCall = function (converType, targetId, userIds, mediaType, extra, callback) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "array", "number", "string", "object"], "startCall");
+            if (RongIMClient._memoryStore.voipStategy) {
+                RongIMClient._voipProvider.startCall(converType, targetId, userIds, mediaType, extra, callback);
+            }
+            else {
+                callback.onError(RongIMLib.ErrorCode.VOIP_NOT_AVALIABLE);
+            }
+        };
+        RongIMClient.prototype.joinCall = function (mediaType, callback) {
+            RongIMLib.CheckParam.getInstance().check(['number', 'object'], "joinCall");
+            if (RongIMClient._memoryStore.voipStategy) {
+                RongIMClient._voipProvider.joinCall(mediaType, callback);
+            }
+            else {
+                callback.onError(RongIMLib.ErrorCode.VOIP_NOT_AVALIABLE);
+            }
+        };
+        RongIMClient.prototype.hungupCall = function (converType, targetId, reason) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "number"], "hungupCall");
+            if (RongIMClient._memoryStore.voipStategy) {
+                RongIMClient._voipProvider.hungupCall(converType, targetId, reason);
+            }
+        };
+        RongIMClient.prototype.changeMediaType = function (converType, targetId, mediaType, callback) {
+            RongIMLib.CheckParam.getInstance().check(["number", "string", "number", "object"], "changeMediaType");
+            if (RongIMClient._memoryStore.voipStategy) {
+                RongIMClient._voipProvider.changeMediaType(converType, targetId, mediaType, callback);
+            }
+            else {
+                callback.onError(RongIMLib.ErrorCode.VOIP_NOT_AVALIABLE);
+            }
+        };
         RongIMClient.MessageType = {};
         RongIMClient.RegisterMessage = {};
         RongIMClient._memoryStore = {};
@@ -3287,7 +3493,7 @@ var RongIMLib;
         return RongIMClient;
     })();
     RongIMLib.RongIMClient = RongIMClient;
-    //����AMD CMD
+    //兼容AMD CMD
     if ("function" === typeof require && "object" === typeof module && module && module.id && "object" === typeof exports && exports) {
         module.exports = RongIMLib;
     }
@@ -3300,7 +3506,7 @@ var RongIMLib;
         else {
             var lurl = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/Long.js" : "//cdn.ronghub.com/Long.js";
             var burl = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/byteBuffer.js" : "//cdn.ronghub.com/byteBuffer.js";
-            var purl = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/protobuf-2.1.1.min.js" : "//cdn.ronghub.com/protobuf-2.1.1.min.js";
+            var purl = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/protobuf-2.1.3.min.js" : "//cdn.ronghub.com/protobuf-2.1.3.min.js";
             define("RongIMLib", ['md5', lurl, burl, purl], function () {
                 return RongIMLib;
             });
@@ -3310,7 +3516,7 @@ var RongIMLib;
         window.RongIMClient = RongIMClient;
     }
 })(RongIMLib || (RongIMLib = {}));
-//��������ͨ��
+//用于连接通道
 var RongIMLib;
 (function (RongIMLib) {
     (function (Qos) {
@@ -3339,7 +3545,7 @@ var RongIMLib;
     var Type = RongIMLib.Type;
     var _topic = ["invtDiz", "crDiz", "qnUrl", "userInf", "dizInf", "userInf", "joinGrp", "quitDiz", "exitGrp", "evctDiz",
         ["", "ppMsgP", "pdMsgP", "pgMsgP", "chatMsg", "pcMsgP", "", "pmcMsgN", "pmpMsgN"], "pdOpen", "rename", "uGcmpr", "qnTkn", "destroyChrm",
-        "createChrm", "exitChrm", "queryChrm", "joinChrm", "pGrps", "addBlack", "rmBlack", "getBlack", "blackStat", "addRelation", "qryRelation", "delRelation", "pullMp", "schMp", "qnTkn", "qnUrl"];
+        "createChrm", "exitChrm", "queryChrm", "joinChrm", "pGrps", "addBlack", "rmBlack", "getBlack", "blackStat", "addRelation", "qryRelation", "delRelation", "pullMp", "schMp", "qnTkn", "qnUrl", "qryVoipK"];
     var Channel = (function () {
         function Channel(address, cb, self) {
             this.connectionStatus = -1;
@@ -3348,13 +3554,32 @@ var RongIMLib;
             this.self = self;
             this.socket = Socket.getInstance().createServer();
             this.socket.connect(this.url, cb);
-            //ע��״̬�ı��۲���
+            //注册状态改变观察者
             if (typeof Channel._ConnectionStatusListener == "object" && "onChanged" in Channel._ConnectionStatusListener) {
                 var me = this;
                 me.socket.on("StatusChanged", function (code) {
                     me.connectionStatus = code;
                     if (code === RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE) {
-                        RongIMLib.RongIMClient._cookieHelper.setItem("rongSDK", "");
+                        var temp = RongIMLib.RongIMClient._cookieHelper.getItemKey("navi");
+                        var naviServer = RongIMLib.RongIMClient._cookieHelper.getItem(temp);
+                        var naviPort = naviServer.split(",")[0].split(":")[1];
+                        naviPort && naviPort.length < 4 || RongIMLib.RongIMClient._cookieHelper.setItem("rongSDK", "");
+                        // TODO  判断拆分 naviServer 后的数组长度。
+                        if (!RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] && naviPort && naviPort.length < 4) {
+                            Bridge._client.handler.connectCallback.pauseTimer();
+                            var temp = RongIMLib.RongIMClient._cookieHelper.getItemKey("navi");
+                            var server = RongIMLib.RongIMClient._cookieHelper.getItem("RongBackupServer");
+                            if (server) {
+                                var arrs = server.split(",");
+                                if (arrs.length < 2) {
+                                    throw new Error("navi server is empty,postion:StatusChanged");
+                                }
+                                RongIMLib.RongIMClient._cookieHelper.setItem(temp, RongIMLib.RongIMClient._cookieHelper.getItem("RongBackupServer"));
+                                var url = RongIMLib.Bridge._client.channel.socket.currentURL;
+                                Bridge._client.channel.socket.currentURL = arrs[0] + url.substring(url.indexOf("/"), url.length);
+                                RongIMLib.RongIMClient.connect(RongIMLib.RongIMClient._memoryStore.token, RongIMLib.RongIMClient._memoryStore.callback);
+                            }
+                        }
                     }
                     if (code === RongIMLib.ConnectionStatus.DISCONNECTED && !RongIMLib.RongIMClient._memoryStore.otherDevice) {
                         Channel._ConnectionStatusListener.onChanged(RongIMLib.ConnectionStatus.DISCONNECTED);
@@ -3376,9 +3601,9 @@ var RongIMLib;
             else {
                 throw new Error("setConnectStatusListener:Parameter format is incorrect");
             }
-            //ע��message�۲���
+            //注册message观察者
             this.socket.on("message", self.handler.handleMessage);
-            //ע���Ͽ����ӹ۲���
+            //注册断开连接观察者
             this.socket.on("disconnect", function (status) {
                 self.channel.socket.fire("StatusChanged", status ? status : 2);
             });
@@ -3466,8 +3691,8 @@ var RongIMLib;
             }
         };
         /**
-         * [checkTransport ����ͨ������]
-         * WEB_XHR_POLLING:�Ƿ�ѡ��comet��ʽ��������
+         * [checkTransport 返回通道类型]
+         * WEB_XHR_POLLING:是否选择comet方式进行连接
          */
         Socket.prototype.checkTransport = function () {
             if (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"]) {
@@ -3515,18 +3740,18 @@ var RongIMLib;
                 data: "getData" in x ? x.getData() : ""
             };
         };
-        //��Ϣͨ�����������к�ͨ�������жϾ��� XHR_POLLING WEBSOCKET������
+        //消息通道常量，所有和通道相关判断均用 XHR_POLLING WEBSOCKET两属性
         Socket.XHR_POLLING = "xhr-polling";
         Socket.WEBSOCKET = "websocket";
         return Socket;
     })();
     RongIMLib.Socket = Socket;
-    //���Ӷ���Ϣ��
+    //连接端消息累
     var Client = (function () {
         function Client(token, appId) {
             this.timeoutMillis = 100000;
             this.timeout_ = 0;
-            this.sdkVer = "2.1.3";
+            this.sdkVer = "2.2.1";
             this.apiVer = Math.floor(Math.random() * 1e6);
             this.channel = null;
             this.handler = null;
@@ -3573,22 +3798,36 @@ var RongIMLib;
                         return;
                     }
                 }
-                //ʵ����Ϣ������
+                //实例消息处理类
                 this.handler = new MessageHandler(this);
-                //�������ӻص�
+                //设置连接回调
                 this.handler.setConnectCallback(_callback);
-                //ʵ��ͨ������
+                //实例通道类型
                 var me = this;
                 this.channel = new Channel(RongIMLib.Navigation.Endpoint, function () {
                     RongIMLib.Transportations._TransportType == Socket.WEBSOCKET && me.keepLive();
                 }, this);
-                //����״̬�ı��۲���
+                //触发状态改变观察者
                 this.channel.socket.fire("StatusChanged", 1);
             }
             else {
-                //û�з��ص�ַ���ֶ��׳�����
+                //没有返回地址就手动抛出错误
                 _callback.onError(RongIMLib.ConnectionState.NOT_AUTHORIZED);
             }
+        };
+        Client.prototype.checkSocket = function (callback) {
+            var me = this;
+            me.channel.writeAndFlush(new RongIMLib.PingReqMessage());
+            var checkTimeout = setInterval(function () {
+                if (!RongIMLib.RongIMClient._memoryStore.isFirstPingMsg && count < 16) {
+                    callback.onSuccess();
+                    clearInterval(checkTimeout);
+                }
+                else {
+                    callback.onError();
+                }
+                count++;
+            }, 200), count = 0;
         };
         Client.prototype.keepLive = function () {
             if (this.heartbeat > 0) {
@@ -3638,14 +3877,14 @@ var RongIMLib;
             this.handler.putCallback(new RongIMLib.QueryCallback(_callback.onSuccess, _callback.onError), msg.getMessageId(), pbtype);
             this.channel.writeAndFlush(msg);
         };
-        Client.prototype.invoke = function (isPullMsg, chrmId) {
+        Client.prototype.invoke = function (isPullMsg, chrmId, offlineMsg) {
             var time, modules, str, me = this, target, temp = this.SyncTimeQueue.shift();
             if (temp == undefined) {
                 return;
             }
             this.SyncTimeQueue.state = "pending";
             if (temp.type != 2) {
-                //��ͨ��Ϣ
+                //普通消息
                 time = RongIMLib.RongIMClient._cookieHelper.getItem(this.userId) || "0";
                 modules = new Modules.SyncRequestMsg();
                 modules.setIspolling(false);
@@ -3653,7 +3892,7 @@ var RongIMLib;
                 target = this.userId;
             }
             else {
-                //��������Ϣ
+                //聊天室消息
                 target = chrmId || me.chatroomId;
                 time = RongIMLib.RongIMClient._cookieHelper.getItem(target + Bridge._client.userId + "CST") || "0";
                 modules = new Modules.ChrmPullMsg();
@@ -3663,7 +3902,7 @@ var RongIMLib;
                     throw new Error("syncTime:Received messages of chatroom but was not init");
                 }
             }
-            //�жϷ���������ʱ���Ƿ���Ϣ���ش洢��ʱ�䣬С�ڵĻ���ִ����ȡ����������һ�²����в���
+            //判断服务器给的时间是否消息本地存储的时间，小于的话不执行拉取操作，进行一下步队列操作
             if (temp.pulltime <= time) {
                 this.SyncTimeQueue.state = "complete";
                 this.invoke(isPullMsg, target);
@@ -3673,41 +3912,41 @@ var RongIMLib;
                 modules.setIsPullSend(true);
             }
             modules.setSyncTime(time);
-            //����queryMessage����
+            //发送queryMessage请求
             this.queryMessage(str, RongIMLib.MessageUtil.ArrayForm(modules.toArrayBuffer()), target, Qos.AT_LEAST_ONCE, {
                 onSuccess: function (collection) {
                     var sync = RongIMLib.MessageUtil.int64ToTimestamp(collection.syncTime), symbol = target;
                     if (str == "chrmPull") {
                         symbol += Bridge._client.userId + "CST";
                     }
-                    //��ֹ��������Ϣ���ɻỰ�б���Ϊ�ն��޷��ӷ�������ȡ�Ự�б���
+                    //防止因离线消息造成会话列表不为空而无法从服务器拉取会话列表。
                     RongIMLib.RongIMClient._memoryStore.isSyncRemoteConverList = true;
-                    //�ѷ���ʱ�������뱾�أ���ͨ��ϢkeyΪuserid����������ϢkeyΪuserid��'CST'��value��Ϊ���������ص�ʱ����
+                    //把返回时间戳存入本地，普通消息key为userid，聊天室消息key为userid＋'CST'；value都为服务器返回的时间戳
                     RongIMLib.RongIMClient._cookieHelper.setItem(symbol, sync);
                     me.SyncTimeQueue.state = "complete";
                     me.invoke(isPullMsg, target);
-                    //����ȡ������Ϣ����������Ϣ������
+                    //把拉取到的消息逐条传给消息监听器
                     var list = collection.list;
                     for (var i = 0, len = list.length; i < len; i++) {
                         if (!(list[i].msgId in me.cacheMessageIds)) {
-                            Bridge._client.handler.onReceived(list[i]);
+                            Bridge._client.handler.onReceived(list[i], undefined, offlineMsg);
                             var arrLen = me.cacheMessageIds.unshift(list[i].msgId);
                             if (arrLen > 20)
                                 me.cacheMessageIds.length = 20;
                         }
                     }
                 },
-                onError: function () {
+                onError: function (error) {
                     me.SyncTimeQueue.state = "complete";
                     me.invoke(isPullMsg, target);
                 }
             }, "DownStreamMessages");
         };
-        Client.prototype.syncTime = function (_type, pullTime, chrmId) {
+        Client.prototype.syncTime = function (_type, pullTime, chrmId, offlineMsg) {
             this.SyncTimeQueue.push({ type: _type, pulltime: pullTime });
-            //����������ֻ��һ����Ա����״̬�Ѿ����ɾ�ִ��invoke����
+            //如果队列中只有一个成员并且状态已经完成就执行invoke方法
             if (this.SyncTimeQueue.length == 1 && this.SyncTimeQueue.state == "complete") {
-                this.invoke(!_type, chrmId);
+                this.invoke(!_type, chrmId, offlineMsg);
             }
         };
         Client.prototype.__init = function (f) {
@@ -3717,14 +3956,14 @@ var RongIMLib;
         return Client;
     })();
     RongIMLib.Client = Client;
-    //�����࣬ʵ��imclient��connect_client������
+    //连接类，实现imclient与connect_client的连接
     var Bridge = (function () {
         function Bridge() {
         }
         Bridge.getInstance = function () {
             return new Bridge();
         };
-        //���ӷ�����
+        //连接服务器
         Bridge.prototype.connect = function (appKey, token, callback) {
             if (!window["Modules"]) {
                 RongIMLib.RongIMClient._memoryStore.hasModules = false;
@@ -3750,14 +3989,14 @@ var RongIMLib;
             Bridge._client.clearHeartbeat();
             Bridge._client.channel.disconnect(2);
         };
-        //ִ��queryMessage����
+        //执行queryMessage请求
         Bridge.prototype.queryMsg = function (topic, content, targetId, callback, pbname) {
             if (typeof topic != "string") {
                 topic = _topic[topic];
             }
             Bridge._client.queryMessage(topic, content, targetId, Qos.AT_MOST_ONCE, callback, pbname);
         };
-        //������Ϣ ִ��publishMessage ����
+        //发送消息 执行publishMessage 请求
         Bridge.prototype.pubMsg = function (topic, content, targetId, callback, msg) {
             Bridge._client.publishMessage(_topic[10][topic], content, targetId, callback, msg);
         };
@@ -3775,7 +4014,7 @@ var RongIMLib;
             this._client = client;
             this.syncMsgMap = new Object;
         }
-        //�Ѷ��������ص����������У���������ʱ��
+        //把对象推入回调对象队列中，并启动定时器
         MessageHandler.prototype.putCallback = function (callbackObj, _publishMessageId, _msg) {
             var item = {
                 Callback: callbackObj,
@@ -3784,19 +4023,19 @@ var RongIMLib;
             item.Callback.resumeTimer();
             this.map[_publishMessageId] = item;
         };
-        //�������ӻص�������������ʱ��
+        //设置连接回调对象，启动定时器
         MessageHandler.prototype.setConnectCallback = function (_connectCallback) {
             if (_connectCallback) {
                 this.connectCallback = new RongIMLib.ConnectAck(_connectCallback.onSuccess, _connectCallback.onError, this._client);
                 this.connectCallback.resumeTimer();
             }
         };
-        MessageHandler.prototype.onReceived = function (msg, pubAckItem) {
-            //ʵ������
+        MessageHandler.prototype.onReceived = function (msg, pubAckItem, offlineMsg) {
+            //实体对象
             var entity,
-            //�������ɵ���Ϣ����
+            //解析完成的消息对象
             message,
-            //�Ự����
+            //会话对象
             con;
             if (msg._name != "PublishMessage") {
                 entity = msg;
@@ -3834,7 +4073,7 @@ var RongIMLib;
                     else if (tmpType == "pc") {
                         entity.type = 5;
                     }
-                    //�����ֶΣ�targetId �Դ�Ϊ׼
+                    //复用字段，targetId 以此为准
                     entity.groupId = msg.getTargetId();
                     entity.fromUserId = this._client.userId;
                     entity.dataTime = Date.parse(new Date().toString());
@@ -3843,8 +4082,8 @@ var RongIMLib;
                     return;
                 }
             }
-            //����ʵ������Ϊ��Ϣ������
-            message = RongIMLib.MessageUtil.messageParser(entity, this._onReceived);
+            //解析实体对象为消息对象。
+            message = RongIMLib.MessageUtil.messageParser(entity, this._onReceived, offlineMsg);
             if (pubAckItem) {
                 message.messageUId = pubAckItem.getMessageUId();
                 message.sentTime = pubAckItem.getTimestamp();
@@ -3858,10 +4097,23 @@ var RongIMLib;
                         if (!con) {
                             con = RongIMLib.RongIMClient.getInstance().createConversation(message.conversationType, message.targetId, "");
                         }
+                        if (message.messageDirection == RongIMLib.MessageDirection.RECEIVE && (entity.status & 64) == 64) {
+                            var mentioneds = RongIMLib.RongIMClient._cookieHelper.getItem("mentioneds_" + Bridge._client.userId + '_' + message.conversationType + '_' + message.targetId);
+                            var key = message.conversationType + '_' + message.targetId, info = {};
+                            if (message.content && message.content.mentionedInfo) {
+                                info[key] = { uid: message.messageUId, time: message.sentTime, mentionedInfo: message.content.mentionedInfo };
+                                RongIMLib.RongIMClient._cookieHelper.setItem("mentioneds_" + Bridge._client.userId + '_' + message.conversationType + '_' + message.targetId, JSON.stringify(info), true);
+                                mentioneds = JSON.stringify(info);
+                            }
+                            if (mentioneds) {
+                                var info = JSON.parse(mentioneds);
+                                con.mentionedMsg = info[key];
+                            }
+                        }
                         if (con.conversationType != 0 && message.senderUserId != Bridge._client.userId && message.receivedStatus != RongIMLib.ReceivedStatus.RETRIEVED) {
                             con.unreadMessageCount = con.unreadMessageCount + 1;
                             if (RongIMLib.MessageUtil.supportLargeStorage()) {
-                                var count = RongIMLib.LocalStorageProvider.getInstance().getItem("cu" + Bridge._client.userId + con.conversationType + con.targetId); // �뱾�ش洢�Ự�ϲ�
+                                var count = RongIMLib.LocalStorageProvider.getInstance().getItem("cu" + Bridge._client.userId + con.conversationType + con.targetId); // 与本地存储会话合并
                                 RongIMLib.LocalStorageProvider.getInstance().setItem("cu" + Bridge._client.userId + con.conversationType + message.targetId, Number(count) + 1);
                             }
                         }
@@ -3877,6 +4129,22 @@ var RongIMLib;
                     onError: function (error) { }
                 });
             }
+            if (message.conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE && (message.messageType == "ChangeModeResponseMessage" || message.messageType == "SuspendMessage" || message.messageType == "HandShakeResponseMessage" ||
+                message.messageType == "TerminateMessage" || message.messageType == "CustomerStatusUpdateMessage" || message.messageType == "TextMessage" || message.messageType == "InformationNotificationMessage")) {
+                if (!RongIMLib.RongIMClient._memoryStore.custStore["isInit"]) {
+                    return;
+                }
+            }
+            if (message.conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE && message.messageType != "HandShakeResponseMessage") {
+                if (!RongIMLib.RongIMClient._memoryStore.custStore[message.targetId]) {
+                    return;
+                }
+                if (message.messageType == "TerminateMessage") {
+                    if (RongIMLib.RongIMClient._memoryStore.custStore[message.targetId].sid != message.content.sid) {
+                        return;
+                    }
+                }
+            }
             if (message.messageType === RongIMLib.RongIMClient.MessageType["HandShakeResponseMessage"]) {
                 var session = message.content.data;
                 RongIMLib.RongIMClient._memoryStore.custStore[message.targetId] = session;
@@ -3889,32 +4157,20 @@ var RongIMLib;
                     }
                 }
             }
-            // var me = this;
-            // switch (message.messageType) {
-            //     case RongIMClient.MessageType["HandShakeResponseMessage"]:
-            //         break;
-            //     case RongIMClient.MessageType["HandShakeResponseMessage"]:
-            //         break;
-            //     case RongIMClient.MessageType["HandShakeResponseMessage"]:
-            //         break;
-            //     default:
-            //         me._onReceived(message);
-            // }
-            if (message.messageType == "ChangeModeResponseMessage" || message.messageType == "SuspendMessage" || message.messageType == "HandShakeResponseMessage" ||
-                message.messageType == "TerminateMessage" || message.messageType == "CustomerStatusUpdateMessage") {
-                if (!RongIMLib.RongIMClient._memoryStore.custStore["isInit"]) {
-                    return;
-                }
-            }
             var that = this;
-            RongIMLib.RongIMClient._dataAccessProvider.addMessage(message.conversationType, message.targetId, message, {
-                onSuccess: function (ret) {
-                    that._onReceived(ret);
-                },
-                onError: function (error) {
-                    that._onReceived(message);
-                }
-            });
+            if (RongIMLib.RongIMClient._voipProvider && ['AcceptMessage', 'RingingMessage', 'HungupMessage', 'InviteMessage', 'MediaModifyMessage', 'MemberModifyMessage'].indexOf(message.messageType) > -1) {
+                RongIMLib.RongIMClient._voipProvider.onReceived(message);
+            }
+            else {
+                RongIMLib.RongIMClient._dataAccessProvider.addMessage(message.conversationType, message.targetId, message, {
+                    onSuccess: function (ret) {
+                        that._onReceived(ret);
+                    },
+                    onError: function (error) {
+                        that._onReceived(message);
+                    }
+                });
+            }
         };
         MessageHandler.prototype.handleMessage = function (msg) {
             if (!msg) {
@@ -3933,7 +4189,7 @@ var RongIMLib;
                         Bridge._client.handler.syncMsgMap[msg.getMessageId()] = msg;
                     }
                     else {
-                        //������PublishMessage�ͰѸö�����onReceived����ִ�д���
+                        //如果是PublishMessage就把该对象给onReceived方法执行处理
                         Bridge._client.handler.onReceived(msg);
                     }
                     break;
@@ -3943,7 +4199,7 @@ var RongIMLib;
                     }
                     var temp = Bridge._client.handler.map[msg.getMessageId()];
                     if (temp) {
-                        //ִ�лص�����
+                        //执行回调操作
                         temp.Callback.process(msg.getStatus(), msg.getData(), msg.getDate(), temp.Message);
                         delete Bridge._client.handler.map[msg.getMessageId()];
                     }
@@ -3960,7 +4216,12 @@ var RongIMLib;
                     }
                     break;
                 case "PingRespMessage":
-                    Bridge._client.pauseTimer();
+                    if (RongIMLib.RongIMClient._memoryStore.isFirstPingMsg) {
+                        RongIMLib.RongIMClient._memoryStore.isFirstPingMsg = false;
+                    }
+                    else {
+                        Bridge._client.pauseTimer();
+                    }
                     break;
                 case "DisconnectMessage":
                     Bridge._client.channel.disconnect(msg.getStatus());
@@ -4126,7 +4387,7 @@ var RongIMLib;
                     return;
                 }
                 if ("GetUserInfoOutput" == pbtype) {
-                    //pb����ΪGetUserInfoOutput�Ļ��Ͱ�data����userinfo��������
+                    //pb类型为GetUserInfoOutput的话就把data放入userinfo缓存队列
                     RongIMLib.Client.userInfoMapping[data.userId] = data;
                 }
                 this._cb(data);
@@ -4163,8 +4424,37 @@ var RongIMLib;
                     RongIMLib.RongIMClient._dataAccessProvider.database.init(userId);
                 }
                 this._client.userId = userId;
-                if (!RongIMLib.RongIMClient.isNotPullMsg) {
-                    this._client.syncTime();
+                var self = this, temp = RongIMLib.RongIMClient._cookieHelper.getItemKey("navi");
+                var naviServer = RongIMLib.RongIMClient._cookieHelper.getItem(temp);
+                // TODO  判断拆分 naviServer 后的数组长度。
+                var naviPort = naviServer.split(",")[0].split(":")[1];
+                if (!RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] && RongIMLib.RongIMClient._memoryStore.isFirstPingMsg && naviPort.length < 4) {
+                    RongIMLib.Bridge._client.checkSocket({
+                        onSuccess: function () {
+                            if (!RongIMLib.RongIMClient.isNotPullMsg) {
+                                self._client.syncTime(undefined, undefined, undefined, true);
+                            }
+                        },
+                        onError: function () {
+                            RongIMLib.RongIMClient._memoryStore.isFirstPingMsg = false;
+                            RongIMLib.RongIMClient.getInstance().disconnect();
+                            var temp = RongIMLib.RongIMClient._cookieHelper.getItemKey("navi");
+                            var server = RongIMLib.RongIMClient._cookieHelper.getItem("RongBackupServer");
+                            var arrs = server.split(",");
+                            if (arrs.length < 2) {
+                                throw new Error("navi server is empty");
+                            }
+                            RongIMLib.RongIMClient._cookieHelper.setItem(temp, RongIMLib.RongIMClient._cookieHelper.getItem("RongBackupServer"));
+                            var url = RongIMLib.Bridge._client.channel.socket.currentURL;
+                            RongIMLib.Bridge._client.channel.socket.currentURL = arrs[0] + url.substring(url.indexOf("/"), url.length);
+                            RongIMLib.RongIMClient.connect(RongIMLib.RongIMClient._memoryStore.token, RongIMLib.RongIMClient._memoryStore.callback);
+                        }
+                    });
+                }
+                else {
+                    if (!RongIMLib.RongIMClient.isNotPullMsg) {
+                        self._client.syncTime(undefined, undefined, undefined, true);
+                    }
                 }
                 if (this._client.reconnectObj.onSuccess) {
                     this._client.reconnectObj.onSuccess(userId);
@@ -4175,6 +4465,7 @@ var RongIMLib;
                     setTimeout(function () { me._cb(userId); }, 500);
                 }
                 RongIMLib.Bridge._client.channel.socket.fire("StatusChanged", 0);
+                RongIMLib.RongIMClient._memoryStore.connectAckTime = timestamp;
                 if (!(new Date().getTime() - timestamp)) {
                     RongIMLib.RongIMClient._memoryStore.deltaTime = 0;
                 }
@@ -4183,7 +4474,7 @@ var RongIMLib;
                 }
             }
             else if (status == 6) {
-                //�ض���
+                //重定向
                 var x = {};
                 var me = this;
                 new RongIMLib.Navigation().getServerEndpoint(this._client.token, this._client.appId, function () {
@@ -4217,11 +4508,17 @@ var RongIMLib;
     var Navigation = (function () {
         function Navigation() {
             window.getServerEndpoint = function (x) {
-                //�ѵ������ص�server�ֶθ�ֵ��CookieHelper._host����Ϊflash widget��Ҫʹ�� decodeURIComponent
+                //把导航返回的server字段赋值给CookieHelper._host，因为flash widget需要使用 decodeURIComponent
                 RongIMLib.RongIMClient._cookieHelper._host = Navigation.Endpoint.host = x["server"];
-                //���õ�ǰ�û� Id ֻ�� comet ʹ�á�
+                RongIMLib.RongIMClient._cookieHelper.setItem("RongBackupServer", x["backupServer"] + "," + (x.userId || ""));
+                //设置当前用户 Id 只有 comet 使用。
                 Navigation.Endpoint.userId = x["userId"];
-                //�滻���ش洢�ĵ�����Ϣ
+                if (x["voipCallInfo"]) {
+                    var callInfo = JSON.parse(x["voipCallInfo"]);
+                    RongIMLib.RongIMClient._memoryStore.voipStategy = callInfo.strategy;
+                    RongIMLib.RongIMClient._cookieHelper.setItem("voipStrategy", callInfo.strategy);
+                }
+                //替换本地存储的导航信息
                 var temp = RongIMLib.RongIMClient._cookieHelper.getItemKey("navi");
                 temp !== null && RongIMLib.RongIMClient._cookieHelper.removeItem(temp);
                 RongIMLib.RongIMClient._cookieHelper.setItem("navi" + md5(RongIMLib.Bridge._client.token).slice(8, 16), x["server"] + "," + (x.userId || ""));
@@ -4229,7 +4526,7 @@ var RongIMLib;
         }
         Navigation.prototype.connect = function (appId, token, callback) {
             var oldAppId = RongIMLib.RongIMClient._cookieHelper.getItem("appId");
-            //����appid�ͱ��ش洢�Ĳ�һ�����������б��ش洢����
+            //如果appid和本地存储的不一样，清空所有本地存储数据
             if (oldAppId && oldAppId != appId) {
                 RongIMLib.RongIMClient._cookieHelper.clearItem();
                 RongIMLib.RongIMClient._cookieHelper.setItem("appId", appId);
@@ -4246,27 +4543,28 @@ var RongIMLib;
         };
         Navigation.prototype.getServerEndpoint = function (_token, _appId, _onsuccess, _onerror, unignore) {
             if (unignore) {
-                //����token����MD5��ȡ8-16�±��������뱾�ش洢�ĵ�����Ϣ���бȶ�
-                //������Ϣ���ϴε�ͨ�����Ͷ�һ������ִ��navi�������ñ��ش洢�ĵ�����Ϣ���ӷ�����
+                //根据token生成MD5截取8-16下标的数据与本地存储的导航信息进行比对
+                //如果信息和上次的通道类型都一样，不执行navi请求，用本地存储的导航信息连接服务器
                 var naviStr = md5(_token).slice(8, 16), _old = RongIMLib.RongIMClient._cookieHelper.getItem(RongIMLib.RongIMClient._cookieHelper.getItemKey("navi")), _new = RongIMLib.RongIMClient._cookieHelper.getItem("navi" + naviStr);
                 if (_old == _new && _new !== null && RongIMLib.RongIMClient._cookieHelper.getItem("rongSDK") == RongIMLib.Transportations._TransportType) {
                     var obj = decodeURIComponent(_old).split(",");
                     setTimeout(function () {
                         RongIMLib.RongIMClient._cookieHelper._host = Navigation.Endpoint.host = obj[0];
+                        RongIMLib.RongIMClient._memoryStore.voipStategy = RongIMLib.RongIMClient._cookieHelper.getItem("voipStrategy");
                         Navigation.Endpoint.userId = obj[1];
                         _onsuccess();
                     }, 500);
                     return;
                 }
             }
-            //������Ϣ���л�Url������key�����������²��Բ���
+            //导航信息，切换Url对象的key进行线上线下测试操作
             var Url = {
-                //���Ի���
+                //测试环境
                 "navUrl-Debug": RongIMLib.MessageUtil.schemeArrs[RongIMLib.RongIMClient.schemeType][0] + "://119.254.111.49:9100/",
-                //���ϻ���
+                //线上环境
                 "navUrl-Release": RongIMLib.MessageUtil.schemeArrs[RongIMLib.RongIMClient.schemeType][0] + "://nav.cn.ronghub.com/"
             }, xss = document.createElement("script");
-            //����jsonp����
+            //进行jsonp请求
             xss.src = Url["navUrl-Debug"] + (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] ? "cometnavi.js" : "navi.js") + "?appId=" + _appId + "&token=" + encodeURIComponent(_token) + "&" + "callBack=getServerEndpoint&t=" + (new Date).getTime();
             document.body.appendChild(xss);
             xss.onerror = function () {
@@ -4286,11 +4584,11 @@ var RongIMLib;
     })();
     RongIMLib.Navigation = Navigation;
 })(RongIMLib || (RongIMLib = {}));
-// TODO: ͳһ�����������������淶
+// TODO: 统一变量、方法等命名规范
 var RongIMLib;
 (function (RongIMLib) {
     /**
-     * ��Ϣ����
+     * 消息基类
      */
     var BaseMessage = (function () {
         function BaseMessage(arg) {
@@ -4373,7 +4671,7 @@ var RongIMLib;
     })();
     RongIMLib.BaseMessage = BaseMessage;
     /**
-     *������Ϣ����
+     *连接消息类型
      */
     var ConnectMessage = (function (_super) {
         __extends(ConnectMessage, _super);
@@ -4468,7 +4766,7 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.ConnectMessage = ConnectMessage;
     /**
-     *����Ӧ������
+     *连接应答类型
      */
     var ConnAckMessage = (function (_super) {
         __extends(ConnAckMessage, _super);
@@ -4569,7 +4867,7 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.ConnAckMessage = ConnAckMessage;
     /**
-     *�Ͽ���Ϣ����
+     *断开消息类型
      */
     var DisconnectMessage = (function (_super) {
         __extends(DisconnectMessage, _super);
@@ -4619,7 +4917,7 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.DisconnectMessage = DisconnectMessage;
     /**
-     *������Ϣ����
+     *请求消息信令
      */
     var PingReqMessage = (function (_super) {
         __extends(PingReqMessage, _super);
@@ -4631,7 +4929,7 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.PingReqMessage = PingReqMessage;
     /**
-     *��Ӧ��Ϣ����
+     *响应消息信令
      */
     var PingRespMessage = (function (_super) {
         __extends(PingRespMessage, _super);
@@ -4643,7 +4941,7 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.PingRespMessage = PingRespMessage;
     /**
-     *��װMesssageId
+     *封装MesssageId
      */
     var RetryableMessage = (function (_super) {
         __extends(RetryableMessage, _super);
@@ -4675,8 +4973,8 @@ var RongIMLib;
     })(BaseMessage);
     RongIMLib.RetryableMessage = RetryableMessage;
     /**
-     *������ϢӦ����˫����
-     *qosΪ1��������Ӧ����������Ϣ����һ����
+     *发送消息应答（双向）
+     *qos为1必须给出应答（所有消息类型一样）
      */
     var PubAckMessage = (function (_super) {
         __extends(PubAckMessage, _super);
@@ -4732,7 +5030,7 @@ var RongIMLib;
     })(RetryableMessage);
     RongIMLib.PubAckMessage = PubAckMessage;
     /**
-     *������Ϣ
+     *发布消息
      */
     var PublishMessage = (function (_super) {
         __extends(PublishMessage, _super);
@@ -4789,7 +5087,7 @@ var RongIMLib;
         PublishMessage.prototype.setSyncMsg = function (x) {
             this.syncMsg = x;
         };
-        //�Ƿ���������ͬ����������Ϣ
+        //是否是其他端同步过来的消息
         PublishMessage.prototype.getSyncMsg = function () {
             return this.syncMsg;
         };
@@ -4809,7 +5107,7 @@ var RongIMLib;
     })(RetryableMessage);
     RongIMLib.PublishMessage = PublishMessage;
     /**
-     *������ѯ
+     *请求查询
      */
     var QueryMessage = (function (_super) {
         __extends(QueryMessage, _super);
@@ -4871,7 +5169,7 @@ var RongIMLib;
     })(RetryableMessage);
     RongIMLib.QueryMessage = QueryMessage;
     /**
-     *������ѯȷ��
+     *请求查询确认
      */
     var QueryConMessage = (function (_super) {
         __extends(QueryConMessage, _super);
@@ -4886,7 +5184,7 @@ var RongIMLib;
     })(RetryableMessage);
     RongIMLib.QueryConMessage = QueryConMessage;
     /**
-     *������ѯӦ��
+     *请求查询应答
      */
     var QueryAckMessage = (function (_super) {
         __extends(QueryAckMessage, _super);
@@ -4930,8 +5228,8 @@ var RongIMLib;
 var RongIMLib;
 (function (RongIMLib) {
     /**
-     * ����Ϣ����д������
-     * ������Ϣʱ�õ�
+     * 把消息对象写入流中
+     * 发送消息时用到
      */
     var MessageOutputStream = (function () {
         function MessageOutputStream(_out) {
@@ -4947,8 +5245,8 @@ var RongIMLib;
     })();
     RongIMLib.MessageOutputStream = MessageOutputStream;
     /**
-     * ��ת��Ϊ��Ϣ����
-     * ������������Ϣʱ�õ�
+     * 流转换为消息对象
+     * 服务器返回消息时用到
      */
     var MessageInputStream = (function () {
         function MessageInputStream(In, isPolling) {
@@ -5070,7 +5368,7 @@ var RongIMLib;
     })();
     RongIMLib.Header = Header;
     /**
-     * �����ư�������
+     * 二进制帮助对象
      */
     var BinaryHelper = (function () {
         function BinaryHelper() {
@@ -5136,8 +5434,8 @@ var RongIMLib;
             return UTF;
         };
         /**
-         * [convertStream ������xת��ΪRongIMStream����]
-         * @param  {any}    x [����]
+         * [convertStream 将参数x转化为RongIMStream对象]
+         * @param  {any}    x [参数]
          */
         BinaryHelper.prototype.convertStream = function (x) {
             if (x instanceof RongIMStream) {
@@ -5155,9 +5453,9 @@ var RongIMLib;
     RongIMLib.BinaryHelper = BinaryHelper;
     var RongIMStream = (function () {
         function RongIMStream(arr) {
-            //��ǰ��ִ�е���ʼλ��
+            //当前流执行的起始位置
             this.position = 0;
-            //��ǰ��д���Ķ����ֽ�
+            //当前流写入的多少字节
             this.writen = 0;
             this.poolLen = 0;
             this.binaryHelper = new BinaryHelper();
@@ -5284,21 +5582,21 @@ var RongIMLib;
     var SocketTransportation = (function () {
         /**
          * [constructor]
-         * @param  {string} url [���ӵ�ַ������token��version]
+         * @param  {string} url [连接地址：包含token、version]
          */
         function SocketTransportation(_socket) {
-            //����״̬ true:������ false:δ����
+            //连接状态 true:已连接 false:未连接
             this.connected = false;
-            //�Ƿ��رգ� true:�ѹر� false��δ�ر�
+            //是否关闭： true:已关闭 false：未关闭
             this.isClose = false;
-            //������Ϣ���е���ʱ����
+            //存放消息队列的临时变量
             this.queue = [];
             this.empty = new Function;
             this._socket = _socket;
             return this;
         }
         /**
-         * [createTransport ����WebScoket����]
+         * [createTransport 创建WebScoket对象]
          */
         SocketTransportation.prototype.createTransport = function (url, method) {
             if (!url) {
@@ -5312,17 +5610,18 @@ var RongIMLib;
             return this.socket;
         };
         /**
-         * [send ������Ϣ��]
-         * @param  {ArrayBuffer} data [��������Ϣ��]
+         * [send 传送消息流]
+         * @param  {ArrayBuffer} data [二进制消息流]
          */
         SocketTransportation.prototype.send = function (data) {
             if (!this.connected && !this.isClose) {
-                //��ͨ��������ʱ��������Ϣ����
+                //当通道不可用时，加入消息队列
                 this.queue.push(data);
                 return;
             }
             if (this.isClose) {
-                throw new Error("The Connection is closed,Please open the Connection!!!");
+                this._socket.fire("StatusChanged", RongIMLib.ConnectionStatus.CONNECTION_CLOSED);
+                return;
             }
             var stream = new RongIMLib.RongIMStream([]), msg = new RongIMLib.MessageOutputStream(stream);
             msg.writeMessage(data);
@@ -5332,8 +5631,8 @@ var RongIMLib;
             return this;
         };
         /**
-         * [onData ͨ����������ʱ���õķ������������ϲ㴫�ݷ��������صĶ�������Ϣ��]
-         * @param  {ArrayBuffer}    data [��������Ϣ��]
+         * [onData 通道返回数据时调用的方法，用来想上层传递服务器返回的二进制消息流]
+         * @param  {ArrayBuffer}    data [二进制消息流]
          */
         SocketTransportation.prototype.onData = function (data) {
             if (RongIMLib.MessageUtil.isArray(data)) {
@@ -5345,7 +5644,7 @@ var RongIMLib;
             return "";
         };
         /**
-         * [onClose ͨ���ر�ʱ�����ķ���]
+         * [onClose 通道关闭时触发的方法]
          */
         SocketTransportation.prototype.onClose = function (ev) {
             var me = this;
@@ -5360,27 +5659,26 @@ var RongIMLib;
             }
         };
         /**
-         * [onError ͨ������ʱ�����ķ���]
-         * @param {any} error [�׳��쳣]
+         * [onError 通道报错时触发的方法]
+         * @param {any} error [抛出异常]
          */
         SocketTransportation.prototype.onError = function (error) {
-            console.log(error);
             throw new Error(error);
         };
         /**
-         * [addEvent Ϊͨ�������¼�]
+         * [addEvent 为通道绑定事件]
          */
         SocketTransportation.prototype.addEvent = function () {
             var self = this;
             self.socket.onopen = function () {
                 self.connected = true;
                 self.isClose = false;
-                //ͨ�������ú󣬵��÷��Ͷ��з����������еȵ÷��͵���Ϣ����
+                //通道可以用后，调用发送队列方法，把所有等得发送的消息发出
                 self.doQueue();
                 self._socket.fire("connect");
             };
             self.socket.onmessage = function (ev) {
-                //�ж������ǲ����ַ������������ַ�����ô����flash�������ġ�
+                //判断数据是不是字符串，如果是字符串那么就是flash传过来的。
                 if (typeof ev.data == "string") {
                     self.onData(ev.data.split(","));
                 }
@@ -5396,7 +5694,7 @@ var RongIMLib;
             };
         };
         /**
-         * [doQueue ��Ϣ���У��Ѷ�������Ϣ����]
+         * [doQueue 消息队列，把队列中消息发出]
          */
         SocketTransportation.prototype.doQueue = function () {
             var self = this;
@@ -5405,7 +5703,7 @@ var RongIMLib;
             }
         };
         /**
-         * [disconnect �Ͽ�����]
+         * [disconnect 断开连接]
          */
         SocketTransportation.prototype.disconnect = function (status) {
             var me = this;
@@ -5418,7 +5716,7 @@ var RongIMLib;
             }
         };
         /**
-         * [reconnect ��������]
+         * [reconnect 重新连接]
          */
         SocketTransportation.prototype.reconnect = function () {
             this.disconnect();
@@ -5504,9 +5802,9 @@ var RongIMLib;
             me.xhr.send();
         };
         /**
-         * [send ������Ϣ��Method:POST]
-         * queue Ϊ��Ϣ���У���ͨ�����÷������еȴ���Ϣ
-         * @param  {string} data [��Ҫ����comet��ʽ���ݣ��˴�ֻ����ͨѶͨ��������ת�������㴦��]
+         * [send 发送消息，Method:POST]
+         * queue 为消息队列，待通道可用发送所有等待消息
+         * @param  {string} data [需要传入comet格式数据，此处只负责通讯通道，数据转换在外层处理]
          */
         PollingTransportation.prototype.send = function (data) {
             var me = this;
@@ -5617,12 +5915,13 @@ var RongIMLib;
     })();
     RongIMLib.PollingTransportation = PollingTransportation;
 })(RongIMLib || (RongIMLib = {}));
-//objectnameӳ��
+//objectname映射
 var typeMapping = {
     "RC:TxtMsg": "TextMessage",
     "RC:ImgMsg": "ImageMessage",
     "RC:VcMsg": "VoiceMessage",
     "RC:ImgTextMsg": "RichContentMessage",
+    "RC:FileMsg": "FileMessage",
     "RC:LBSMsg": "LocationMessage",
     "RC:InfoNtf": "InformationNotificationMessage",
     "RC:ContactNtf": "ContactNotificationMessage",
@@ -5636,9 +5935,17 @@ var typeMapping = {
     "RC:CsEnd": "TerminateMessage",
     "RC:CsSp": "SuspendMessage",
     "RC:CsUpdate": "CustomerStatusUpdateMessage",
-    "RC:ReadNtf": "ReadReceiptMessage"
+    "RC:ReadNtf": "ReadReceiptMessage",
+    "RC:VCAccept": "AcceptMessage",
+    "RC:VCRinging": "RingingMessage",
+    "RC:VCSummary": "SummaryMessage",
+    "RC:VCHangup": "HungupMessage",
+    "RC:VCInvite": "InviteMessage",
+    "RC:VCModifyMedia": "MediaModifyMessage",
+    "RC:VCModifyMem": "MemberModifyMessage",
+    "RC:CsContact": "CustomerContact"
 },
-//�Զ�����Ϣ����
+//自定义消息类型
 registerMessageTypeMapping = {}, HistoryMsgType = {
     4: "qryCMsg",
     2: "qryDMsg",
@@ -5647,12 +5954,12 @@ registerMessageTypeMapping = {}, HistoryMsgType = {
     6: "qrySMsg",
     7: "qryPMsg",
     8: "qryPMsg",
-    5: "qryPMsg"
+    5: "qryCMsg"
 }, disconnectStatus = { 1: 6 };
 var RongIMLib;
 (function (RongIMLib) {
     /**
-     * ͨ����ʶ��
+     * 通道标识类
      */
     var Transportations = (function () {
         function Transportations() {
@@ -5707,7 +6014,7 @@ var RongIMLib;
     })();
     RongIMLib.PublicServiceMap = PublicServiceMap;
     /**
-     * �Ự�����ࡣ
+     * 会话工具类。
      */
     var ConversationMap = (function () {
         function ConversationMap() {
@@ -5735,8 +6042,8 @@ var RongIMLib;
             }
         };
         /**
-         * [replace �滻�Ự]
-         * �Ự�������ڵ������µ���add�������ǵ�ǰ�Ự���滻�ҷ��ص���һ��λ�ã������û�����һЩ����ʧЧ�������ṩreplace����
+         * [replace 替换会话]
+         * 会话数组存在的情况下调用add方法会是当前会话被替换且返回到第一个位置，导致用户本地一些设置失效，所以提供replace方法
          */
         ConversationMap.prototype.replace = function (conversation) {
             for (var i = 0, len = this.conversationList.length; i < len; i++) {
@@ -5758,7 +6065,7 @@ var RongIMLib;
     })();
     RongIMLib.ConversationMap = ConversationMap;
     /**
-     * ������
+     * 工具类
      */
     var MessageUtil = (function () {
         function MessageUtil() {
@@ -5772,10 +6079,18 @@ var RongIMLib;
             }
         };
         /**
-         *4680000 Ϊlocalstorage��С����5200000�ֽڵ�90%������90%��ɾ��֮ǰ�����Ĵ洢
+         *4680000 为localstorage最小容量5200000字节的90%，超过90%将删除之前过早的存储
          */
         MessageUtil.checkStorageSize = function () {
             return JSON.stringify(localStorage).length < 4680000;
+        };
+        MessageUtil.isEmpty = function (obj) {
+            var empty = true;
+            for (var key in obj) {
+                empty = false;
+                break;
+            }
+            return empty;
         };
         MessageUtil.ArrayForm = function (typearray) {
             if (Object.prototype.toString.call(typearray) == "[object ArrayBuffer]") {
@@ -5802,7 +6117,7 @@ var RongIMLib;
         MessageUtil.isArray = function (obj) {
             return Object.prototype.toString.call(obj) == "[object Array]";
         };
-        //������ֻ�ܱ�������
+        //遍历，只能遍历数组
         MessageUtil.forEach = function (arr, func) {
             if ([].forEach) {
                 return function (arr, func) {
@@ -5840,8 +6155,8 @@ var RongIMLib;
             }
             return timestamp;
         };
-        //��Ϣת������
-        MessageUtil.messageParser = function (entity, onReceived) {
+        //消息转换方法
+        MessageUtil.messageParser = function (entity, onReceived, offlineMsg) {
             var message = new RongIMLib.Message(), content = entity.content, de, objectName = entity.classname, val, isUseDef = false;
             try {
                 if (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"]) {
@@ -5857,7 +6172,7 @@ var RongIMLib;
                 de = val;
                 isUseDef = true;
             }
-            //ӳ��Ϊ������Ϣ����
+            //映射为具体消息对象
             if (objectName in typeMapping) {
                 var str = "new RongIMLib." + typeMapping[objectName] + "(de)";
                 message.content = eval(str);
@@ -5877,7 +6192,7 @@ var RongIMLib;
                 message.content = new RongIMLib.UnknownMessage({ content: de, objectName: objectName });
                 message.messageType = "UnknownMessage";
             }
-            //����ʵ����������message����
+            //根据实体对象设置message对象
             message.sentTime = MessageUtil.int64ToTimestamp(entity.dataTime);
             message.senderUserId = entity.fromUserId;
             message.conversationType = entity.type;
@@ -5906,9 +6221,15 @@ var RongIMLib;
             message.receivedTime = new Date().getTime();
             message.messageId = (message.conversationType + "_" + ~~(Math.random() * 0xffffff));
             message.objectName = objectName;
+            message.offLineMessage = offlineMsg ? true : false;
+            if (!offlineMsg) {
+                if (RongIMLib.RongIMClient._memoryStore.connectAckTime > message.sentTime) {
+                    message.offLineMessage = true;
+                }
+            }
             return message;
         };
-        //����SSL
+        //适配SSL
         MessageUtil.schemeArrs = [["http", "ws"], ["https", "wss"]];
         MessageUtil.sign = { converNum: 1, msgNum: 1, isMsgStart: true, isConvStart: true };
         return MessageUtil;
@@ -6003,6 +6324,41 @@ var RongIMLib;
         return LimitableMap;
     })();
     RongIMLib.LimitableMap = LimitableMap;
+    var RongAjax = (function () {
+        function RongAjax(options) {
+            this.xmlhttp = null;
+            this.options = options;
+            var me = this;
+            var hasCORS = typeof XMLHttpRequest !== "undefined" && "withCredentials" in new XMLHttpRequest();
+            if ("undefined" != typeof XMLHttpRequest && hasCORS) {
+                me.xmlhttp = new XMLHttpRequest();
+            }
+            else if ("undefined" != typeof XDomainRequest) {
+                me.xmlhttp = new XDomainRequest();
+            }
+            else {
+                me.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+        RongAjax.prototype.send = function (callback) {
+            var me = this;
+            var url = "http://up.qiniu.com/putb64/-1";
+            me.xmlhttp.onreadystatechange = function () {
+                if (me.xmlhttp.readyState == 4) {
+                    callback(JSON.parse(me.xmlhttp.responseText.replace(/'/g, '"')));
+                }
+            };
+            me.xmlhttp.open("POST", url, true);
+            me.xmlhttp.withCredentials = false;
+            if ("setRequestHeader" in me.xmlhttp) {
+                me.xmlhttp.setRequestHeader("Content-type", "application/octet-stream");
+                me.xmlhttp.setRequestHeader('Authorization', "UpToken " + me.options.token);
+            }
+            me.xmlhttp.send("data=" + encodeURIComponent(me.options.base64));
+        };
+        return RongAjax;
+    })();
+    RongIMLib.RongAjax = RongAjax;
 })(RongIMLib || (RongIMLib = {}));
 var RongIMLib;
 (function (RongIMLib) {
@@ -6083,7 +6439,7 @@ var RongIMLib;
     })();
     RongIMLib.CustomerStatusMessage = CustomerStatusMessage;
     /**
-     * �ͷ�ת����Ӧ��Ϣ��������
+     * 客服转换响应消息的类型名
      */
     var ChangeModeResponseMessage = (function () {
         function ChangeModeResponseMessage(message) {
@@ -6102,8 +6458,8 @@ var RongIMLib;
     })();
     RongIMLib.ChangeModeResponseMessage = ChangeModeResponseMessage;
     /**
-     * �ͷ�ת����Ϣ��������
-     * ����Ϣ������δ����Ϣ��
+     * 客服转换消息的类型名
+     * 此消息不计入未读消息数
      */
     var ChangeModeMessage = (function () {
         function ChangeModeMessage(message) {
@@ -6149,6 +6505,21 @@ var RongIMLib;
         return HandShakeMessage;
     })();
     RongIMLib.HandShakeMessage = HandShakeMessage;
+    var CustomerContact = (function () {
+        function CustomerContact(message) {
+            this.messageName = "CustomerContact";
+            this.page = message.page;
+            this.nickName = message.nickName;
+            this.routingInfo = message.routingInfo;
+            this.info = message.info;
+            this.requestInfo = message.requestInfo;
+        }
+        CustomerContact.prototype.encode = function () {
+            return JSON.stringify(RongIMLib.ModelUtil.modelClone(this));
+        };
+        return CustomerContact;
+    })();
+    RongIMLib.CustomerContact = CustomerContact;
     var EvaluateMessage = (function () {
         function EvaluateMessage(message) {
             this.messageName = "EvaluateMessage";
@@ -6157,7 +6528,7 @@ var RongIMLib;
             this.pid = message.pid;
             this.source = message.source;
             this.suggest = message.suggest;
-            this.isRobotResolved = message.isresolve;
+            this.isresolve = message.isresolve;
             this.type = message.type;
         }
         EvaluateMessage.obtain = function () {
@@ -6170,7 +6541,7 @@ var RongIMLib;
     })();
     RongIMLib.EvaluateMessage = EvaluateMessage;
     /**
-     * �ͷ�������Ӧ��Ϣ��������
+     * 客服握手响应消息的类型名
      */
     var HandShakeResponseMessage = (function () {
         function HandShakeResponseMessage(message) {
@@ -6417,6 +6788,9 @@ var RongIMLib;
             if (message.user) {
                 this.user = message.user;
             }
+            if (message.mentionedInfo) {
+                this.mentionedInfo = message.mentionedInfo;
+            }
         }
         TextMessage.obtain = function (text) {
             return new TextMessage({ extra: "", content: text });
@@ -6476,6 +6850,9 @@ var RongIMLib;
             if (message.user) {
                 this.user = message.user;
             }
+            if (message.mentionedInfo) {
+                this.mentionedInfo = message.mentionedInfo;
+            }
         }
         VoiceMessage.obtain = function (base64Content, duration) {
             return new VoiceMessage({ content: base64Content, duration: duration, extra: "" });
@@ -6494,9 +6871,10 @@ var RongIMLib;
             }
             this.content = message.content;
             this.imageUri = message.imageUri;
-            this.extra = message.extra;
-            if (message.user) {
-                this.user = message.user;
+            message.extra && (this.extra = message.extra);
+            message.user && (this.user = message.user);
+            if (message.mentionedInfo) {
+                this.mentionedInfo = message.mentionedInfo;
             }
         }
         ImageMessage.obtain = function (content, imageUri) {
@@ -6514,7 +6892,7 @@ var RongIMLib;
             if (arguments.length == 0) {
                 throw new Error("Can not instantiate with empty parameters, use obtain method instead -> LocationMessage.");
             }
-            this.latiude = message.latitude;
+            this.latitude = message.latitude;
             this.longitude = message.longitude;
             this.poi = message.poi;
             this.content = message.content;
@@ -6522,9 +6900,12 @@ var RongIMLib;
             if (message.user) {
                 this.user = message.user;
             }
+            if (message.mentionedInfo) {
+                this.mentionedInfo = message.mentionedInfo;
+            }
         }
         LocationMessage.obtain = function (latitude, longitude, poi, content) {
-            return new LocationMessage({ latitude: longitude, longitude: longitude, poi: poi, content: content, extra: "" });
+            return new LocationMessage({ latitude: latitude, longitude: longitude, poi: poi, content: content, extra: "" });
         };
         LocationMessage.prototype.encode = function () {
             return JSON.stringify(RongIMLib.ModelUtil.modelClone(this));
@@ -6582,6 +6963,9 @@ var RongIMLib;
             if (message.user) {
                 this.user = message.user;
             }
+            if (message.mentionedInfo) {
+                this.mentionedInfo = message.mentionedInfo;
+            }
         }
         PublicServiceCommandMessage.obtain = function (item) {
             return new PublicServiceCommandMessage({ content: "", command: "", menuItem: item, extra: "" });
@@ -6614,9 +6998,34 @@ var RongIMLib;
         return PublicServiceRichContentMessage;
     })();
     RongIMLib.PublicServiceRichContentMessage = PublicServiceRichContentMessage;
+    var FileMessage = (function () {
+        function FileMessage(message) {
+            this.messageName = "FileMessage";
+            message.name && (this.name = message.name);
+            message.size && (this.size = message.size);
+            message.type && (this.type = message.type);
+            message.uri && (this.uri = message.uri);
+            message.extra && (this.extra = message.extra);
+            message.user && (this.user = message.user);
+        }
+        FileMessage.obtain = function (msg) {
+            return new FileMessage({ name: msg.name, size: msg.size, type: msg.type, uri: msg.uri });
+        };
+        FileMessage.prototype.encode = function () {
+            return JSON.stringify(RongIMLib.ModelUtil.modelClone(this));
+        };
+        return FileMessage;
+    })();
+    RongIMLib.FileMessage = FileMessage;
 })(RongIMLib || (RongIMLib = {}));
 var RongIMLib;
 (function (RongIMLib) {
+    var MentionedInfo = (function () {
+        function MentionedInfo(type, userIdList, mentionedContent) {
+        }
+        return MentionedInfo;
+    })();
+    RongIMLib.MentionedInfo = MentionedInfo;
     var CustomServiceConfig = (function () {
         function CustomServiceConfig(isBlack, companyName, companyUrl) {
         }
@@ -6630,7 +7039,7 @@ var RongIMLib;
     })();
     RongIMLib.CustomServiceSession = CustomServiceSession;
     var Conversation = (function () {
-        function Conversation(conversationTitle, conversationType, draft, isTop, latestMessage, latestMessageId, notificationStatus, objectName, receivedStatus, receivedTime, senderUserId, senderUserName, sentStatus, sentTime, targetId, unreadMessageCount, senderPortraitUri) {
+        function Conversation(conversationTitle, conversationType, draft, isTop, latestMessage, latestMessageId, notificationStatus, objectName, receivedStatus, receivedTime, senderUserId, senderUserName, sentStatus, sentTime, targetId, unreadMessageCount, senderPortraitUri, mentionedMsg) {
             this.conversationTitle = conversationTitle;
             this.conversationType = conversationType;
             this.draft = draft;
@@ -6648,6 +7057,7 @@ var RongIMLib;
             this.targetId = targetId;
             this.unreadMessageCount = unreadMessageCount;
             this.senderPortraitUri = senderPortraitUri;
+            this.mentionedMsg = mentionedMsg;
         }
         Conversation.prototype.setTop = function () {
             RongIMLib.RongIMClient._dataAccessProvider.addConversation(this, { onSuccess: function (data) { } });
@@ -6676,7 +7086,7 @@ var RongIMLib;
     })();
     RongIMLib.Group = Group;
     var Message = (function () {
-        function Message(content, conversationType, extra, objectName, messageDirection, messageId, receivedStatus, receivedTime, senderUserId, sentStatus, sentTime, targetId, messageType, messageUId, isLocalMessage) {
+        function Message(content, conversationType, extra, objectName, messageDirection, messageId, receivedStatus, receivedTime, senderUserId, sentStatus, sentTime, targetId, messageType, messageUId, isLocalMessage, offLineMessage) {
             this.content = content;
             this.conversationType = conversationType;
             this.extra = extra;
@@ -6692,6 +7102,7 @@ var RongIMLib;
             this.messageType = messageType;
             this.messageUId = messageUId;
             this.isLocalMessage = isLocalMessage;
+            this.offLineMessage = offLineMessage;
         }
         return Message;
     })();
@@ -6745,10 +7156,10 @@ var RongIMLib;
     })();
     RongIMLib.PublicServiceProfile = PublicServiceProfile;
     var UserInfo = (function () {
-        function UserInfo(userId, name, icon) {
+        function UserInfo(userId, name, portraitUri) {
             this.userId = userId;
             this.name = name;
-            this.icon = icon;
+            this.portraitUri = portraitUri;
         }
         return UserInfo;
     })();
@@ -6855,8 +7266,8 @@ var RongIMLib;
             }
             callback.onSuccess(conver);
         };
-        ServerDataProvider.prototype.getConversationList = function (callback, conversationTypes) {
-            if (RongIMLib.RongIMClient._memoryStore.conversationList.length == 0 || RongIMLib.RongIMClient._memoryStore.isSyncRemoteConverList) {
+        ServerDataProvider.prototype.getConversationList = function (callback, conversationTypes, count) {
+            if (RongIMLib.RongIMClient._memoryStore.conversationList.length == 0 || RongIMLib.RongIMClient._memoryStore.isSyncRemoteConverList || (typeof count != undefined && RongIMLib.RongIMClient._memoryStore.conversationList.length < count)) {
                 RongIMLib.RongIMClient.getInstance().getRemoteConversationList({
                     onSuccess: function (list) {
                         if (RongIMLib.MessageUtil.supportLargeStorage()) {
@@ -6873,7 +7284,7 @@ var RongIMLib;
                     onError: function (errorcode) {
                         callback.onSuccess([]);
                     }
-                }, conversationTypes);
+                }, conversationTypes, count);
             }
             else {
                 if (conversationTypes) {
@@ -6885,9 +7296,15 @@ var RongIMLib;
                             }
                         });
                     });
+                    if (count > 0) {
+                        convers.length = count;
+                    }
                     callback.onSuccess(convers);
                 }
                 else {
+                    if (count) {
+                        RongIMLib.RongIMClient._memoryStore.conversationList.length = count;
+                    }
                     callback.onSuccess(RongIMLib.RongIMClient._memoryStore.conversationList);
                 }
             }
@@ -6941,6 +7358,18 @@ var RongIMLib;
                             RongIMLib.LocalStorageProvider.getInstance().removeItem("cu" + RongIMLib.Bridge._client.userId + conversationType + targetId);
                         }
                         conver.unreadMessageCount = 0;
+                        conver.mentionedMsg = null;
+                        var mentioneds = RongIMLib.RongIMClient._cookieHelper.getItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId);
+                        if (mentioneds) {
+                            var info = JSON.parse(mentioneds);
+                            delete info[conversationType + "_" + targetId];
+                            if (!RongIMLib.MessageUtil.isEmpty(info)) {
+                                RongIMLib.RongIMClient._cookieHelper.setItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId, JSON.stringify(info), true);
+                            }
+                            else {
+                                RongIMLib.RongIMClient._cookieHelper.removeItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId);
+                            }
+                        }
                     }
                     callback.onSuccess(true);
                 },
@@ -6979,7 +7408,7 @@ var RongIMLib;
     var DBUtil = (function () {
         function DBUtil() {
         }
-        //RongIMClint.init ʱ��ִ�У����뵱ǰ��¼�˵�Id
+        //RongIMClint.init 时候执行，传入当前登录人的Id
         DBUtil.prototype.init = function (userId) {
             var me = this, isInit = false;
             me.userId = userId;
@@ -7069,7 +7498,7 @@ var RongIMLib;
                 callback.onSuccess(conver);
             });
         };
-        WebSQLDataProvider.prototype.getConversationList = function (callback, conversationTypes) {
+        WebSQLDataProvider.prototype.getConversationList = function (callback, conversationTypes, count) {
             if (RongIMLib.RongIMClient._memoryStore.isSyncRemoteConverList) {
                 RongIMLib.RongIMClient.getInstance().getRemoteConversationList({
                     onSuccess: function (list) {
@@ -7085,11 +7514,11 @@ var RongIMLib;
                     onError: function (errorCode) {
                         callback.onError(errorCode);
                     }
-                }, null);
+                }, conversationTypes, count);
             }
-            //��ѯ�ö��Ự��
+            //查询置顶会话。
             var tSql = "select * from t_conversation_" + this.database.userId + " t where t.isTop = 1 ";
-            //������ѯ�Ự��
+            //排序查询会话。
             var oSql = "select * from t_conversation_" + this.database.userId + " c where c.isTop != 1 order by c.sentTime ";
             var me = this;
             if (conversationTypes) {
@@ -7212,7 +7641,7 @@ var RongIMLib;
                     });
                 }
                 else {
-                    //TODO ���ܴ��� len �� count ���Ȳ��ҷ�����û����ʷ��Ϣ�����¶���ȡһ����ʷ��Ϣ��
+                    //TODO 可能存在 len 和 count 相等并且服务区没有历史消息，导致多拉取一次历史消息。
                     callback.onSuccess(results, true);
                     RongIMLib.RongIMClient._memoryStore.lastReadTime.set(conversationType + targetId, result[len - 1].sentTime);
                 }
@@ -7259,12 +7688,24 @@ var RongIMLib;
             var sSql = "select * from t_conversation_" + this.database.userId + " t where t.conversationType = ? and t.targetId = ?";
             var uSql = "update t_conversation_" + this.database.userId + " set content = ? where conversationType = ? and targetId = ?", me = this;
             this.database.execSearchByParams(sSql, [conversationType, targetId], function (results) {
+                var mentioneds = RongIMLib.RongIMClient._cookieHelper.getItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId);
+                if (mentioneds) {
+                    var info = JSON.parse(mentioneds);
+                    delete info[conversationType + "_" + targetId];
+                    if (!RongIMLib.MessageUtil.isEmpty(info)) {
+                        RongIMLib.RongIMClient._cookieHelper.setItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId, JSON.stringify(info), true);
+                    }
+                    else {
+                        RongIMLib.RongIMClient._cookieHelper.removeItem("mentioneds_" + RongIMLib.Bridge._client.userId + '_' + conversationType + '_' + targetId);
+                    }
+                }
                 if (results.length == 0) {
                     callback.onSuccess(false);
                 }
                 else {
                     var conver = JSON.parse(results[0].content);
                     conver.unreadMessageCount = 0;
+                    conver.mentionedMsg = null;
                     me.database.execUpdateByParams(uSql, [JSON.stringify(conver), conversationType, targetId]);
                     callback.onSuccess(true);
                 }
@@ -7331,10 +7772,15 @@ var RongIMLib;
     var CookieProvider = (function () {
         function CookieProvider() {
         }
-        CookieProvider.prototype.setItem = function (composedKey, object) {
-            // var exp = new Date();
-            // exp.setTime(exp.getTime() + 15 * 24 * 3600 * 1000);
-            document.cookie = composedKey + "=" + decodeURIComponent(object) + ";path=/;";
+        CookieProvider.prototype.setItem = function (composedKey, object, isSave) {
+            if (isSave) {
+                var exp = new Date();
+                exp.setTime(exp.getTime() + 1 * 24 * 3600 * 1000);
+                document.cookie = composedKey + "=" + decodeURIComponent(object) + ";path=/;expires=" + exp.toGMTString();
+            }
+            else {
+                document.cookie = composedKey + "=" + decodeURIComponent(object) + ";path=/;";
+            }
         };
         CookieProvider.prototype.getItem = function (composedKey) {
             if (composedKey) {
@@ -7367,12 +7813,12 @@ var RongIMLib;
             var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
             if (keys) {
                 for (var i = keys.length; i--;) {
-                    //TODO �����жϣ���Ҫɾ���û��Լ��� cookie
+                    //TODO 条件判断，不要删除用户自己的 cookie
                     document.cookie = keys[i] + "=0;path=/;expires=" + new Date(0).toUTCString();
                 }
             }
         };
-        //��λ���ֽ�
+        //单位：字节
         CookieProvider.prototype.onOutOfQuota = function () {
             return 4 * 1024;
         };
@@ -7410,7 +7856,7 @@ var RongIMLib;
                 delete me._memeoryStore[key];
             }
         };
-        //��λ���ֽ�
+        //单位：字节
         MemeoryProvider.prototype.onOutOfQuota = function () {
             return 4 * 1024;
         };
@@ -7438,7 +7884,7 @@ var RongIMLib;
         LocalStorageProvider.prototype.clearItem = function () {
             localStorage.clear();
         };
-        //��λ���ֽ�
+        //单位：字节
         LocalStorageProvider.prototype.onOutOfQuota = function () {
             return JSON.stringify(localStorage).length;
         };
@@ -7454,7 +7900,7 @@ var RongIMLib;
             this.head = document.getElementsByTagName("head")[0];
             RongIMLib.Transportations._TransportType = RongIMLib.Socket.WEBSOCKET;
             if ("WebSocket" in window && "ArrayBuffer" in window && WebSocket.prototype.CLOSED === 3 && !window["WEB_XHR_POLLING"]) {
-                var str = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/protobuf-2.1.1.min.js" : "//cdn.ronghub.com/protobuf-2.1.1.min.js";
+                var str = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/protobuf-2.1.3.min.js" : "//cdn.ronghub.com/protobuf-2.1.3.min.js";
                 this.script.src = str;
                 this.head.appendChild(this.script);
             }
@@ -7471,7 +7917,7 @@ var RongIMLib;
     }
     else if (document.addEventListener) {
         document.addEventListener("DOMContentLoaded", function () {
-            //TODO �滻callee
+            //TODO 替换callee
             document.removeEventListener("DOMContentLoaded", arguments.callee, false);
             new FeatureDectector();
         }, false);

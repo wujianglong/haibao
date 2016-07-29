@@ -460,7 +460,7 @@ conversationDire.directive("textMessage", [function() {
         },
         template: '<div class="" id="{{itemid}}">' +
         '<div class="Message-text">' +
-        '<pre class="at_all_people" ng-show="isAtAll">@所有人</pre>' +
+        // '<pre class="at_all_people" ng-show="isAtAll">@所有人</pre>' +
         '<pre class="Message-entry" ng-bind-html="content|trustHtml">' +
         // '<i class="at_function" ng-show="isAtPart">@****</i>' +
         '</pre>' +
@@ -675,7 +675,9 @@ conversationDire.directive("fileMessage", [function() {
                   showSize = scope.item.size >= 1024 ? fomate(scope.item.size / 1024) + 'M' : fomate(scope.item.size) + 'K';
                   angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
                   angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
-                  unbingWatch();
+                  if(typeof unbingWatch === "function" || typeof unbingWatch === "object"){
+                    unbingWatch();
+                  }
                   break;
               }
               scope.showSize = showSize;

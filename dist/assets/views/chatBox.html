@@ -17,6 +17,7 @@
     </div>
     <!-- content -->
     <div id="Messages" ng-class="{messagesload:messagesloading}">
+      <div class="no_network"><span>当前网络不可用，请检查你的网络设置</span></div>
       <conversation-item ng-repeat="conversationitem in conversationServer.conversationMessageListShow" item='conversationitem'>
 
       </conversation-item>
