@@ -2456,6 +2456,10 @@ input::-ms-clear{display:none;}
         /*display: none;*/
     }
 
+    .no_network{
+      padding-left: 0px !important;
+    }
+
     .phone_return {
         top: 7px;
         left: -3px;
@@ -3245,9 +3249,11 @@ input::-ms-clear{display:none;}
 
 .no_network{
     text-align: center;
-    position: fixed;
+    position: absolute;;
     top:54px;
     width: 100%;
+    min-width: 1000px;
+    padding-left: 384px;
     z-index: 9999;
     visibility:hidden;
 }
