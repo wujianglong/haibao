@@ -320,7 +320,6 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     var mainDataServer = <mainDataServer>{};
 
     mainDataServer.loginUser = <webimmodel.UserInfo>{};
-    mainDataServer.netConnected = false;
     mainDataServer.conversation = {
         totalUnreadCount: 0,
         conversations: <webimmodel.Conversation[]>[],
@@ -1556,7 +1555,6 @@ interface RongIMSDKServer {
 }
 
 interface mainDataServer {
-    netConnected: boolean
     loginUser: webimmodel.UserInfo
     conversation: {
         totalUnreadCount: number
