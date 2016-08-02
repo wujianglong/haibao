@@ -51,11 +51,15 @@ interface Document {
 }
 
 interface HTMLElement{
-  createTextRange:any;
+  createTextRange: any;
+}
+interface HTMLAnchorElement{
+  download: any;
 }
 interface Element{
   children:any;
 }
+
 declare var window: Window
 
 interface Notification extends Function {

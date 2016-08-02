@@ -632,7 +632,8 @@ conversationDire.directive("fileMessage", [function() {
               scope.item.state = 1;
             }
             scope.Download =  function(){
-              window.open(scope.item.uri, '_self');
+              // window.open(scope.item.uri, '_self');
+              webimutil.DownloadHelper.downloadFile(scope.item.uri);
             }
             function fomate(num: number){
               var result = Math.ceil(num * 100);

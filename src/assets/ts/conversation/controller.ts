@@ -446,7 +446,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
             RongIMSDKServer.sendMessage(targetType, targetId, msg, atFlag && (targetType == webimmodel.conversationType.Group || targetType == webimmodel.conversationType.Discussion)).then(function() {
                atArray = [];
-            }, function(error) {
+            }, function(error: any) {
               var content = '';
               switch (error.errorCode) {
                 case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
