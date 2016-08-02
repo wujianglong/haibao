@@ -14,7 +14,8 @@ var webimApp = angular.module("webim", ["ui.router", "ui.event", "uiSwitch", "ng
 webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvider",
     function($provide: angular.auto.IProvideService, $stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider, $httpProvider: angular.IHttpProvider) {
         var baseUrl = window["__sealtalk_config"]["serverUrl"];
-        var appkey = window["__sealtalk_config"]["appkey"]
+        var appkey = window["__sealtalk_config"]["appkey"];
+        var appVersion = window["__sealtalk_config"]["appVersion"]
 
         $provide.provider("appconfig", function() {
             this.$get = function() {
@@ -102,11 +103,11 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
             templateUrl: "assets/views/forgetPassword.html"
         }).state("main", {
             url: '/main',
-            templateUrl: 'assets/views/main.html',
+            templateUrl: 'assets/views/main.html?v=' + appVersion,
             controller: 'mainController'
         }).state("main.chat", {
             url: '/chat/:targetId/:targetType',
-            templateUrl: 'assets/views/chatBox.html',
+            templateUrl: 'assets/views/chatBox.html?v=' + appVersion,
             controller: 'conversationController'
         }).state("main.none", {
             url: "/none",

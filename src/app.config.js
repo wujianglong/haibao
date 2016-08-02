@@ -1,4 +1,5 @@
 window.__sealtalk_config={
   serverUrl:"***",
-  appkey:"***"
+  appkey:"***",
+  appVersion:"1.0.0"
 }

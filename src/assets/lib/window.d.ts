@@ -52,6 +52,7 @@ interface Document {
 
 interface HTMLElement{
   createTextRange: any;
+  href: string;
 }
 interface HTMLAnchorElement{
   download: any;
