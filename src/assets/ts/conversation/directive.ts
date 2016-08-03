@@ -24,7 +24,8 @@ conversationDire.directive('atshowDire', function () {
                    e.preventDefault();
                    return;
                 }
-             　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+            //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+                if (obj.textContent.substr(caretPos - 1, 1) == '@') {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
