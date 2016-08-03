@@ -21,13 +21,16 @@ groupAddMember.controller("groupaddmemberController", ["$scope", "$state", "$sta
             friendList = friendList.filter(function(item: webimmodel.Friend, index: number, arr: webimmodel.Friend[]) {
                 return item.id != mainDataServer.loginUser.id;
             })
+            var rawFriendList = webimutil.Helper.cloneObject(friendList);
             $scope.friendList = webimutil.Helper.cloneObject(friendList);
 
             $scope.searchfriend = function(str: string) {
                 if (str == "") {
-                    $scope.friendList = webimutil.Helper.cloneObject(friendList);
+                    $scope.friendList.length = 0;
+                    $scope.friendList = webimutil.Helper.cloneObject(rawFriendList);
                 } else {
-                    var list = mainDataServer.contactsList.find(str, friendList);
+                    var list = mainDataServer.contactsList.find(str, rawFriendList);
+                    $scope.friendList.length = 0;
                     $scope.friendList = webimutil.Helper.cloneObject(list);
                 }
             }
@@ -105,6 +108,13 @@ groupAddMember.controller("groupaddmemberController", ["$scope", "$state", "$sta
             $scope.back = function() {
                 $state.go("main.creategroup")
             }
+            $scope.syncState = function (id: string, state: boolean) {
+              rawFriendList.forEach(function (item: any) {
+                  if (item.id == id) {
+                      item.isSelected = state;
+                  }
+              });
+            };
         } else {
             //修改群组
 
@@ -120,13 +130,14 @@ groupAddMember.controller("groupaddmemberController", ["$scope", "$state", "$sta
                 return !membersObj[item.id];
             })
 
+            var rawFriendList = webimutil.Helper.cloneObject(friendList);
             $scope.friendList = webimutil.Helper.cloneObject(friendList);
 
             $scope.searchfriend = function(str: string) {
                 if (str == "") {
-                    $scope.friendList = webimutil.Helper.cloneObject(friendList);
+                    $scope.friendList = webimutil.Helper.cloneObject(rawFriendList);
                 } else {
-                    var searchList = mainDataServer.contactsList.find(str, friendList);
+                    var searchList = mainDataServer.contactsList.find(str, rawFriendList);
                     $scope.friendList = webimutil.Helper.cloneObject(searchList);
                 }
             }
@@ -177,6 +188,13 @@ groupAddMember.controller("groupaddmemberController", ["$scope", "$state", "$sta
             $scope.back = function() {
                 $state.go("main.groupinfo", { groupid: $stateParams["idorname"] });
             }
+            $scope.syncState = function (id: string, state: boolean) {
+              rawFriendList.forEach(function (item: any) {
+                  if (item.id == id) {
+                      item.isSelected = state;
+                  }
+              });
+            };
         }
     }]);
 

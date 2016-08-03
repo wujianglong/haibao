@@ -25,6 +25,9 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
                     },
                     getAppKey: function() {
                         return appkey;
+                    },
+                    getAppVersion: function() {
+                        return appVersion;
                     }
                 }
             }
