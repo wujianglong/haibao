@@ -21,6 +21,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         var targetId = $state.params["targetId"];
         var targetType = Number($state.params["targetType"]);
+        var currentCon = new webimmodel.Conversation();
+        currentCon.targetId = targetId;
+        currentCon.targetType = targetType;
+        $scope.currentConversation = currentCon;
 
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
@@ -34,6 +38,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         $scope.searchStr = '';
         $scope.lastSearchStr = '';
         $scope.defaultSearch = false;
+
+
         if (groupid != "0") {
           $scope.groupInfo = mainDataServer.contactsList.getGroupById(groupid);
           if($scope.groupInfo){

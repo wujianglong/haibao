@@ -703,6 +703,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               isfirst = true;
                               conversationItem.lastMsg = result.item.lastMsg;
                               conversationItem.unReadNum = result.item.unReadNum;
+                              conversationItem.lastTime = result.item.lastTime;
                               if (msg.senderUserId == mainDataServer.loginUser.id) {
                                 conversationItem.atStr = '';
                               }

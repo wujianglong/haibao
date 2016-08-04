@@ -29,9 +29,13 @@ conversationDire.directive('atshowDire', function () {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
-                     if(lastChar != ' '){
+                     var regExp = /^[A-Za-z0-9]+$/;
+                     if(regExp.test(lastChar)){
                        return;
                      }
+                    //  if(lastChar != ' '){
+                    //    return;
+                    //  }
                    }
                   scope.atShow = true;
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
