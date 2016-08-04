@@ -444,8 +444,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               msg.mentionedInfo = mentioneds;
             }
 
-            RongIMSDKServer.sendMessage(targetType, targetId, msg, atFlag && (targetType == webimmodel.conversationType.Group || targetType == webimmodel.conversationType.Discussion)).then(function() {
+            RongIMSDKServer.sendMessage(targetType, targetId, msg, atFlag && (targetType == webimmodel.conversationType.Group || targetType == webimmodel.conversationType.Discussion)).then(function(msg) {
                atArray = [];
+               $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msg), true, true);
             }, function(error: any) {
               var content = '';
               switch (error.errorCode) {
@@ -475,7 +476,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             // setTimeout(function () {
             //     $scope.$emit("conversationChange");
             // }, 200);
-            $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msgouter), true, true);
+            // $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(msgouter), true, true);
             $scope.currentConversation.draftMsg = "";
 
             var obj = document.getElementById("message-content");

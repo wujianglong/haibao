@@ -683,7 +683,6 @@ conversationDire.directive("fileMessage", [function() {
                   // ele[0].getElementsByClassName("file_btn")[0].parentElement.href = "http://developer.qiniu.com/resource/gogopher.jpg?attname=down.jpg";
                   ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.href;
 
-
                   break;
               }
               scope.showSize = showSize;

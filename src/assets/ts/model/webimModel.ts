@@ -352,7 +352,9 @@ module webimmodel {
                     }
                     else
                     {
-                        console.log("has unknown message type " + SDKmsg.messageType)
+                       msg.content = '当前版本暂不支持查看此消息';
+                       msg.panelType = webimmodel.PanelType.InformationNotification;
+                       console.log("has unknown message type " + SDKmsg.messageType)
                     }
                     break;
             }
@@ -373,6 +375,8 @@ module webimmodel {
                 msgContent = "[位置]";
             } else if (msgtype == MessageType.VoiceMessage) {
                 msgContent = "[语音]";
+            }else if (msgtype == webimmodel.MessageType.FileMessage) {
+                msgContent = "[文件]" + msg.content.name;
             } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage || msgtype == MessageType.InformationNotificationMessage) {
                 msgContent = "[通知消息]";
             } else if (msg.objectName == "RC:GrpNtf") {
@@ -450,7 +454,7 @@ module webimmodel {
                         break;
                 }
             }
-            else {
+            else if(msgtype == webimmodel.MessageType.TextMessage){
                 msgContent = msg.content ? msg.content.content : "";
 
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
@@ -471,6 +475,9 @@ module webimmodel {
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");
                 // }
 
+            }
+            else {
+                msgContent = "[当前版本暂不支持查看此消息]";
             }
             return msgContent;
         }

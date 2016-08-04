@@ -204,7 +204,7 @@ groupAddMember.directive("searchitem", function() {
         scope: { item: "=" },
         template: '<li class="chat_item joinGroup_item addFriends_item">' +
         '<div class="select">' +
-        '<input type="checkbox" class="hide" id="{{item.id}}" ng-model="item.isSelected" value="136" data-count="" name="">' +
+        '<input type="checkbox" class="hide" id="{{item.id}}" ng-change="syncState()" ng-model="item.isSelected" value="136" data-count="" name="">' +
         '<label for="{{item.id}}"></label>' +
         '</div>' +
         '<div class="photo">' +
@@ -219,6 +219,9 @@ groupAddMember.directive("searchitem", function() {
         '</li>',
         link: function(scope: any, ele: any, attr: any) {
             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+            scope.syncState = function(){
+              scope.$parent.syncState(scope.item.id, scope.item.isSelected);
+            }
         }
     }
 })
