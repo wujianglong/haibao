@@ -25,10 +25,15 @@ declare module RongIMLib {
     class RongUploadLib {
         static init(imgOpts?: any, fileOpts?: any): void
         static getInstance(): RongUploadLib;
+        reload(image: string, file: string): void
         setListeners(listener: any): void
-        startUpload(conversationType: string, targetId: string): void
+        start(conversationType: string, targetId: string): void
         stopUpload(): void
         getThumbnail(): void
+        postImage(base64: string, conversationType: webimmodel.conversationType, targetId: string, callback:any): void
+        destroy(): void
+        cancel(file: any): void
+        cancelAll(callback: any): void
     }
 }
 
