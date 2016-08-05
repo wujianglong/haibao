@@ -1,6 +1,5 @@
 /// <reference path="../../../../typings/angularjs/angular.d.ts"/>
 /// <reference path="../../../../typings/angular-file-upload/angular-file-upload.d.ts"/>
-/// <reference path="../../../../vendor/qiniu/qiniu.d.ts"/>
 
 var conversationCtr = angular.module("webim.conversation.controller", ["webim.main.server", "webim.conversation.server"]);
 var IMGDOMAIN = "http://7xogjk.com1.z0.glb.clouddn.com/";

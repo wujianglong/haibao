@@ -169,8 +169,6 @@ module.exports = (grunt) ->
             src:[
               './vendor/jqlayer/layer.min.js'
               './vendor/jqueryrebox/jquery-rebox.js'
-              './vendor/qiniu/qiniu.js'
-              './vendor/qiniu/plupload.min.js'
             ]
             dest:'./temp/other.js'
           }
@@ -199,8 +197,6 @@ module.exports = (grunt) ->
             src:[
               './vendor/jqlayer/layer.min.js'
               './vendor/jqueryrebox/jquery-rebox.js'
-              './vendor/qiniu/qiniu.js'
-              './vendor/qiniu/plupload.min.js'
             ]
             dest:'./build/assets/js/other.min.js'
           }

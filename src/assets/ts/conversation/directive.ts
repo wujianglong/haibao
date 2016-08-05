@@ -619,11 +619,11 @@ conversationDire.directive("fileMessage", [function() {
               '<img ng-src="{{imgType}}">' +
             '</div>' +
             '<div class="file_name fl">' +
-              '<p class="p1">{{item.name}}.{{item.type}}</p>' +
+              '<p class="p1">{{item.name}}</p>' +
               '<p class="p2">{{showSize}}</p>' +
               '<div class="up_process"><div></div></div>' +
             '</div>' +
-            '<a ng-show="isover">' +
+            '<a ng-show="isover" href="{{item.uri}}">' +
             // '<div class="file_btn fr" ng-click="Download()">' +
             '<div class="file_btn fr">' +
             '</div>' +
@@ -687,7 +687,7 @@ conversationDire.directive("fileMessage", [function() {
                 if(typeof unbingWatch === 'function' || typeof unbingWatch === "object"){
                   unbingWatch();
                 }
-                ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.href;
+                ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.uri;
                 break;
             }
             scope.showSize = showSize;
