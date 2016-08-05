@@ -4,7 +4,8 @@
 
 
 var mainCtr = angular.module("webim.main.controller", ["webim.main.server", "webim.conversation.server"]);
-
+var IMGDOMAIN = "http://7xogjk.com1.z0.glb.clouddn.com/";
+var FILEDOMAIN = "http://o83059m7d.bkt.clouddn.com/";
 
 mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout", "$http",
     "mainDataServer", "conversationServer", "mainServer", "RongIMSDKServer", "appconfig",
@@ -292,6 +293,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
               RongIMSDKServer.getConversationList().then(function(list) {
                   mainDataServer.conversation.updateConversations();
               });
+              RongIMLib.RongUploadLib.init(
+                {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
+                {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
+              );
           }, function(error) {
               if (error.tokenError) {
                   //token 错误。
@@ -302,6 +307,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                               RongIMSDKServer.getConversationList().then(function(list) {
                                   mainDataServer.conversation.updateConversations();
                               });
+                              RongIMLib.RongUploadLib.init(
+                                {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
+                                {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
+                              );
                           }, function(error) {
                               if (error.tokenError) {
                                   //token 错误。
@@ -328,6 +337,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                       RongIMSDKServer.getConversationList().then(function(list) {
                           mainDataServer.conversation.updateConversations();
                       });
+                      RongIMLib.RongUploadLib.init(
+                        {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
+                        {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
+                      );
                   }, function(error) {
                       if (error.tokenError) {
                           //token 错误。
