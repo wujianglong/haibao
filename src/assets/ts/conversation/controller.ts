@@ -669,16 +669,16 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         //   });
         // }
         // conversationServer.initUpload();
-        // $scope.uploadStatus = {
-        //     show: false,
-        //     progress: 0,
-        //     cancle: function() {
-        //         qiniuuploader.stop && qiniuuploader.stop();
-        //         $scope.uploadStatus.show = false;
-        //         $scope.uploadStatus.progress = 0;
-        //         qiniuuploader.files.pop();
-        //     }
-        // }
+        $scope.uploadStatus = {
+            show: false,
+            progress: 0,
+            cancle: function() {
+                // qiniuuploader.stop && qiniuuploader.stop();
+                $scope.uploadStatus.show = false;
+                $scope.uploadStatus.progress = 0;
+                // qiniuuploader.files.pop();
+            }
+        }
         // var qiniuuploader: any;
         // function uploadFileInit() {
         //     qiniuuploader = Qiniu.uploader({
@@ -778,9 +778,9 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           onFileAdded:function(file: any){
               RongIMLib.RongUploadLib.getInstance().start($scope.currentConversation.targetType,$scope.currentConversation.targetId);
               // for (var i = 0, len = files.length; i < len; i++) {
-                  if (file.type.indexOf("image") > -1) {
-                    return;
-                  }
+                if (file.uploadType == 'IMAGE') {
+                  return;
+                }
                 var msg = new webimmodel.Message();
                 msg.conversationType = $scope.currentConversation.targetType;
                 msg.objectName = 'RC:FileMsg';
@@ -804,13 +804,13 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               $scope.$apply();
           },
           onBeforeUpload:function(file: any){
-            if(file.type.indexOf('image') > -1){
+            if (file.uploadType == 'IMAGE') {
               $scope.uploadStatus.show = true;
               $scope.$apply();
             }
           },
           onUploadProgress:function(file: any){
-            if(file.type.indexOf('image') > -1){
+            if (file.uploadType == 'IMAGE') {
               $scope.uploadStatus.progress = file.percent + "%";
             }else{
               var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
@@ -823,7 +823,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             });
           },
           onFileUploaded:function( file: any, message: webimmodel.Message){
-              if (file.type.indexOf('image') > -1) {
+              if (file.uploadType == 'IMAGE') {
                 $scope.uploadStatus.show = false;
                 $scope.uploadStatus.progress = 0;
               }
