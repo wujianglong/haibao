@@ -608,8 +608,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            // var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
-            conversationServer.getHistory(targetId, targetType, null, 5).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -624,8 +624,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            // var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
-            conversationServer.getHistory(targetId, targetType, null, 5).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -955,7 +955,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // });
         $scope.$on("$destroy", function() {
            //清除配置,不然scroll会重复请求
-          //  conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+           conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
         });
         // 删除消息数
         //获取最后一条消息时间
