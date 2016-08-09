@@ -690,12 +690,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             //群组信息更新，已经在其他端接收过不做处理。
                             var groupNotification = <any>data.content;
                             var isself = false;
-                            if(groupNotification.message.content.operatorUserId == mainDataServer.loginUser.id){
+                            if(groupNotification.operatorUserId == mainDataServer.loginUser.id){
                               isself = true;
                             }
-                            switch (groupNotification.message.content.operation) {
+                            switch (groupNotification.operation) {
                                 case "Add":
-                                    var changemembers = groupNotification.message.content.data.data.targetUserIds.join().split(",");
+                                    var changemembers = groupNotification.data.data.targetUserIds.join().split(",");
                                     var groupid = data.targetId;
                                     var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
                                     if (self == -1) {
@@ -714,7 +714,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     } else {
                                         mainServer.group.getById(groupid).success(function(rep) {
 
-                                            var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.message.content.data.data.operatorNickname + "邀请你加入了群组");
+                                            var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.data.data.operatorNickname + "邀请你加入了群组");
                                             mainDataServer.notification.addNotification(temporarynotifi);
                                             if (!$state.is("main.notification")) {
                                                 mainDataServer.notification.hasNewNotification = true;
@@ -747,7 +747,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     }
                                     break;
                                 case "Quit":
-                                    var changemembers = groupNotification.message.content.data.data.targetUserIds.join().split(",");
+                                    var changemembers = groupNotification.data.data.targetUserIds.join().split(",");
                                     var groupid = data.targetId;
                                     var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
                                     if (self == -1) {
@@ -761,7 +761,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     }
                                     break;
                                 case "Kicked":
-                                    var changemembers = groupNotification.message.content.data.data.targetUserIds.join().split(",");
+                                    var changemembers = groupNotification.data.data.targetUserIds.join().split(",");
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
                                     var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
@@ -770,7 +770,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                             mainDataServer.contactsList.removeGroupMember(groupid, changemembers[a]);
                                         }
                                     } else {
-                                        var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.message.content.data.data.operatorNickname + '将你移出了群组');
+                                        var temporarynotifi = new webimmodel.WarningNoticeMessage(groupNotification.data.data.operatorNickname + '将你移出了群组');
                                         mainDataServer.notification.addNotification(temporarynotifi);
                                         if (!$state.is("main.notification")) {
                                             mainDataServer.notification.hasNewNotification = true;
@@ -790,19 +790,19 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-                                    var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
-                                    var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + ' 修改群名称为' + groupNotification.message.content.data.data.targetGroupName);
+                                    var operator = isself ? "你" : groupNotification.data.data.operatorNickname;
+                                    var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + ' 修改群名称为' + groupNotification.data.data.targetGroupName);
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {
                                         mainDataServer.notification.hasNewNotification = true;
                                     }
-                                    mainDataServer.contactsList.updateGroupNameById(groupid, groupNotification.message.content.data.data.targetGroupName);
-                                    mainDataServer.conversation.updateConversationTitle(webimmodel.conversationType.Group, groupid, groupNotification.message.content.data.data.targetGroupName);
+                                    mainDataServer.contactsList.updateGroupNameById(groupid, groupNotification.data.data.targetGroupName);
+                                    mainDataServer.conversation.updateConversationTitle(webimmodel.conversationType.Group, groupid, groupNotification.data.data.targetGroupName);
                                     break;
                                 case "Create":
                                     var groupid = data.targetId;
                                     mainServer.group.getById(groupid).success(function (rep) {
-                                        var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
+                                        var operator = isself ? "你" : groupNotification.data.data.operatorNickname;
                                         var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + "创建了群组");
                                         mainDataServer.notification.addNotification(temporarynotifi);
                                         if (!$state.is("main.notification")) {
@@ -835,7 +835,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 case "Dismiss":
                                     var groupid = data.targetId;
                                     var groupname = mainDataServer.contactsList.getGroupById(groupid) ? mainDataServer.contactsList.getGroupById(groupid).name : groupid;
-                                    var operator = isself ? "你" : groupNotification.message.content.data.data.operatorNickname;
+                                    var operator = isself ? "你" : groupNotification.data.data.operatorNickname;
                                     var temporarynotifi = new webimmodel.WarningNoticeMessage(operator + "解散了群组");
                                     mainDataServer.notification.addNotification(temporarynotifi);
                                     if (!$state.is("main.notification")) {
@@ -851,7 +851,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     }
                                     break;
                                 default:
-                                    console.log("不支持操作类型" + groupNotification.message.content.operation);
+                                    console.log("不支持操作类型" + groupNotification.operation);
                             }
                             conversationServer.asyncConverGroupNotifition(data, msg);
                             addmessage(msg);
