@@ -20,8 +20,8 @@ groupInfo.controller("groupinfoController", ["$scope", "$rootScope", "$state", "
             }
         }
         $scope.back = function() {
-            // back();
-            $rootScope.back();
+            back();
+            // $rootScope.back();
         }
 
         var groupid = $stateParams["groupid"];

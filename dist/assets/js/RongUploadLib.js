@@ -271,7 +271,7 @@ var RongIMLib;
                     });
                     break;
                 case 'FILE':
-                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.FILE, option.fileName, file.oldName, {
+                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.FILE, option.fileName, encodeURIComponent(file.oldName), {
                         onSuccess: function (data) {
                             var type = (option.fileName && option.fileName.split('.')[1]) || "";
                             msg = new RongIMLib.FileMessage({ name: file.oldName, size: file.size, type: type, fileUri: data.downloadUrl });
