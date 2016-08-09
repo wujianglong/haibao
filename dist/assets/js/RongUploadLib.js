@@ -254,7 +254,7 @@ var RongIMLib;
             var msg = null;
             switch (option.uploadType) {
                 case 'IMAGE':
-                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.IMAGE, option.fileName, {
+                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.IMAGE, option.fileName, null, {
                         onSuccess: function (data) {
                             if (option.isBase64Data) {
                                 msg = new RongIMLib.ImageMessage({ content: file, imageUri: data.downloadUrl });
@@ -271,10 +271,10 @@ var RongIMLib;
                     });
                     break;
                 case 'FILE':
-                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.FILE, option.fileName, {
+                    RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.FILE, option.fileName, file.oldName, {
                         onSuccess: function (data) {
                             var type = (option.fileName && option.fileName.split('.')[1]) || "";
-                            msg = new RongIMLib.FileMessage({ name: file.oldName, size: file.size, type: type, uri: data.downloadUrl });
+                            msg = new RongIMLib.FileMessage({ name: file.oldName, size: file.size, type: type, fileUri: data.downloadUrl });
                             callback(msg);
                         },
                         onError: function (error) { }

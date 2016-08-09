@@ -16,7 +16,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.remainMessageCount = 10;
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
-            var detail = <any>msgsdk.content.message.content
+            var detail = <any>msgsdk.content
             var comment = "", members = <any>[]
             var isself = detail.operatorUserId == mainDataServer.loginUser.id ? true : false;
             switch (detail.operation) {
@@ -152,6 +152,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 var item = webimmodel.Message.convertMsg(msgsdk);
                                 if (item) {
                                     unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                }
+                                break;
+                            case webimmodel.MessageType.GroupNotificationMessage:
+                                if (msgsdk.objectName == "RC:GrpNtf") {
+                                  var item = webimmodel.Message.convertMsg(msgsdk);
+                                  if (item) {
+                                      conversationServer.asyncConverGroupNotifition(msgsdk, item);
+                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                  }
                                 }
                                 break;
                             case webimmodel.MessageType.UnknownMessage:

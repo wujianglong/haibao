@@ -293,12 +293,12 @@ conversationDire.directive('contenteditableDire', function() {
               if(!hasImg){
                 if (e.clipboardData) {
                     content = (e.originalEvent || e).clipboardData.getData('text/plain');
-                    content = replacemy(content);
+                    // content = replacemy(content);
                     document.execCommand('insertText', false, content);
                 }
                 else if (window.clipboardData) {
                     content = window.clipboardData.getData('Text');
-                    content = replacemy(content);
+                    // content = replacemy(content);
                     document.selection.createRange().pasteHTML(content);
                 }
               }

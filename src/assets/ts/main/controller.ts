@@ -685,7 +685,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                           }
                         }
                         break;
-                    case webimmodel.MessageType.UnknownMessage:
+                    case webimmodel.MessageType.GroupNotificationMessage:
                         if (data.objectName == "RC:GrpNtf" && !data.hasReceivedByOtherClient) {
                             //群组信息更新，已经在其他端接收过不做处理。
                             var groupNotification = <any>data.content;

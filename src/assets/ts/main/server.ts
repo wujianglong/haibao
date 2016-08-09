@@ -390,7 +390,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                   }
                   // item.conversationTitle = group ? group.name : "未知群组";
                   // conversationitem.title = group ? group.name : "未知群组";
-                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.message.content.operation == "Create" && item.latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
                        conversationitem.lastMsg = '你 创建了群组';
                   }
                   conversationitem.firstchar = group ? group.firstchar : "";

@@ -136,7 +136,8 @@ module webimmodel {
         CommandNotificationMessage: "CommandNotificationMessage",
         ReadReceiptMessage: "ReadReceiptMessage",
         TypingStatusMessage: "TypingStatusMessage",
-        FileMessage: "FileMessage"
+        FileMessage: "FileMessage",
+        GroupNotificationMessage: "GroupNotificationMessage"
     }
 
     export enum conversationType {
@@ -380,10 +381,12 @@ module webimmodel {
             } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage || msgtype == MessageType.InformationNotificationMessage) {
                 msgContent = "[通知消息]";
             } else if (msg.objectName == "RC:GrpNtf") {
-                var data = msg.content.message.content.data.data
-                switch (msg.content.message.content.operation) {
+              // var data = msg.content.message.content.data.data;
+              var data = msg.content.data;
+              // switch (msg.content.message.content.operation) {
+               switch (msg.content.operation) {
                     case "Add":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = data.targetUserDisplayNames ? ("你邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
                         }else{
                           msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
@@ -394,21 +397,21 @@ module webimmodel {
                         break;
                     case "Kicked":
                         //由于之前数据问题
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                            msgContent = data.targetUserDisplayNames ? ("你将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
                         }else{
                           msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
                         }
                         break;
                     case "Rename":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = "你修改群名称为" + data.targetGroupName;
                         }else{
                           msgContent = data.operatorNickname + "修改群名称为" + data.targetGroupName;
                         }
                         break;
                     case "Create":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = "你创建了群组";
                         }else{
                           msgContent = data.operatorNickname + "创建了群组";
@@ -473,6 +476,7 @@ module webimmodel {
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");
+                msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
                 // }
 
             }
