@@ -3,8 +3,8 @@
 
 var groupInfo = angular.module("webim.goupinfo", []);
 
-groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams", "mainDataServer", "mainServer", "RongIMSDKServer",
-    function($scope: any, $state: angular.ui.IStateService, $stateParams: angular.ui.IStateParamsService, mainDataServer: mainDataServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer) {
+groupInfo.controller("groupinfoController", ["$scope", "$rootScope", "$state", "$stateParams", "mainDataServer", "mainServer", "RongIMSDKServer",
+    function($scope: any,$rootScope: any, $state: angular.ui.IStateService, $stateParams: angular.ui.IStateParamsService, mainDataServer: mainDataServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer) {
 
         $scope.$on("$viewContentLoaded", function() {
             angular.element(document.getElementById("portrait")).css("background-color", webimutil.Helper.portraitColors[$scope.groupInfo.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
@@ -20,7 +20,8 @@ groupInfo.controller("groupinfoController", ["$scope", "$state", "$stateParams",
             }
         }
         $scope.back = function() {
-            back();
+            // back();
+            $rootScope.back();
         }
 
         var groupid = $stateParams["groupid"];

@@ -346,8 +346,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-typescript'
-  # grunt.loadNpmTasks 'grunt-rev'
-  # grunt.loadNpmTasks 'grunt-filerev'
+  grunt.loadNpmTasks 'grunt-rev'
+  grunt.loadNpmTasks 'grunt-filerev'
   grunt.loadNpmTasks 'grunt-usemin'
 
   # Build for dev.
@@ -356,7 +356,7 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
-    'filerev:build'
+    # 'filerev:build'
     # 'usemin:build'
     'clean:map'
     'watch:build'
