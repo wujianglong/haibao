@@ -202,6 +202,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }
 
         });
+        $scope.$on('reconnect', function () {
+            reconnectServer();
+        });
 
 
         //初始化好友数据   邀请通知一起通过好友关系表获取解析
@@ -907,11 +910,13 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         console.log("reconnectSuccess");
                         showDisconnectErr(false);
                         isConnecting = false;
+                        mainDataServer.isConnected = true;
                         RongIMSDKServer.getConversationList().then(function() {
                             mainDataServer.conversation.updateConversations();
                         });
                     },
                     onError: function() {
+                        mainDataServer.isConnected = false;
                         if (reconnectTimes <= 5) {
                             reconnectServer();
                             reconnectTimes += 1;

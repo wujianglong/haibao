@@ -8,7 +8,7 @@
     visibility: hidden;
     height: auto;
     width: auto;
-    white-space: nowrap; /* Thanks to Herb Caudill comment */
+    white-space: nowrap; /* for at message */
 }
 
 [contenteditable=true]:empty:before{

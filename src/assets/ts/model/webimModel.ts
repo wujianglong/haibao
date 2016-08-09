@@ -278,7 +278,7 @@ module webimmodel {
                     file.name = SDKmsg.content.name;
                     file.size = SDKmsg.content.size;
                     file.type = SDKmsg.content.type;
-                    file.uri = SDKmsg.content.uri;
+                    file.fileUri = SDKmsg.content.fileUri;
                     file.extra = SDKmsg.content.extra;
                     file.state = FileState.Success;
                     msg.content = file;
@@ -560,7 +560,7 @@ module webimmodel {
         name: string;
         size: number;
         type: number;
-        uri: string;
+        fileUri: string;
         extra: string;
         state: FileState;
         progress: number;  // 0-100

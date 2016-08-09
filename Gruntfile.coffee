@@ -279,6 +279,63 @@ module.exports = (grunt) ->
         src: './src/assets/ts/**/*.ts'
         dest: './temp/main.js'
 
+    filerev:
+      build:
+        options:
+          algorithm: 'sha1',
+          length: 4
+        files:
+          src: ['./build/assets/js/main.min.js', './build/assets/css/main.css']
+          dest: 'build'
+
+    rev:
+      build:
+        options:
+          algorithm: 'sha1',
+          length: 4
+        files:
+          src: ['./build/assets/js/main.min.js', './build/assets/css/main.css']
+      release:
+        options:
+          algorithm: 'sha1',
+          length: 4
+        files:
+          src: ['./dist/assets/js/main.min.js', './dist/assets/css/main.css']
+
+    useminPrepare:
+      build:
+        html:
+          src: ['./src/index.html']
+      release:
+        html: ['./src/index.html']
+
+    usemin:
+      build:
+        html: './build/index.html'
+        options:
+          assetsDirs: [
+              './build/assets/js',
+              './build/assets/css'
+            ]
+          # blockReplacements:
+          #   css:
+          #     (block) ->
+          #       return '<link rel="stylesheet" href="assets/css/' + block.dest + '">'
+          #
+          #   js:
+          #     (block) ->
+          #       return '<script src="assets/js/' + block.dest + '">'
+
+      release:
+        build:
+          html: './dist/index.html'
+          options:
+            assetsDirs: [
+                'dest',
+                './dist/assets/js',
+                './dist/assets/css'
+              ]
+
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-concat'
@@ -289,6 +346,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-typescript'
+  # grunt.loadNpmTasks 'grunt-rev'
+  # grunt.loadNpmTasks 'grunt-filerev'
+  grunt.loadNpmTasks 'grunt-usemin'
 
   # Build for dev.
   grunt.registerTask 'build', [
@@ -296,6 +356,8 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
+    'filerev:build'
+    # 'usemin:build'
     'clean:map'
     'watch:build'
   ]
@@ -308,4 +370,8 @@ module.exports = (grunt) ->
     'typescript:release'
     'cssmin:release'
     'uglify:release'
+  ]
+
+  grunt.registerTask 'test', [
+    'usemin:build'
   ]

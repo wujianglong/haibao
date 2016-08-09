@@ -472,6 +472,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             }, function(error: any) {
               var content = '';
               switch (error.errorCode) {
+                case RongIMLib.ErrorCode.TIMEOUT:
+                   if(!mainDataServer.isConnected){
+                      $scope.$broadcast('reconnect');
+                   }
+                   break;
                 case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
                    content = "您的消息已经发出，但被对方拒收";
                    break;
@@ -603,7 +608,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -618,7 +624,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -828,7 +835,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               }
               else{
                 var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
-                item.content.uri = message.content.uri;
+                item.content.fileUri = message.content.fileUri;
                 item.content.state = 3;
               }
               if(message.messageType == webimmodel.MessageType.ImageMessage){
@@ -946,5 +953,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // element.bind("paste", function(e: any) {
         //     handlePaste(e);
         // });
+        $scope.$on("$destroy", function() {
+           //清除配置,不然scroll会重复请求
+           conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+        })
+        // 删除消息数
+        //获取最后一条消息时间
 
     }])
