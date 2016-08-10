@@ -137,7 +137,8 @@ module webimmodel {
         ReadReceiptMessage: "ReadReceiptMessage",
         TypingStatusMessage: "TypingStatusMessage",
         FileMessage: "FileMessage",
-        GroupNotificationMessage: "GroupNotificationMessage"
+        GroupNotificationMessage: "GroupNotificationMessage",
+        RecallCommandMessage: "RecallCommandMessage"
     }
 
     export enum conversationType {
@@ -279,7 +280,7 @@ module webimmodel {
                     file.name = SDKmsg.content.name;
                     file.size = SDKmsg.content.size;
                     file.type = SDKmsg.content.type;
-                    file.fileUri = SDKmsg.content.fileUri;
+                    file.fileUrl = SDKmsg.content.fileUrl;
                     file.extra = SDKmsg.content.extra;
                     file.state = FileState.Success;
                     msg.content = file;
@@ -341,6 +342,10 @@ module webimmodel {
                     break;
                 case MessageType.ReadReceiptMessage:
                 case MessageType.TypingStatusMessage:
+                    break;
+                case MessageType.RecallCommandMessage:
+                    msg.content = '撤回了一条消息';
+                    msg.panelType = webimmodel.PanelType.InformationNotification;
                     break;
                 default:
                     if (SDKmsg.objectName == "RC:GrpNtf") {
@@ -564,7 +569,7 @@ module webimmodel {
         name: string;
         size: number;
         type: number;
-        fileUri: string;
+        fileUrl: string;
         extra: string;
         state: FileState;
         progress: number;  // 0-100
@@ -749,6 +754,7 @@ module webimmodel {
             name: string;
             imgSrc: string;
             role?: string;
+            displayName?: string;
         }) {
             super(item);
             this.role = item.role;

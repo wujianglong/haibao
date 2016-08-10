@@ -268,7 +268,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           var lastMessageSendTime = sendtime;
           var type = webimmodel.conversationType.Private;
           // 以上 3 个属性在会话的最后一条消息中可以获得。
-          if(targetType != webimmodel.conversationType.Private){
+          if(targetType != webimmodel.conversationType.Private || targetType != webimmodel.conversationType.Group){
             return;
           }
           var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
@@ -835,7 +835,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               }
               else{
                 var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
-                item.content.fileUri = message.content.fileUri;
+                item.content.fileUrl = message.content.fileUrl;
                 item.content.state = 3;
               }
               if(message.messageType == webimmodel.MessageType.ImageMessage){

@@ -1798,7 +1798,7 @@ var RongIMLib;
                 });
                 return;
             }
-            if (RongIMLib.Bridge._client && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTING) {
+            if (RongIMLib.Bridge._client && RongIMLib.Bridge._client.channel && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTING) {
                 return;
             }
             RongIMClient.bridge.connect(RongIMClient._memoryStore.appKey, token, {

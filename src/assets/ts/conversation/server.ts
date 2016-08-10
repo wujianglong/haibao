@@ -13,7 +13,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.conversationMessageList = <any>[];
         conversationServer.conversationMessageListShow = <any>[];
         conversationServer.pullMessageTime = null;
-        conversationServer.remainMessageCount = 10;
+        conversationServer.remainMessageCount = 3;
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content
@@ -239,7 +239,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function getLastMessageTime(id: string, type: string){
           var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
           var sentTime = 0;
-          for(var i = currenthis.length - 1; i > -1; i--){
+          for (var i = 0; i < currenthis.length; i++) {
             if (currenthis[i].panelType == webimmodel.PanelType.Message) {
                 sentTime = (new Date(currenthis[i].sentTime)).getTime();
                 break;
