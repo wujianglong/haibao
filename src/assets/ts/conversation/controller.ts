@@ -268,7 +268,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           var lastMessageSendTime = sendtime;
           var type = webimmodel.conversationType.Private;
           // 以上 3 个属性在会话的最后一条消息中可以获得。
-          if(targetType != webimmodel.conversationType.Private){
+          if(targetType != webimmodel.conversationType.Private || targetType != webimmodel.conversationType.Group){
             return;
           }
           var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
@@ -608,8 +608,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            // var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
-            conversationServer.getHistory(targetId, targetType, null, 5).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -624,8 +624,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            // var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
-            conversationServer.getHistory(targetId, targetType, null, 5).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -835,7 +835,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               }
               else{
                 var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
-                item.content.fileUri = message.content.fileUri;
+                item.content.fileUrl = message.content.fileUrl;
                 item.content.state = 3;
               }
               if(message.messageType == webimmodel.MessageType.ImageMessage){
@@ -955,7 +955,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // });
         $scope.$on("$destroy", function() {
            //清除配置,不然scroll会重复请求
-          //  conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+           conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
         });
         // 删除消息数
         //获取最后一条消息时间

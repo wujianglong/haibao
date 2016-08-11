@@ -279,15 +279,6 @@ module.exports = (grunt) ->
         src: './src/assets/ts/**/*.ts'
         dest: './temp/main.js'
 
-    filerev:
-      build:
-        options:
-          algorithm: 'sha1',
-          length: 4
-        files:
-          src: ['./build/assets/js/main.min.js', './build/assets/css/main.css']
-          dest: 'build'
-
     rev:
       build:
         options:
@@ -302,39 +293,6 @@ module.exports = (grunt) ->
         files:
           src: ['./dist/assets/js/main.min.js', './dist/assets/css/main.css']
 
-    useminPrepare:
-      build:
-        html:
-          src: ['./src/index.html']
-      release:
-        html: ['./src/index.html']
-
-    usemin:
-      build:
-        html: './build/index.html'
-        options:
-          assetsDirs: [
-              './build/assets/js',
-              './build/assets/css'
-            ]
-          # blockReplacements:
-          #   css:
-          #     (block) ->
-          #       return '<link rel="stylesheet" href="assets/css/' + block.dest + '">'
-          #
-          #   js:
-          #     (block) ->
-          #       return '<script src="assets/js/' + block.dest + '">'
-
-      release:
-        build:
-          html: './dist/index.html'
-          options:
-            assetsDirs: [
-                'dest',
-                './dist/assets/js',
-                './dist/assets/css'
-              ]
 
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -356,7 +314,7 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
-    # 'filerev:build'
+    'rev:build'
     # 'usemin:build'
     'clean:map'
     'watch:build'
@@ -370,8 +328,11 @@ module.exports = (grunt) ->
     'typescript:release'
     'cssmin:release'
     'uglify:release'
+    'rev:release'
   ]
 
   grunt.registerTask 'test', [
-    'usemin:build'
+    # 'rev:build'
+    # 'usemin:build'
+    'filerev:build'
   ]

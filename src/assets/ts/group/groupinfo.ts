@@ -229,14 +229,19 @@ groupInfo.directive("member", ["$state", "mainDataServer", function($state: angu
         '</div>' +
         '<div class="info">' +
         '<h3 class="nickname">' +
-        '<span class="nickname_text">{{item.name}}</span>' +
+        '<span class="nickname_text">{{showName}}</span>' +
         '</h3>' +
         '</div>' +
         '</div>' +
         '</li>',
         link: function(scope: any, ele: any, attr: any) {
             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-
+            //查找是否在好友列表中
+            var user = mainDataServer.contactsList.getFriendById(scope.item.id);
+            if(user){
+              scope.showName = user.displayName || user.name;
+            }
+            scope.showName = scope.item.displayName || scope.showName || scope.item.name;
             scope.showinfo = function() {
                 $state.go("main.friendinfo", { userid: scope.item.id, groupid: scope.$parent.groupInfo.id, targetid: scope.$parent.groupInfo.id, conversationtype: $state.params["conversationtype"] });
             }

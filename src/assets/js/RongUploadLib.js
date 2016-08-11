@@ -226,7 +226,7 @@ var RongIMLib;
                                     me.listener.onFileUploaded(file, ret);
                                 },
                                 onError: function (error, ret) {
-                                    me.listener.onFileUploaded(file, ret);
+                                    me.listener.onFileUploaded(file, ret, error);
                                 }
                             });
                         });
@@ -274,7 +274,7 @@ var RongIMLib;
                     RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.FILE, option.fileName, encodeURIComponent(file.oldName), {
                         onSuccess: function (data) {
                             var type = (option.fileName && option.fileName.split('.')[1]) || "";
-                            msg = new RongIMLib.FileMessage({ name: file.oldName, size: file.size, type: type, fileUri: data.downloadUrl });
+                            msg = new RongIMLib.FileMessage({ name: file.oldName, size: file.size, type: type, fileUrl: data.downloadUrl });
                             callback(msg);
                         },
                         onError: function (error) { }

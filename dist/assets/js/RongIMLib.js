@@ -1798,7 +1798,7 @@ var RongIMLib;
                 });
                 return;
             }
-            if (RongIMLib.Bridge._client && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTING) {
+            if (RongIMLib.Bridge._client && RongIMLib.Bridge._client.channel && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus == RongIMLib.ConnectionStatus.CONNECTING) {
                 return;
             }
             RongIMClient.bridge.connect(RongIMClient._memoryStore.appKey, token, {
@@ -1828,7 +1828,7 @@ var RongIMLib;
             return RongIMClient._instance;
         };
         RongIMClient.reconnect = function (callback) {
-            if (RongIMLib.Bridge._client.channel.connectionStatus != RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus != RongIMLib.ConnectionStatus.CONNECTING) {
+            if (!RongIMLib.Bridge._client || (RongIMLib.Bridge._client.channel.connectionStatus != RongIMLib.ConnectionStatus.CONNECTED && RongIMLib.Bridge._client.channel.connectionStatus != RongIMLib.ConnectionStatus.CONNECTING)) {
                 RongIMClient.bridge.reconnect(callback);
             }
         };
@@ -4053,9 +4053,9 @@ var RongIMLib;
         };
         MessageHandler.prototype.onReceived = function (msg, pubAckItem, offlineMsg) {
             //实体对象
-            var entity,
+            var entity, 
             //解析完成的消息对象
-            message,
+            message, 
             //会话对象
             con;
             if (msg._name != "PublishMessage") {
@@ -4587,7 +4587,7 @@ var RongIMLib;
                 "navUrl-Release": RongIMLib.MessageUtil.schemeArrs[RongIMLib.RongIMClient.schemeType][0] + "://nav.cn.ronghub.com/"
             }, xss = document.createElement("script");
             //进行jsonp请求
-            xss.src = Url["navUrl-Debug"] + (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] ? "cometnavi.js" : "navi.js") + "?appId=" + _appId + "&token=" + encodeURIComponent(_token) + "&" + "callBack=getServerEndpoint&t=" + (new Date).getTime();
+            xss.src = Url["navUrl-Release"] + (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] ? "cometnavi.js" : "navi.js") + "?appId=" + _appId + "&token=" + encodeURIComponent(_token) + "&" + "callBack=getServerEndpoint&t=" + (new Date).getTime();
             document.body.appendChild(xss);
             xss.onerror = function () {
                 _onerror(RongIMLib.ConnectionState.TOKEN_INCORRECT);
@@ -5971,7 +5971,7 @@ var typeMapping = {
     "RC:GrpNtf": "GroupNotificationMessage",
     "RC:PSCmd": "PublicServiceCommandMessage",
     "RC:RcCmd": "RecallCommandMessage"
-},
+}, 
 //自定义消息类型
 registerMessageTypeMapping = {}, HistoryMsgType = {
     4: "qryCMsg",
@@ -7067,12 +7067,12 @@ var RongIMLib;
             message.name && (this.name = message.name);
             message.size && (this.size = message.size);
             message.type && (this.type = message.type);
-            message.fileUri && (this.fileUri = message.fileUri);
+            message.fileUrl && (this.fileUrl = message.fileUrl);
             message.extra && (this.extra = message.extra);
             message.user && (this.user = message.user);
         }
         FileMessage.obtain = function (msg) {
-            return new FileMessage({ name: msg.name, size: msg.size, type: msg.type, fileUri: msg.uri });
+            return new FileMessage({ name: msg.name, size: msg.size, type: msg.type, fileUrl: msg.fileUrl });
         };
         FileMessage.prototype.encode = function () {
             return JSON.stringify(RongIMLib.ModelUtil.modelClone(this));

@@ -25,7 +25,7 @@ conversationDire.directive('atshowDire', function () {
                    return;
                 }
             //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
-                if (obj.textContent.substr(caretPos - 1, 1) == '@') {
+                if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
@@ -623,7 +623,7 @@ conversationDire.directive("fileMessage", [function() {
               '<p class="p2">{{showSize}}</p>' +
               '<div class="up_process"><div></div></div>' +
             '</div>' +
-            '<a ng-show="isover" href="{{item.fileUri}}">' +
+            '<a ng-show="isover" href="{{item.fileUrl}}">' +
             // '<div class="file_btn fr" ng-click="Download()">' +
             '<div class="file_btn fr">' +
             '</div>' +
@@ -682,12 +682,13 @@ conversationDire.directive("fileMessage", [function() {
                 break;
               case webimmodel.FileState.Success:
                 var kbSize = scope.item.size / 1024;
-                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';                  angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
+                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';
+                angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
                 angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
                 if(typeof unbingWatch === 'function' || typeof unbingWatch === "object"){
                   unbingWatch();
                 }
-                ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.fileUri;
+                ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.fileUrl;
                 break;
             }
             scope.showSize = showSize;

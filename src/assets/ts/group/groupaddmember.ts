@@ -208,8 +208,8 @@ groupAddMember.directive("searchitem", function() {
         '<label for="{{item.id}}"></label>' +
         '</div>' +
         '<div class="photo">' +
-        // '<img class="img" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
-        '<div class="portrait">{{item.firstchar}}</div>' +
+        '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
+        '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
         '</div>' +
         '<div class="info">' +
         '<h3 class="nickname">' +

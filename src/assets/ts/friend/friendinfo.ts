@@ -99,8 +99,9 @@ friendinfo.controller("friendinfoController", ["$scope", "$rootScope", "$state",
         }
 
         $scope.back = function() {
-            goback();
+            // goback();
             // $rootScope.back();
+            window.history.back();
         }
 
     }]);

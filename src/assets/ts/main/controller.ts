@@ -277,7 +277,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                 id: members[j].user.id,
                                 name: members[j].user.nickname,
                                 imgSrc: members[j].user.portraitUri,
-                                role: members[j].role
+                                role: members[j].role,
+                                displayName: members[j].displayName
                             });
                             mainDataServer.contactsList.addGroupMember(groupid, member);
                         }
@@ -368,6 +369,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     //链接成功
                     case RongIMLib.ConnectionStatus.CONNECTED:
                         console.log('链接成功');
+                        mainDataServer.isConnected = true;
                         break;
                     //正在链接
                     case RongIMLib.ConnectionStatus.CONNECTING:
@@ -399,6 +401,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     //网络不可用
                     case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
                         console.log('网络不可用');
+                        mainDataServer.isConnected = false;
                         showDisconnectErr(true);
                         if(!isConnecting){
                           isConnecting = true;
@@ -735,7 +738,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                                         id: members[j].user.id,
                                                         name: members[j].user.nickname,
                                                         imgSrc: members[j].user.portraitUri,
-                                                        role: members[j].role
+                                                        role: members[j].role,
+                                                        displayName: members[j].displayName
                                                     });
                                                     mainDataServer.contactsList.addGroupMember(groupid, member);
                                                 }
@@ -823,7 +827,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                                     id: members[j].user.id,
                                                     name: members[j].user.nickname,
                                                     imgSrc: members[j].user.portraitUri,
-                                                    role: members[j].role
+                                                    role: members[j].role,
+                                                    displayName: members[j].displayName
                                                 });
                                                 mainDataServer.contactsList.addGroupMember(groupid, member);
                                             }
@@ -859,6 +864,31 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                     case webimmodel.MessageType.InformationNotificationMessage:
                            addmessage(msg);
+                        break;
+                    case webimmodel.MessageType.ReadReceiptMessage:
+                           //清除会话已读状态,改变消息总数
+                           if(msg.objectName == 'RC:ReadNtf' && msg.senderUserId == mainDataServer.loginUser.id){
+                             RongIMSDKServer.clearUnreadCount(msg.conversationType, msg.targetId);
+                             var curCon = mainDataServer.conversation.getConversation(msg.conversationType, msg.targetId);
+                             if (curCon) {
+                                 curCon.atStr = '';
+                                 mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
+                                 curCon.unReadNum = 0;
+                             }
+                             //去除消息的未读状态
+                           }
+                        break;
+                    case webimmodel.MessageType.RecallCommandMessage:
+                        if(msg.objectName == 'RC:RcCmd'){
+                            if(msg.senderUserId == mainDataServer.loginUser.id){
+                              msg.content = '你' + msg.content;
+                            }
+                            else{
+                              conversationServer.messageAddUserInfo(msg);
+                              msg.content = msg.senderUserName + msg.content;
+                            }
+                            addmessage(msg);
+                        }
                         break;
                     default:
                         console.log(data.messageType + "：未处理")
@@ -901,7 +931,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           }
         }
 
-        var reconnectTimes = 0, timeInterval = 20;
+        var reconnectTimes = 0, timeInterval = 20, timeID: any;
         function reconnectServer() {
             setTimeout(function() {
                 RongIMSDKServer.reconnect({
@@ -917,6 +947,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     },
                     onError: function() {
                         mainDataServer.isConnected = false;
+                        isConnecting = false;
                         if (reconnectTimes <= 5) {
                             reconnectServer();
                             reconnectTimes += 1;
@@ -933,10 +964,16 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             $http.get("index.html", {
                 params: { t: Math.random() }
             }).success(function() {
+                if(timeID){
+                  clearTimeout(timeID);
+                }
                 callback && callback.onSuccess && callback.onSuccess();
             }).error(function() {
                 showDisconnectErr(true);
-                setTimeout(function() {
+                if(timeID){
+                  clearTimeout(timeID);
+                }
+                timeID = setTimeout(function () {
                     checkNetwork(callback);
                 }, 5000);
             });

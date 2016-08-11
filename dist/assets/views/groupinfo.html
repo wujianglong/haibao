@@ -39,7 +39,7 @@
               </ul>
           </div>
       </div>
-      <div class="groupFunBtn" ng-click="quitGroup()" ng-show="!isEditable">退出群组</div>
+      <div class="groupFunBtn" ng-click="quitGroup()" ng-show="!groupInfo.isCreater&&!isEditable">退出群组</div>
       <div class="groupFunBtn" ng-click="dismiss()" ng-show="groupInfo.isCreater&&!isEditable">退出群组并解散</div>
       <div class="groupFunBtn" ng-click="kickMember()" ng-show="groupInfo.isCreater&&isEditable">删除(<span ng-bind="groupInfo.memberList|selectedNum"></span>)</div>
   </div>
