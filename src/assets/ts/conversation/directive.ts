@@ -240,6 +240,7 @@ conversationDire.directive('contenteditableDire', function() {
             }
 
             var domElement = <any>element[0];
+            var lastSendTime: any, counter = 0;
 
             // scope.$watch(function() {
             //     return ngModel.$modelValue;
@@ -266,9 +267,18 @@ conversationDire.directive('contenteditableDire', function() {
             //     }
             // });
 
-            element.bind('input propertychange', function () {
+            element.bind('input propertychange keydown', function () {
                 //发送正在输入消息
-                scope.sendTypingStatusMessage();
+
+                if(lastSendTime && (new Date()).getTime() - lastSendTime > 6000){
+                  scope.sendTypingStatusMessage();
+                  lastSendTime = (new Date()).getTime();
+                }
+                else if(!lastSendTime){
+                  lastSendTime = (new Date()).getTime();
+                  scope.sendTypingStatusMessage();
+                }
+
                 if (domElement.innerHTML == attrs["placeholder"] || domElement.innerHTML === '' || domElement.innerHTML == '<br>') {
                   element.empty();
                 }
