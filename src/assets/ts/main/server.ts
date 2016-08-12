@@ -321,6 +321,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
     mainDataServer.loginUser = <webimmodel.UserInfo>{};
     mainDataServer.isConnected = false;
+    mainDataServer.isTyping = false;
     mainDataServer.conversation = {
         totalUnreadCount: 0,
         conversations: <webimmodel.Conversation[]>[],
@@ -1559,6 +1560,7 @@ interface RongIMSDKServer {
 interface mainDataServer {
     loginUser: webimmodel.UserInfo
     isConnected: boolean
+    isTyping: boolean
     conversation: {
         totalUnreadCount: number
         conversations: webimmodel.Conversation[]

@@ -1384,7 +1384,7 @@ input::-ms-clear{display:none;}
     margin-bottom: -118px;
     height: 118px;
     width: 60px;
-    border-right: 1px solid #cdd2d9;
+    border-right: 1px solidg #cdd2d9;
     position: relative;
 }
 .inputBoxInner{
@@ -3282,4 +3282,89 @@ input::-ms-clear{display:none;}
     height: 100%;
     position: relative;
     z-index: 999;
+}
+
+/* 正在输入图标 */
+.typingIcon{
+    position: absolute;
+    top: -25px;
+    left: 10px;
+    z-index: 10;
+}
+.typingIcon > i {
+    background-color: #fff;
+    width: 6px;
+    height: 6px;
+    border-radius: 100%;
+    margin: 2px 3px;
+    display: inline-block;
+}
+.typingIcon > i:nth-child(1) {
+    animation: typing1 1s infinite;
+}
+.typingIcon > i:nth-child(2) {
+    animation: typing2 1s  infinite;
+}
+.typingIcon > i:nth-child(3) {
+    animation: typing3 1s  infinite;
+}
+@-webkit-keyframes typing1 {
+    0%,24% {
+        background-color: #fff; }
+
+
+    25%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing1 {
+    0%,24% {
+        background-color: #fff; }
+
+
+    25%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@-webkit-keyframes typing2 {
+    0%,49% {
+        background-color: #fff; }
+
+
+    50%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing2 {
+    0%,49%  {
+        background-color: #fff; }
+
+
+    50%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@-webkit-keyframes typing3 {
+    0%,74% {
+        background-color: #fff; }
+
+
+    75%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing3 {
+    0%,74% {
+        background-color: #fff; }
+
+
+    75%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
 }

@@ -199,6 +199,7 @@ module webimmodel {
         senderUserImgSrc: string
         imgSrc: string
         mentionedInfo: any
+        isRead: boolean
 
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);

@@ -267,6 +267,8 @@ conversationDire.directive('contenteditableDire', function() {
             // });
 
             element.bind('input propertychange', function () {
+                //发送正在输入消息
+                scope.sendTypingStatusMessage();
                 if (domElement.innerHTML == attrs["placeholder"] || domElement.innerHTML === '' || domElement.innerHTML == '<br>') {
                   element.empty();
                 }

@@ -4053,9 +4053,9 @@ var RongIMLib;
         };
         MessageHandler.prototype.onReceived = function (msg, pubAckItem, offlineMsg) {
             //实体对象
-            var entity, 
+            var entity,
             //解析完成的消息对象
-            message, 
+            message,
             //会话对象
             con;
             if (msg._name != "PublishMessage") {
@@ -4587,7 +4587,7 @@ var RongIMLib;
                 "navUrl-Release": RongIMLib.MessageUtil.schemeArrs[RongIMLib.RongIMClient.schemeType][0] + "://nav.cn.ronghub.com/"
             }, xss = document.createElement("script");
             //进行jsonp请求
-            xss.src = Url["navUrl-Release"] + (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] ? "cometnavi.js" : "navi.js") + "?appId=" + _appId + "&token=" + encodeURIComponent(_token) + "&" + "callBack=getServerEndpoint&t=" + (new Date).getTime();
+            xss.src = Url["navUrl-Debug"] + (RongIMLib.RongIMClient._memoryStore.global["WEB_XHR_POLLING"] ? "cometnavi.js" : "navi.js") + "?appId=" + _appId + "&token=" + encodeURIComponent(_token) + "&" + "callBack=getServerEndpoint&t=" + (new Date).getTime();
             document.body.appendChild(xss);
             xss.onerror = function () {
                 _onerror(RongIMLib.ConnectionState.TOKEN_INCORRECT);
@@ -5971,7 +5971,7 @@ var typeMapping = {
     "RC:GrpNtf": "GroupNotificationMessage",
     "RC:PSCmd": "PublicServiceCommandMessage",
     "RC:RcCmd": "RecallCommandMessage"
-}, 
+},
 //自定义消息类型
 registerMessageTypeMapping = {}, HistoryMsgType = {
     4: "qryCMsg",

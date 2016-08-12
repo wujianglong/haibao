@@ -24,6 +24,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         currentCon.targetId = targetId;
         currentCon.targetType = targetType;
         $scope.currentConversation = currentCon;
+        $scope.mainData = <mainDataServer>mainDataServer;
 
         //判断是否有此会话没有则创建一个。清除未读消息
         var conversation = {};
@@ -279,6 +280,21 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               console.log('sendReadReceiptMessage error', error.errorCode);
           });
         }
+
+        $scope.sendTypingStatusMessage = function(){
+          var type = webimmodel.conversationType.Private;
+          // 以上 3 个属性在会话的最后一条消息中可以获得。
+          if(targetType != webimmodel.conversationType.Private){
+            return;
+          }
+          var msg = RongIMLib.TypingStatusMessage.obtain('RC:TxtMsg', null);
+          RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
+
+          }, function(error) {
+              console.log('sendTypingStatusMessage error', error.errorCode);
+          });
+        }
+
         // sendReadReceiptMessage();
 
         function updateTargetDetail(){

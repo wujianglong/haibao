@@ -279,20 +279,17 @@ module.exports = (grunt) ->
         src: './src/assets/ts/**/*.ts'
         dest: './temp/main.js'
 
-    rev:
-      build:
-        options:
-          algorithm: 'sha1',
-          length: 4
-        files:
-          src: ['./build/assets/js/main.min.js', './build/assets/css/main.css']
-      release:
-        options:
-          algorithm: 'sha1',
-          length: 4
-        files:
-          src: ['./dist/assets/js/main.min.js', './dist/assets/css/main.css']
+    filerev:
+      options:
+        algorithm: 'sha1',
+        length: 4
+      styles:
+        src: './dist/assets/css/main.css'
+      js:
+        src: './dist/assets/js/main.min.js'
 
+    usemin:
+      html: 'dist/index.html'
 
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -304,7 +301,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-typescript'
-  grunt.loadNpmTasks 'grunt-rev'
   grunt.loadNpmTasks 'grunt-filerev'
   grunt.loadNpmTasks 'grunt-usemin'
 
@@ -314,8 +310,8 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
-    'rev:build'
-    # 'usemin:build'
+    # 'filerev'
+    # 'usemin'
     'clean:map'
     'watch:build'
   ]
@@ -328,11 +324,18 @@ module.exports = (grunt) ->
     'typescript:release'
     'cssmin:release'
     'uglify:release'
-    'rev:release'
+    'filerev'
+    'usemin'
   ]
 
   grunt.registerTask 'test', [
     # 'rev:build'
-    # 'usemin:build'
-    'filerev:build'
+    # 'useminPrepare'
+    'filerev'
+    'print'
+    'usemin'
+    # 'filerev'
   ]
+
+  grunt.registerTask 'print', ->
+     console.log('grunt.filerev.summary:', grunt.filerev.summary)

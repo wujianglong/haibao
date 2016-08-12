@@ -12,7 +12,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
     function($scope: any, $state: angular.ui.IStateService, $window: angular.IWindowService, $timeout: angular.ITimeoutService,
         $http: angular.IHttpService,
         mainDataServer: mainDataServer, conversationServer: conversationServer, mainServer: mainServer, RongIMSDKServer: RongIMSDKServer, appconfig: any) {
-
+        var isConnecting = false
         if (!mainDataServer.loginUser.id) {
             var userid = webimutil.CookieHelper.getCookie("loginuserid"),usertoken = webimutil.CookieHelper.getCookie("loginusertoken");
             if (userid) {
@@ -139,6 +139,14 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             if ($state.is("main.chat")) {
                 RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                 mainDataServer.conversation.updateConversations();
+            }
+            if(!isConnecting){
+              isConnecting = true;
+              checkNetwork({
+                  onSuccess: function() {
+                      reconnectServer();
+                  }
+              })
             }
         }
 
@@ -362,7 +370,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
 
 
 
-        var isReconnect = true, isConnecting = false;
+        var isReconnect = true;
         RongIMSDKServer.setConnectionStatusListener({
             onChanged: function(status: number) {
                 switch (status) {
@@ -437,6 +445,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           });
         }
 
+        var typingTimeID: any;
         RongIMSDKServer.setOnReceiveMessageListener({
             onReceived: function(data: RongIMLib.Message) {
                 if ($scope.mainData.loginUser.hasSound) {
@@ -890,6 +899,18 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             addmessage(msg);
                         }
                         break;
+                    case webimmodel.MessageType.TypingStatusMessage:
+                        //判断如果为当前输入页面用户
+                        if ($state.is("main.chat") && !document.hidden && msg.conversationType == webimmodel.conversationType.Private && msg.senderUserId == mainDataServer.conversation.currentConversation.targetId) {
+                            mainDataServer.isTyping = true;
+                            if(typingTimeID){ clearTimeout(typingTimeID);}
+                            typingTimeID = setTimeout(function () {
+                              mainDataServer.isTyping = false;
+                              $scope.$apply();
+                            }, 6000);
+                        }
+
+                        break;
                     default:
                         console.log(data.messageType + "：未处理")
                         break;
@@ -931,13 +952,19 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           }
         }
 
-        var reconnectTimes = 0, timeInterval = 20, timeID: any;
+        var reconnectTimes = 0, timeInterval = 20, timeID: any, reconnectTimeID: any;
         function reconnectServer() {
-            setTimeout(function() {
+            if(reconnectTimeID){
+              clearTimeout(reconnectTimeID);
+            }
+            reconnectTimeID = setTimeout(function() {
                 RongIMSDKServer.reconnect({
                     onSuccess: function() {
                         reconnectTimes = 0;
                         console.log("reconnectSuccess");
+                        if (reconnectTimeID) {
+                            clearTimeout(reconnectTimeID);
+                        }
                         showDisconnectErr(false);
                         isConnecting = false;
                         mainDataServer.isConnected = true;
