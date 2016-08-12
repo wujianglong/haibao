@@ -140,14 +140,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                 RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                 mainDataServer.conversation.updateConversations();
             }
-            if(!isConnecting){
-              isConnecting = true;
-              checkNetwork({
-                  onSuccess: function() {
-                      reconnectServer();
-                  }
-              })
-            }
         }
 
 
@@ -378,6 +370,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case RongIMLib.ConnectionStatus.CONNECTED:
                         console.log('链接成功');
                         mainDataServer.isConnected = true;
+                        showDisconnectErr(false);
+                        isConnecting = false;
                         break;
                     //正在链接
                     case RongIMLib.ConnectionStatus.CONNECTING:
@@ -654,6 +648,10 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case webimmodel.MessageType.ImageMessage:
                     case webimmodel.MessageType.RichContentMessage:
                     case webimmodel.MessageType.FileMessage:
+                        //隐藏正在输入状态
+                        if ($state.is("main.chat") && !document.hidden && msg.conversationType == webimmodel.conversationType.Private && msg.senderUserId == mainDataServer.conversation.currentConversation.targetId) {
+                          mainDataServer.isTyping = false;
+                        }
                         if ($state.is("main.chat") && !document.hidden && msg.senderUserId != mainDataServer.loginUser.id){
                           sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                         }

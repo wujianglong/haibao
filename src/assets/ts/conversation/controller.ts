@@ -899,7 +899,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             //     showLoading(false);
             //     webimutil.Helper.alertMessage.error("上传图片出错！", 2);
             // });
-            RongIMLib.RongUploadLib.getInstance().postImage(strBase64, $scope.currentConversation.targetType, $scope.currentConversation.targetId, function(ret: any,msg: any, err: any){
+            RongIMLib.RongUploadLib.getInstance().postImage(strBase64, file, $scope.currentConversation.targetType, $scope.currentConversation.targetId, function(ret: any,msg: any, err: any){
                 showLoading(false);
                 if(err){
                   webimutil.Helper.alertMessage.error("上传图片出错！", 2);

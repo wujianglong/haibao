@@ -237,7 +237,7 @@ module webimmodel {
                 case MessageType.ImageMessage:
                     var image = new ImageMessage();
                     var content = SDKmsg.content.content || "";
-                    if (content.indexOf("base64,") == -1) {
+                    if (typeof content == "string" && content.indexOf("base64,") == -1) {
                         content = "data:image/png;base64," + content;
                     }
                     image.content = content;
@@ -265,7 +265,7 @@ module webimmodel {
                 case MessageType.LocationMessage:
                     var location = new LocationMessage();
                     var content = SDKmsg.content.content || "";
-                    if (content.indexOf("base64,") == -1) {
+                    if (typeof content == "string" && content.indexOf("base64,") == -1) {
                         content = "data:image/png;base64," + content;
                     }
                     location.content = content;

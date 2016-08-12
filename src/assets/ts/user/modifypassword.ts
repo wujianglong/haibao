@@ -3,8 +3,8 @@
 
 var modifypassword = angular.module("webim.usermodifypassword", ["webim.main.server"]);
 
-modifypassword.controller("modifypasswordController", ["$scope", "$state", "mainServer", "mainDataServer",
-    function($scope: any, $state: angular.ui.IStateService, mainServer: mainServer, mainDataServer: mainDataServer) {
+modifypassword.controller("modifypasswordController", ["$scope", "$state", "mainServer", "mainDataServer", "conversationServer",
+    function($scope: any, $state: angular.ui.IStateService, mainServer: mainServer, mainDataServer: mainDataServer, conversationServer:conversationServer) {
         $scope.user = {
             oldpassword: "",
             newpassword: "",
@@ -56,6 +56,7 @@ modifypassword.controller("modifypasswordController", ["$scope", "$state", "main
             mainServer.user.logout().success(function() {
                 webimutil.CookieHelper.removeCookie("loginuserid");//清除登录状态
                 mainDataServer.loginUser = new webimmodel.UserInfo();//清除用户信息
+                conversationServer.historyMessagesCache.length = 0;
                 if (window.Electron) {
                     window.Electron.webQuit();
                 }

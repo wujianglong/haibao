@@ -57,7 +57,7 @@ var RongIMLib;
         };
         //自定义压缩图片过程，方法最后一行必须调用 callback ，并把压缩好的 base64 传入 callback
         RongUploadLib.imageCompressToBase64 = function (file, callback) {
-            RongUploadLib.getInstance().getThumbnail(file.getNative(), 60000, function (obj, data) {
+            RongUploadLib.getInstance().getThumbnail(file, 60000, function (obj, data) {
                 var reg = new RegExp('^data:image/[^;]+;base64,');
                 var dataFinal = data.replace(reg, '');
                 callback(dataFinal);
@@ -111,13 +111,13 @@ var RongIMLib;
                 delete me.store[key];
             }
         };
-        RongUploadLib.prototype.postImage = function (base64, conversationType, targetId, callback) {
+        RongUploadLib.prototype.postImage = function (base64, file, conversationType, targetId, callback) {
             var me = this;
             RongIMLib.RongIMClient.getInstance().getFileToken(RongIMLib.FileType.IMAGE, {
                 onSuccess: function (data) {
                     new RongIMLib.RongAjax({ token: data.token, base64: base64 }).send(function (ret) {
                         var opt = { uploadType: 'IMAGE', fileName: ret.hash, isBase64Data: true };
-                        me.createMessage(opt, base64, function (msg) {
+                        me.createMessage(opt, file, function (msg) {
                             RongIMLib.RongIMClient.getInstance().sendMessage(conversationType, targetId, msg, {
                                 onSuccess: function (message) {
                                     callback(ret, message);
@@ -257,11 +257,14 @@ var RongIMLib;
                     RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.IMAGE, option.fileName, null, {
                         onSuccess: function (data) {
                             if (option.isBase64Data) {
-                                msg = new RongIMLib.ImageMessage({ content: file, imageUri: data.downloadUrl });
-                                callback(msg);
+
+                                RongUploadLib.imageCompressToBase64(file, function (content) {
+                                  msg = new RongIMLib.ImageMessage({ content: content, imageUri: data.downloadUrl });
+                                  callback(msg);
+                                });
                             }
                             else {
-                                RongUploadLib.imageCompressToBase64(file, function (content) {
+                                RongUploadLib.imageCompressToBase64(file.getNative(), function (content) {
                                     msg = new RongIMLib.ImageMessage({ content: content, imageUri: data.downloadUrl });
                                     callback(msg);
                                 });

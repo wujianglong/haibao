@@ -30,7 +30,7 @@ declare module RongIMLib {
         start(conversationType: string, targetId: string): void
         stopUpload(): void
         getThumbnail(): void
-        postImage(base64: string, conversationType: webimmodel.conversationType, targetId: string, callback:any): void
+        postImage(base64: string, file:any, conversationType: webimmodel.conversationType, targetId: string, callback:any): void
         destroy(): void
         cancel(file: any): void
         cancelAll(callback: any): void
