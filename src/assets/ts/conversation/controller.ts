@@ -853,6 +853,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
                 item.content.fileUrl = message.content.fileUrl;
                 item.content.state = 3;
+                $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(message), true, true);
               }
               if(message.messageType == webimmodel.MessageType.ImageMessage){
                 conversationServer.addHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType, webimmodel.Message.convertMsg(message));

@@ -363,6 +363,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function checkMessageExist(id: string, type: string, messageuid: string){
           var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
           var keepGoing = true;
+          if(!messageuid){
+            return false;
+          }
           angular.forEach(currenthis, function (value, key) {
               if(keepGoing){
                 if (value.panelType == webimmodel.PanelType.Message && value.messageUId == messageuid) {
