@@ -631,7 +631,7 @@ conversationDire.directive("fileMessage", [function() {
               '<img ng-src="{{imgType}}">' +
             '</div>' +
             '<div class="file_name fl">' +
-              '<p class="p1">{{item.name}}</p>' +
+              '<p class="p1">{{showName}}</p>' +
               '<p class="p2">{{showSize}}</p>' +
               '<div class="up_process"><div></div></div>' +
             '</div>' +
@@ -646,7 +646,54 @@ conversationDire.directive("fileMessage", [function() {
         '</div>' +
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
-          var imgType = 'undefined', showSize = '';
+          var imgType = 'undefined', showSize = '', showName = '',maxSize = 20;
+          showName = scope.item.name;
+          function getBLen(str: string) {
+            if (str == null) return 0;
+            if (typeof str != "string"){
+              str += "";
+            }
+            return str.replace(/[^\x00-\xff]/g,"01").length;
+          }
+
+          function getStr(str: string, cutLen: number, fromHead: boolean) {
+             var result = "";
+             var len = 0;
+             if(fromHead){
+               for (var i=0; i<str.length && len < cutLen; i++) {
+                 if (str.charCodeAt(i)>127 || str.charCodeAt(i)==94) {
+                      len += 2;
+                  } else {
+                      len ++;
+                  }
+                  result += str[i];
+               }
+             }else{
+               for (var i=str.length-1; i>-1 && len < cutLen; i--) {
+                 if (str.charCodeAt(i)>127 || str.charCodeAt(i)==94) {
+                      len += 2;
+                  } else {
+                      len ++;
+                  }
+                  result = str[i] + result;
+               }
+             }
+             return result;
+          }
+
+          var showNameLen = getBLen(showName),
+               suffix = scope.item.name.replace(/.+\./, "");
+
+          if(showNameLen > maxSize){
+            var _filename = scope.item.name.substr(0, scope.item.name.lastIndexOf('.'));
+            var backLen = maxSize - 10 - 3 - suffix.length - 1;
+            showName = getStr(_filename, 10, true);
+            showName = showName + '...';
+            showName += getStr(_filename, backLen, false);
+            showName = showName + '.' + suffix;
+          }
+          scope.showName = showName;
+
           scope.itemid = scope.$parent.item.messageUId;
           scope.Cancel =  function(){
             RongIMLib.RongUploadLib.getInstance().cancel(scope.itemid);
