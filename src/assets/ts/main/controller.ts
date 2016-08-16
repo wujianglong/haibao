@@ -694,6 +694,15 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             })
                           }
                         }
+                        else{
+                          RongIMSDKServer.clearUnreadCount(msg.conversationType, msg.targetId);
+                          var curCon = mainDataServer.conversation.getConversation(msg.conversationType, msg.targetId);
+                          if (curCon) {
+                              curCon.atStr = '';
+                              mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
+                              curCon.unReadNum = 0;
+                          }
+                        }
                         break;
                     case webimmodel.MessageType.GroupNotificationMessage:
                         if (data.objectName == "RC:GrpNtf" && !data.hasReceivedByOtherClient) {

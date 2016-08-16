@@ -267,12 +267,11 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         function sendReadReceiptMessage(messageuid: string, sendtime: number){
           var messageUId = messageuid;
           var lastMessageSendTime = sendtime;
-          var type = webimmodel.conversationType.Private;
           // 以上 3 个属性在会话的最后一条消息中可以获得。
           if(targetType != webimmodel.conversationType.Private || targetType != webimmodel.conversationType.Group){
             return;
           }
-          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, targetType);
           // var msg = RongIMLib.TextMessage.obtain('con');
           RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 
@@ -282,8 +281,6 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         }
 
         $scope.sendTypingStatusMessage = function(){
-          var type = webimmodel.conversationType.Private;
-          // 以上 3 个属性在会话的最后一条消息中可以获得。
           if(targetType != webimmodel.conversationType.Private){
             return;
           }
@@ -834,11 +831,18 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           onUploadProgress:function(file: any){
             if (file.uploadType == 'IMAGE') {
               $scope.uploadStatus.progress = file.percent + "%";
-            }else{
+            }
+            else if(file.percent > 0){
               var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
               item.content.extra = file.percent + "%";
               item.content.state = item.content.state == webimmodel.FileState.Uploading ? -1 : webimmodel.FileState.Uploading;
             }
+            // else if(file.percent == 0){
+            //   var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
+            //   if(item){
+            //     item.content.state = webimmodel.FileState.Failed;
+            //   }
+            // }
             // $('#'+file.id).find('div.up_process > div').css('width', file.percent + "%");
             setTimeout(function () {
                 $scope.$apply();
@@ -864,18 +868,19 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               }
               $scope.$apply();
           },
-          onError:function( file: any, err: any, errTip: string){
-              // for(var i = 0;i < up.files.lenght; i++){
-              //   var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, up.files[i].id);
-              //   item.content.state = 2;
-              // }
-              if (file.uploadType == 'IMAGE') {
+          onError:function( up: any, err: any, errTip: string){
+              if (up.files[0].uploadType == 'IMAGE') {
                 $scope.uploadStatus.show = false;
                 webimutil.Helper.alertMessage.error("上传图片出错！", 2);
               }else{
-                var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
-                item.content.state = webimmodel.FileState.Failed;
+                for(var i = 0;i < up.files.length;i++){
+                  var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, up.files[i].id);
+                  if(item){
+                    item.content.state = webimmodel.FileState.Failed;
+                  }
+                }
               }
+
           },
           onUploadComplete:function(){
           }
@@ -977,6 +982,13 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         $scope.$on("$destroy", function() {
            //清除配置,不然scroll会重复请求
            conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+          //  sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+          if(targetType == webimmodel.conversationType.Group){
+            var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
+            if(lastItem && lastItem.messageUId && lastItem.sentTime){
+              sendReadReceiptMessage(lastItem.messageUId, lastItem.sentTime.getTime());
+            }
+          }
         });
         // 删除消息数
         //获取最后一条消息时间

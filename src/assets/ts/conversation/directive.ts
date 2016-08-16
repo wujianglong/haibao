@@ -658,16 +658,98 @@ conversationDire.directive("fileMessage", [function() {
             var result = Math.ceil(num * 100);
             return result / 100;
           }
-          switch(scope.item.type){
+          switch(scope.item.type.toLowerCase()){
             case 'doc':
             case 'mp3':
             case 'mp4':
             case 'txt':
             case 'xlsx':
+            case 'pdf':
                imgType = scope.item.type;
                break;
+            case 'bmp':
+            case 'cod':
+            case 'gif':
+            case 'ief':
+            case 'jpe':
+            case 'jpeg':
+            case 'jfif':
+            case 'svg':
+            case 'tif':
+            case 'tiff':
+            case 'ras':
+            case 'ico':
+            case 'pbm':
+            case 'pgm':
+            case 'png':
+            case 'pnm':
+            case 'xbm':
+            case 'xpm':
+            case 'xwd':
+            case 'rgb':
+               imgType = 'pic';
+               break;
             case 'docx':
+            case 'dot':
                imgType = 'doc';
+               break;
+            case 'xls':
+            case 'xla':
+            case 'xlc':
+            case 'xlm':
+            case 'xlt':
+            case 'xlw':
+               imgType = 'xlsx';
+               break;
+            case 'wav':
+            case 'wma':
+            case 'au':
+            case 'snd':
+            case 'mid':
+            case 'rmi':
+            case 'aif':
+            case 'aifc':
+            case 'aiff':
+            case 'm3u':
+            case 'ra':
+            case 'ram':
+               imgType = 'mp3';
+               break;
+            case 'avi':
+            case 'rmvb':
+            case 'mp2':
+            case 'mpa':
+            case 'mpe':
+            case 'mpeg':
+            case 'mpg':
+            case 'mpv2':
+            case 'mov':
+            case 'qt':
+            case 'lsf':
+            case 'lsx':
+            case 'asf':
+            case 'asr':
+            case 'asx':
+            case 'avi':
+            case 'movie':
+            case 'wmv':
+               imgType = 'mp4';
+               break;
+            case 'log':
+            case 'html':
+            case 'stm':
+            case 'uls':
+            case 'bas':
+            case 'c':
+            case 'h':
+            case 'rtx':
+            case 'sct':
+            case 'tsv':
+            case 'htt':
+            case 'htc':
+            case 'etx':
+            case 'vcf':
+               imgType = 'txt';
                break;
           }
           imgType = 'assets/img/' + imgType + '.png';
@@ -688,13 +770,13 @@ conversationDire.directive("fileMessage", [function() {
               case -1:
               case webimmodel.FileState.Uploading:
                 var kbSize = scope.item.size / 1024;
-                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';
+                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + ' M' : fomate(kbSize) + ' K';
                 angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'block');
                 angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', scope.item.extra);
                 break;
               case webimmodel.FileState.Success:
                 var kbSize = scope.item.size / 1024;
-                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';
+                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + ' M' : fomate(kbSize) + ' K';
                 angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
                 angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
                 if(typeof unbingWatch === 'function' || typeof unbingWatch === "object"){
