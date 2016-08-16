@@ -13,6 +13,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.conversationMessageList = <any>[];
         conversationServer.conversationMessageListShow = <any>[];
         conversationServer.pullMessageTime = null;
+        conversationServer.remainMessageCount = 5;
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content.message.content
@@ -210,18 +211,33 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             messageAddUserInfo(item);
             arr.unshift(item);
         }
-//定时清理消息缓存
+
+        // 定时清理消息缓存
         function clearHistoryMessages(id: string, type: string) {
-            //TODO conversationServer.historyMessagesCache  应该删除定位到10条消息之前panel不为时间分割线的消息
-            conversationServer.historyMessagesCache = {};
-            // angular.forEach(conversationServer.historyMessagesCache, function (value, key) {
-            //     if (key != mainDataServer.conversation.currentConversation.targetType + "_" + mainDataServer.conversation.currentConversation.targetId) {
-            //         // if(value && value.length > 10){
-            //         //    value.splice(0, value.length - 10);
-            //         // }
-            //         value.length = 0;
-            //     }
-            // });
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          var counter = 0,counterAll = 0;
+          for(var i = currenthis.length - 1; i > -1; i--){
+            if (currenthis[i].panelType == webimmodel.PanelType.Message) {
+                counter++;
+            }
+            if (counter >= conversationServer.remainMessageCount && currenthis[i].panelType == webimmodel.PanelType.Time) {
+                currenthis.splice(0, i);
+                conversationServer.unshiftHistoryMessages(id, type, new webimmodel.GetMoreMessagePanel());
+                break;
+            }
+          }
+        }
+
+        function getLastMessageTime(id: string, type: string){
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          var sentTime = 0;
+          for (var i = 0; i < currenthis.length; i++) {
+            if (currenthis[i].panelType == webimmodel.PanelType.Message) {
+                sentTime = (new Date(currenthis[i].sentTime)).getTime();
+                break;
+            }
+          }
+          return sentTime;
         }
 
         function compareDateIsAddSpan(first: Date, second: Date) {
@@ -373,6 +389,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.checkMessageExist = checkMessageExist;
         conversationServer.addAtMessage = addAtMessage;
         conversationServer.clearHistoryMessages = clearHistoryMessages;
+        conversationServer.getLastMessageTime = getLastMessageTime;
         conversationServer.getMessageById = getMessageById;
 
         return conversationServer;
@@ -396,4 +413,6 @@ interface conversationServer {
     checkMessageExist(id: string, type:number, messageuid: string): boolean
     addAtMessage(id: string, type: number, item: webimmodel.Message): void
     getMessageById(id: string, type:number, messageuid: string): webimmodel.Message
+    clearHistoryMessages(id: string, type: number): void
+    getLastMessageTime(id: string, type: number): number
 }

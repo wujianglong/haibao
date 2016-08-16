@@ -885,13 +885,19 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           }
         }
 
-        var reconnectTimes = 0, timeInterval = 20;
+        var reconnectTimes = 0, timeInterval = 20, timeID: any, reconnectTimeID: any;
         function reconnectServer() {
-            setTimeout(function() {
+            if(reconnectTimeID){
+              clearTimeout(reconnectTimeID);
+            }
+            reconnectTimeID = setTimeout(function() {
                 RongIMSDKServer.reconnect({
                     onSuccess: function() {
                         reconnectTimes = 0;
                         console.log("reconnectSuccess");
+                        if (reconnectTimeID) {
+                            clearTimeout(reconnectTimeID);
+                        }
                         showDisconnectErr(false);
                         isConnecting = false;
                         RongIMSDKServer.getConversationList().then(function() {
@@ -915,10 +921,16 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             $http.get("index.html", {
                 params: { t: Math.random() }
             }).success(function() {
+                if(timeID){
+                  clearTimeout(timeID);
+                }
                 callback && callback.onSuccess && callback.onSuccess();
             }).error(function() {
                 showDisconnectErr(true);
-                setTimeout(function() {
+                if(timeID){
+                  clearTimeout(timeID);
+                }
+                timeID = setTimeout(function() {
                     checkNetwork(callback);
                 }, 5000);
             });

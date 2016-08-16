@@ -283,6 +283,18 @@ module.exports = (grunt) ->
         src: './src/assets/ts/**/*.ts'
         dest: './temp/main.js'
 
+    filerev:
+      options:
+        algorithm: 'sha1',
+        length: 4
+      styles:
+        src: './dist/assets/css/main.css'
+      js:
+        src: './dist/assets/js/main.min.js'
+
+    usemin:
+      html: 'dist/index.html'
+
   # These plugins provide necessary tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-concat'
@@ -312,4 +324,6 @@ module.exports = (grunt) ->
     'typescript:release'
     'cssmin:release'
     'uglify:release'
+    'filerev'
+    'usemin'
   ]

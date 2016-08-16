@@ -580,7 +580,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getHistoryMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId] = [];
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 conversationServer.conversationMessageList = conversationServer.historyMessagesCache[targetType + "_" + targetId];
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
@@ -595,7 +596,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
         $scope.getMoreMessage = function() {
             conversationServer.historyMessagesCache[targetType + "_" + targetId].shift();
-            conversationServer.getHistory(targetId, targetType, conversationServer.pullMessageTime, 10).then(function(has) {
+            var _pullMessageTime = conversationServer.getLastMessageTime(targetId, targetType);
+            conversationServer.getHistory(targetId, targetType, _pullMessageTime, 5).then(function(has) {
                 if (has) {
                     conversationServer.unshiftHistoryMessages(targetId, targetType, new webimmodel.GetMoreMessagePanel());
                 }
@@ -827,5 +829,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // element.bind("paste", function(e: any) {
         //     handlePaste(e);
         // });
+
+        $scope.$on("$destroy", function() {
+           //清除配置,不然scroll会重复请求
+           conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+        });
 
     }])
