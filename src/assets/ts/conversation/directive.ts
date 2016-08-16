@@ -579,7 +579,7 @@ conversationDire.directive("bigImage", [function() {
     }
 }]);
 
-conversationDire.directive("richContentMessage", [function() {
+conversationDire.directive("richcontentMessage", [function() {
     return {
         restrict: "E",
         scope: {
@@ -670,7 +670,7 @@ conversationDire.directive("fileMessage", [function() {
                imgType = 'doc';
                break;
           }
-          imgType = 'assets/img/' + scope.imgType + '.png';
+          imgType = 'assets/img/' + imgType + '.png';
           scope.imgType = imgType;
 
           updateState();

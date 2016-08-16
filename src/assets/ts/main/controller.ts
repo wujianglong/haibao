@@ -909,6 +909,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
 
                         break;
+                    case webimmodel.MessageType.InviteMessage:
+                    case webimmodel.MessageType.HungupMessage:
+                        //判断如果为当前输入页面用户
+                        // msg.content = msg.senderUserName + msg.content;
+                        addmessage(msg);
+                        break;
                     default:
                         console.log(data.messageType + "：未处理")
                         break;

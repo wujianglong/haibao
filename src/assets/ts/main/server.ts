@@ -707,6 +707,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               conversationItem.unReadNum = result.item.unReadNum;
                               conversationItem.lastTime = result.item.lastTime;
                               if (msg.senderUserId == mainDataServer.loginUser.id) {
+                                RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                                totalUnreadCount = totalUnreadCount - oldUnread;
+                                result.item.unReadNum = 0;
                                 conversationItem.atStr = '';
                               }
                               else{
@@ -726,6 +729,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                        result.item.atStr = '';
                    }else{
                      if(msg.senderUserId == mainDataServer.loginUser.id){
+                       RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                       totalUnreadCount = totalUnreadCount - oldUnread;
+                       result.item.unReadNum = 0;
                        result.item.atStr = '';
                      }
                      else{

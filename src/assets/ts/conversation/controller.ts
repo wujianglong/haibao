@@ -816,10 +816,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 var filemsg: any = new webimmodel.FileMessage();
                 filemsg.name = file.oldName || file.name;
                 filemsg.size = file.size;
-                filemsg.type = '';
+                filemsg.type = file.name.replace(/.+\./, "").toLowerCase();
                 // file.uri = SDKmsg.content.uri;
                 // file.extra = SDKmsg.content.extra;
-                filemsg.state = 0;
+                filemsg.state = webimmodel.FileState.Uploading;
                 msg.content = filemsg;
                 addmessage(msg);
               // }
@@ -837,7 +837,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             }else{
               var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
               item.content.extra = file.percent + "%";
-              item.content.state = item.content.state == 0 ? -1 : 0;
+              item.content.state = item.content.state == webimmodel.FileState.Uploading ? -1 : webimmodel.FileState.Uploading;
             }
             // $('#'+file.id).find('div.up_process > div').css('width', file.percent + "%");
             setTimeout(function () {
@@ -852,7 +852,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               else{
                 var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
                 item.content.fileUrl = message.content.fileUrl;
-                item.content.state = 3;
+                item.content.state = webimmodel.FileState.Success;
                 $scope.mainData.conversation.updateConStatic(webimmodel.Message.convertMsg(message), true, true);
               }
               if(message.messageType == webimmodel.MessageType.ImageMessage){
@@ -864,14 +864,18 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
               }
               $scope.$apply();
           },
-          onError:function(err: any, errTip: string){
+          onError:function( file: any, err: any, errTip: string){
               // for(var i = 0;i < up.files.lenght; i++){
               //   var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, up.files[i].id);
               //   item.content.state = 2;
               // }
-              $scope.uploadStatus.show = false;
-              webimutil.Helper.alertMessage.error("上传图片出错！", 2);
-
+              if (file.uploadType == 'IMAGE') {
+                $scope.uploadStatus.show = false;
+                webimutil.Helper.alertMessage.error("上传图片出错！", 2);
+              }else{
+                var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, file.id);
+                item.content.state = webimmodel.FileState.Failed;
+              }
           },
           onUploadComplete:function(){
           }
