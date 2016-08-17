@@ -365,10 +365,11 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         var isReconnect = true;
         RongIMSDKServer.setConnectionStatusListener({
             onChanged: function(status: number) {
+                var myDate = new Date();
                 switch (status) {
                     //链接成功
                     case RongIMLib.ConnectionStatus.CONNECTED:
-                        console.log('链接成功');
+                        console.log('链接成功', myDate.toLocaleString());
                         mainDataServer.isConnected = true;
                         showDisconnectErr(false);
                         isConnecting = false;
@@ -402,17 +403,17 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                     //网络不可用
                     case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
-                        console.log('网络不可用');
+                        console.log('网络不可用', myDate.toLocaleString(), 'isConnecting:' + isConnecting);
                         mainDataServer.isConnected = false;
                         showDisconnectErr(true);
-                        if(!isConnecting){
+                        // if(!isConnecting){
                           isConnecting = true;
                           checkNetwork({
                               onSuccess: function() {
                                   reconnectServer();
                               }
                           })
-                        }
+                        // }
                         break;
                 }
             }
@@ -973,8 +974,9 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             reconnectTimeID = setTimeout(function() {
                 RongIMSDKServer.reconnect({
                     onSuccess: function() {
+                        var myDate = new Date();
                         reconnectTimes = 0;
-                        console.log("reconnectSuccess");
+                        console.log("reconnectSuccess", myDate.toLocaleString());
                         if (reconnectTimeID) {
                             clearTimeout(reconnectTimeID);
                         }
@@ -993,7 +995,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             reconnectTimes += 1;
                         } else {
                             reconnectTimes = 0;
-                            console.log("网络正常重连失败！！！");
+                            var myDate = new Date();
+                            console.log("网络正常重连失败！！！", myDate.toLocaleString());
                         }
                     }
                 });
@@ -1001,6 +1004,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         }
 
         function checkNetwork(callback: any) {
+            var myDate = new Date();
+            console.log('begin checkNetwork', myDate.toLocaleString());
             $http.get("index.html", {
                 params: { t: Math.random() }
             }).success(function() {

@@ -207,7 +207,12 @@ var RongIMLib;
                     'BeforeUpload': function (up, file) {
                         var name = "";
                         file.oldName = file.name;
-                        name = (+new Date) + '-' + Math.floor(Math.random() * 1000) + '.' + file.name.split(".")[1];
+                        if (file.name.lastIndexOf('.') > -1) {
+                            name = (+new Date) + '-' + Math.floor(Math.random() * 1000) + '.' + file.name.substr(file.name.lastIndexOf('.') + 1);
+                        }
+                        else {
+                            name = (+new Date) + '-' + Math.floor(Math.random() * 1000);
+                        }
                         file.name = name;
                         file.uploadType = me.uploadType;
                         me.listener.onBeforeUpload(file);
@@ -218,7 +223,12 @@ var RongIMLib;
                     },
                     'FileUploaded': function (up, file, info) {
                         var option = up.getOption();
-                        options.fileName = file.target_name;
+                        if (file.name.lastIndexOf('.') > -1) {
+                            options.fileName = file.target_name;
+                        }
+                        else {
+                            options.fileName = file.id;
+                        }
                         file.uploadType = me.uploadType;
                         me.createMessage(options, file, function (msg) {
                             RongIMLib.RongIMClient.getInstance().sendMessage(me.conversationType, me.targetId, msg, {
@@ -257,10 +267,9 @@ var RongIMLib;
                     RongIMLib.RongIMClient.getInstance().getFileUrl(RongIMLib.FileType.IMAGE, option.fileName, null, {
                         onSuccess: function (data) {
                             if (option.isBase64Data) {
-
                                 RongUploadLib.imageCompressToBase64(file, function (content) {
-                                  msg = new RongIMLib.ImageMessage({ content: content, imageUri: data.downloadUrl });
-                                  callback(msg);
+                                    msg = new RongIMLib.ImageMessage({ content: content, imageUri: data.downloadUrl });
+                                    callback(msg);
                                 });
                             }
                             else {
