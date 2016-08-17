@@ -528,7 +528,7 @@ conversationDire.directive("imageMessage", [function() {
         '<span id="{{\'rebox_\'+$id}}" ng-click="showBigImage()"   class="Message-entry gallery" style="">' +
         '<!-- <p>发给您一张示意图</p> -->' +
         // '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" data-image="{{item.imageUri}}" alt=""/>' +
-        '<a href="{{item.imageUri||\'../../static/images/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
+        '<a href="{{item.imageUri||\'assets/img/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
         '</span>' +
         '</div>' +
         '</div>',
@@ -591,7 +591,7 @@ conversationDire.directive("richcontentMessage", [function() {
         '<div class="image-textBox">' +
         '<h4>{{item.title}}</h4>' +
         '<div class="cont clearfix">' +
-        '<img ng-src="{{item.imageUri||\'../../static/images/barBg.png\'}}" alt=""/>' +
+        '<img ng-src="{{item.imageUri||\'assets/img/barBg.png\'}}" alt=""/>' +
         '<div>{{item.content}}</div>' +
         '</div>' +
         '</div>' +
@@ -611,7 +611,7 @@ conversationDire.directive("locationMessage", [function() {
         '<div class="Message-map">' +
         '<span class="Message-entry" style="">' +
         '<div class="mapBox">' +
-        '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" alt=""/>' +
+        '<img ng-src="{{item.content||\'assets/img/barBg.png\'}}" alt=""/>' +
         '<span>{{item.poi}}</span>' +
         '</div>' +
         '</span>' +
