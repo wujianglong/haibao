@@ -591,7 +591,7 @@ conversationDire.directive("richcontentMessage", [function() {
         '<div class="image-textBox">' +
         '<h4>{{item.title}}</h4>' +
         '<div class="cont clearfix">' +
-        '<img ng-src="{{item.imageUri||\'assets/img/barBg.png\'}}" alt=""/>' +
+        '<img ng-src="{{item.imageUri||\'assets/img/imageText.png\'}}" alt=""/>' +
         '<div>{{item.content}}</div>' +
         '</div>' +
         '</div>' +
