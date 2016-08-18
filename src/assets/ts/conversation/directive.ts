@@ -648,6 +648,9 @@ conversationDire.directive("fileMessage", [function() {
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
           var imgType = 'undefined', showSize = '', showName = '',maxSize = 20;
           showName = scope.item.name;
+          if(window.Electron){
+             angular.element(ele[0].getElementsByTagName("a")[0]).attr("target","_blank");
+          }
           function getBLen(str: string) {
             if (str == null) return 0;
             if (typeof str != "string"){
@@ -713,7 +716,7 @@ conversationDire.directive("fileMessage", [function() {
               case 'txt':
               case 'xlsx':
               case 'pdf':
-                 imgType = scope.item.type;
+                 imgType = scope.item.type.toLowerCase();
                  break;
               case 'bmp':
               case 'cod':
