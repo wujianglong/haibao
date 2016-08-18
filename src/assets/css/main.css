@@ -1910,8 +1910,10 @@ input::-ms-clear{display:none;}
     border-left: 2px solid #0099ff;
 }
 .image-textBox h4{
-    height: 24px;
+    /*height: 24px;*/
     font-size: 16px;
+    padding-bottom: 6px;
+    line-height: 1.4;
 }
 .image-textBox .cont img{
     float: left;

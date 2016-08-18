@@ -271,7 +271,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           if(targetType != webimmodel.conversationType.Private && targetType != webimmodel.conversationType.Group){
             return;
           }
-          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, targetType);
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, 1);
           // var msg = RongIMLib.TextMessage.obtain('con');
           RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 

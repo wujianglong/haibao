@@ -431,7 +431,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
           if(targetType != webimmodel.conversationType.Private){
             return;
           }
-          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, RongIMLib.ConversationType.PRIVATE);
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, 1);
           // var msg = RongIMLib.TextMessage.obtain('con');
           RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
 

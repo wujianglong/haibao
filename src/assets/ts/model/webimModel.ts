@@ -393,6 +393,8 @@ module webimmodel {
                 msgContent = "[图片]";
             } else if (msgtype == MessageType.LocationMessage) {
                 msgContent = "[位置]";
+            } else if (msgtype == MessageType.RichContentMessage) {
+                msgContent = "[图文]";
             } else if (msgtype == MessageType.VoiceMessage) {
                 msgContent = "[语音]";
             }else if (msgtype == webimmodel.MessageType.FileMessage) {
