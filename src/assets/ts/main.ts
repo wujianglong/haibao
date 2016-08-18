@@ -14,7 +14,7 @@ var webimApp = angular.module("webim", ["ui.router", "ui.event", "uiSwitch", "ng
 webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvider",
     function($provide: angular.auto.IProvideService, $stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider, $httpProvider: angular.IHttpProvider) {
         var baseUrl = window["__sealtalk_config"]["serverUrl"];
-        var appkey = window["__sealtalk_config"]["appkey"]
+        var appkey = window["__sealtalk_config"]["appkey"];
 
         $provide.provider("appconfig", function() {
             this.$get = function() {
@@ -202,6 +202,19 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
         })
 
     }]);
+    // .run(function($rootScope: any, $state: angular.ui.IStateService, $stateParams: any) {
+    //        $rootScope.$state = $state;
+    //        $rootScope.$stateParams = $stateParams;
+    //        $rootScope.$on("$stateChangeSuccess",  function(event: any, toState: any, toParams: any, fromState: any, fromParams: any) {
+    //            // to be used for back button //won't work when page is reloaded.
+    //            $rootScope.previousState_name = fromState.name;
+    //            $rootScope.previousState_params = fromParams;
+    //        });
+    //        //back button function called from back button's ng-click="back()"
+    //        $rootScope.back = function() {//实现返回的函数
+    //            $state.go($rootScope.previousState_name,$rootScope.previousState_params);
+    //        };
+    //    });
 
 
 function cancelScollStyle() {

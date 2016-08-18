@@ -16,7 +16,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.remainMessageCount = 5;
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
-            var detail = <any>msgsdk.content.message.content
+            var detail = <any>msgsdk.content
             var comment = "", members = <any>[]
             var isself = detail.operatorUserId == mainDataServer.loginUser.id ? true : false;
             switch (detail.operation) {
@@ -154,6 +154,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                     unshiftHistoryMessages(currentConversationTargetId, conver, item);
                                 }
                                 break;
+                            case webimmodel.MessageType.GroupNotificationMessage:
+                                if (msgsdk.objectName == "RC:GrpNtf") {
+                                  var item = webimmodel.Message.convertMsg(msgsdk);
+                                  if (item) {
+                                      conversationServer.asyncConverGroupNotifition(msgsdk, item);
+                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                  }
+                                }
+                                break;
                             case webimmodel.MessageType.UnknownMessage:
                                 if (msgsdk.objectName == "RC:GrpNtf") {
                                   var item = webimmodel.Message.convertMsg(msgsdk);
@@ -253,12 +262,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function addHistoryMessages(id: string, type: string, item: webimmodel.Message) {
             var arr = conversationServer.historyMessagesCache[type + "_" + id] || [];
             var exist = false;
-            if(item.senderUserId != mainDataServer.loginUser.id){
+            // if(item.senderUserId != mainDataServer.loginUser.id){
               exist = checkMessageExist(id, type, item.messageUId);
               if (exist) {
+                  console.log('exist离线消息有重复');
                   return;
               }
-            }
+            // }
 
             if (arr[arr.length - 1] && arr[arr.length - 1].panelType != webimmodel.PanelType.Time && arr[arr.length - 1].sentTime && item.sentTime) {
                 if (compareDateIsAddSpan(arr[arr.length - 1].sentTime, item.sentTime)) {
@@ -354,6 +364,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         function checkMessageExist(id: string, type: string, messageuid: string){
           var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
           var keepGoing = true;
+          if(!messageuid){
+            return false;
+          }
           angular.forEach(currenthis, function (value, key) {
               if(keepGoing){
                 if (value.panelType == webimmodel.PanelType.Message && value.messageUId == messageuid) {

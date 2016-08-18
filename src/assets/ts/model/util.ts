@@ -207,6 +207,42 @@ module webimutil {
         }
     }
 
+    export class DownloadHelper{
+
+      static isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+      static isSafari = navigator.userAgent.toLowerCase().indexOf('safari') > -1;
+      static downloadFile(sUrl: string) {
+
+          //If in Chrome or Safari - download via virtual link click
+          if (this.isChrome || this.isSafari) {
+              //Creating new link node.
+              var link = document.createElement('a');
+              link.href = sUrl;
+
+              if (link.download !== undefined){
+                  //Set HTML5 download attribute. This will prevent file from opening if supported.
+                  var fileName = sUrl.substring(sUrl.lastIndexOf('/') + 1, sUrl.length);
+                  link.download = fileName;
+              }
+
+              //Dispatching click event.
+              if (document.createEvent) {
+                  var e = document.createEvent('MouseEvents');
+                  e.initEvent('click' ,true ,true);
+                  link.dispatchEvent(e);
+                  return true;
+              }
+          }
+
+          // Force file download (whether supported by server).
+          var query = '?download';
+
+          window.open(sUrl + query);
+      }
+
+
+    }
+
     var PinYin = <any>{
         "a": "\u554a\u963f\u9515",
         "ai": "\u57c3\u6328\u54ce\u5509\u54c0\u7691\u764c\u853c\u77ee\u827e\u788d\u7231\u9698\u8bf6\u6371\u55f3\u55cc\u5ad2\u7477\u66a7\u7839\u953f\u972d",

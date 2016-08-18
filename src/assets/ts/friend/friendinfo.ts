@@ -3,8 +3,8 @@
 
 var friendinfo = angular.module("webim.friendinfo", ["webim.main.server"]);
 
-friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams", "$window", "mainDataServer", "mainServer",
-    function($scope: any, $state: angular.ui.IStateService, $stateParams: any, $window: angular.IWindowService, mainDataServer: mainDataServer, mainServer: mainServer) {
+friendinfo.controller("friendinfoController", ["$scope", "$rootScope", "$state", "$stateParams", "$window", "mainDataServer", "mainServer",
+    function($scope: any, $rootScope: any, $state: angular.ui.IStateService, $stateParams: any, $window: angular.IWindowService, mainDataServer: mainDataServer, mainServer: mainServer) {
 
         $scope.$on("$viewContentLoaded", function() {
             setPortrait();
@@ -99,7 +99,9 @@ friendinfo.controller("friendinfoController", ["$scope", "$state", "$stateParams
         }
 
         $scope.back = function() {
-            goback();
+            // goback();
+            // $rootScope.back();
+            window.history.back();
         }
 
     }]);

@@ -7902,6 +7902,7 @@ var RongIMLib;
             if ("WebSocket" in window && "ArrayBuffer" in window && WebSocket.prototype.CLOSED === 3 && !window["WEB_XHR_POLLING"]) {
                 var str = window["SCHEMETYPE"] ? window["SCHEMETYPE"] + "://cdn.ronghub.com/protobuf-2.1.3.min.js" : "//cdn.ronghub.com/protobuf-2.1.3.min.js";
                 this.script.src = str;
+                this.script.src = '../assets/js/protobuf-2.1.3.min.js';
                 this.head.appendChild(this.script);
             }
             else {

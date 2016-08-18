@@ -169,8 +169,6 @@ module.exports = (grunt) ->
             src:[
               './vendor/jqlayer/layer.min.js'
               './vendor/jqueryrebox/jquery-rebox.js'
-              './vendor/qiniu/qiniu.js'
-              './vendor/qiniu/plupload.min.js'
             ]
             dest:'./temp/other.js'
           }
@@ -199,8 +197,6 @@ module.exports = (grunt) ->
             src:[
               './vendor/jqlayer/layer.min.js'
               './vendor/jqueryrebox/jquery-rebox.js'
-              './vendor/qiniu/qiniu.js'
-              './vendor/qiniu/plupload.min.js'
             ]
             dest:'./build/assets/js/other.min.js'
           }
@@ -305,6 +301,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-typescript'
+  grunt.loadNpmTasks 'grunt-filerev'
+  grunt.loadNpmTasks 'grunt-usemin'
 
   # Build for dev.
   grunt.registerTask 'build', [
@@ -312,6 +310,8 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
+    # 'filerev'
+    # 'usemin'
     'clean:map'
     'watch:build'
   ]
@@ -327,3 +327,15 @@ module.exports = (grunt) ->
     'filerev'
     'usemin'
   ]
+
+  grunt.registerTask 'test', [
+    # 'rev:build'
+    # 'useminPrepare'
+    'filerev'
+    'print'
+    'usemin'
+    # 'filerev'
+  ]
+
+  grunt.registerTask 'print', ->
+     console.log('grunt.filerev.summary:', grunt.filerev.summary)

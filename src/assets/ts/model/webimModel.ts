@@ -136,7 +136,11 @@ module webimmodel {
         CommandNotificationMessage: "CommandNotificationMessage",
         ReadReceiptMessage: "ReadReceiptMessage",
         TypingStatusMessage: "TypingStatusMessage",
-        FileMessage: "FileMessage"
+        FileMessage: "FileMessage",
+        GroupNotificationMessage: "GroupNotificationMessage",
+        RecallCommandMessage: "RecallCommandMessage",
+        InviteMessage: "InviteMessage",
+        HungupMessage: "HungupMessage"
     }
 
     export enum conversationType {
@@ -197,6 +201,7 @@ module webimmodel {
         senderUserImgSrc: string
         imgSrc: string
         mentionedInfo: any
+        isRead: boolean
 
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);
@@ -234,7 +239,7 @@ module webimmodel {
                 case MessageType.ImageMessage:
                     var image = new ImageMessage();
                     var content = SDKmsg.content.content || "";
-                    if (content.indexOf("base64,") == -1) {
+                    if (typeof content == "string" && content.indexOf("base64,") == -1) {
                         content = "data:image/png;base64," + content;
                     }
                     image.content = content;
@@ -262,7 +267,7 @@ module webimmodel {
                 case MessageType.LocationMessage:
                     var location = new LocationMessage();
                     var content = SDKmsg.content.content || "";
-                    if (content.indexOf("base64,") == -1) {
+                    if (typeof content == "string" && content.indexOf("base64,") == -1) {
                         content = "data:image/png;base64," + content;
                     }
                     location.content = content;
@@ -278,7 +283,7 @@ module webimmodel {
                     file.name = SDKmsg.content.name;
                     file.size = SDKmsg.content.size;
                     file.type = SDKmsg.content.type;
-                    file.uri = SDKmsg.content.uri;
+                    file.fileUrl = SDKmsg.content.fileUrl;
                     file.extra = SDKmsg.content.extra;
                     file.state = FileState.Success;
                     msg.content = file;
@@ -341,6 +346,21 @@ module webimmodel {
                 case MessageType.ReadReceiptMessage:
                 case MessageType.TypingStatusMessage:
                     break;
+                case MessageType.RecallCommandMessage:
+                    msg.content = '撤回了一条消息';
+                    msg.panelType = webimmodel.PanelType.InformationNotification;
+                    break;
+                case MessageType.InviteMessage:
+                case MessageType.HungupMessage:
+                    // if(SDKmsg.content.mediaType == '1'){
+                    //   msg.content = '音频消息';
+                    // }
+                    // else if(SDKmsg.content.mediaType == '2'){
+                    //   msg.content = '视频消息';
+                    // }
+                    msg.content = '当前版本暂不支持查看此消息';
+                    msg.panelType = webimmodel.PanelType.InformationNotification;
+                    break;
                 default:
                     if (SDKmsg.objectName == "RC:GrpNtf") {
                         var groupnot = new webimmodel.InformationNotificationMessage();
@@ -352,7 +372,9 @@ module webimmodel {
                     }
                     else
                     {
-                        console.log("has unknown message type " + SDKmsg.messageType)
+                       msg.content = '当前版本暂不支持查看此消息';
+                       msg.panelType = webimmodel.PanelType.InformationNotification;
+                       console.log("has unknown message type " + SDKmsg.messageType)
                     }
                     break;
             }
@@ -371,15 +393,21 @@ module webimmodel {
                 msgContent = "[图片]";
             } else if (msgtype == MessageType.LocationMessage) {
                 msgContent = "[位置]";
+            } else if (msgtype == MessageType.RichContentMessage) {
+                msgContent = "[图文]";
             } else if (msgtype == MessageType.VoiceMessage) {
                 msgContent = "[语音]";
+            }else if (msgtype == webimmodel.MessageType.FileMessage) {
+                msgContent = "[文件] " + msg.content.name;
             } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage || msgtype == MessageType.InformationNotificationMessage) {
                 msgContent = "[通知消息]";
             } else if (msg.objectName == "RC:GrpNtf") {
-                var data = msg.content.message.content.data.data
-                switch (msg.content.message.content.operation) {
+              // var data = msg.content.message.content.data.data;
+              var data = msg.content.data;
+              // switch (msg.content.message.content.operation) {
+               switch (msg.content.operation) {
                     case "Add":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = data.targetUserDisplayNames ? ("你邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
                         }else{
                           msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "邀请" + data.targetUserDisplayNames.join("、") + "加入了群组") : "加入群组";
@@ -390,21 +418,21 @@ module webimmodel {
                         break;
                     case "Kicked":
                         //由于之前数据问题
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                            msgContent = data.targetUserDisplayNames ? ("你将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
                         }else{
                           msgContent = data.targetUserDisplayNames ? (data.operatorNickname + "将" + data.targetUserDisplayNames.join("、") + "移出了群组") : "移除群组";
                         }
                         break;
                     case "Rename":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = "你修改群名称为" + data.targetGroupName;
                         }else{
                           msgContent = data.operatorNickname + "修改群名称为" + data.targetGroupName;
                         }
                         break;
                     case "Create":
-                        if(msg.content.message.content.operatorUserId == operatorid){
+                        if(msg.content.operatorUserId == operatorid){
                           msgContent = "你创建了群组";
                         }else{
                           msgContent = data.operatorNickname + "创建了群组";
@@ -450,7 +478,7 @@ module webimmodel {
                         break;
                 }
             }
-            else {
+            else if(msgtype == webimmodel.MessageType.TextMessage){
                 msgContent = msg.content ? msg.content.content : "";
 
                 msgContent = webimutil.Helper.escapeSymbol.escapeHtml(msgContent);
@@ -469,8 +497,12 @@ module webimmodel {
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");
+                msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
                 // }
 
+            }
+            else {
+                msgContent = "[当前版本暂不支持查看此消息]";
             }
             return msgContent;
         }
@@ -553,7 +585,7 @@ module webimmodel {
         name: string;
         size: number;
         type: number;
-        uri: string;
+        fileUrl: string;
         extra: string;
         state: FileState;
         progress: number;  // 0-100
@@ -738,6 +770,7 @@ module webimmodel {
             name: string;
             imgSrc: string;
             role?: string;
+            displayName?: string;
         }) {
             super(item);
             this.role = item.role;

@@ -24,13 +24,18 @@ conversationDire.directive('atshowDire', function () {
                    e.preventDefault();
                    return;
                 }
-             　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+            //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
+                if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
-                     if(lastChar != ' '){
+                     var regExp = /^[A-Za-z0-9]+$/;
+                     if(regExp.test(lastChar)){
                        return;
                      }
+                    //  if(lastChar != ' '){
+                    //    return;
+                    //  }
                    }
                   scope.atShow = true;
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
@@ -235,6 +240,7 @@ conversationDire.directive('contenteditableDire', function() {
             }
 
             var domElement = <any>element[0];
+            var lastSendTime: any, counter = 0;
 
             // scope.$watch(function() {
             //     return ngModel.$modelValue;
@@ -261,7 +267,18 @@ conversationDire.directive('contenteditableDire', function() {
             //     }
             // });
 
-            element.bind('input propertychange', function () {
+            element.bind('input propertychange keydown', function () {
+                //发送正在输入消息
+
+                if(lastSendTime && (new Date()).getTime() - lastSendTime > 6000){
+                  scope.sendTypingStatusMessage();
+                  lastSendTime = (new Date()).getTime();
+                }
+                else if(!lastSendTime){
+                  lastSendTime = (new Date()).getTime();
+                  scope.sendTypingStatusMessage();
+                }
+
                 if (domElement.innerHTML == attrs["placeholder"] || domElement.innerHTML === '' || domElement.innerHTML == '<br>') {
                   element.empty();
                 }
@@ -288,12 +305,12 @@ conversationDire.directive('contenteditableDire', function() {
               if(!hasImg){
                 if (e.clipboardData) {
                     content = (e.originalEvent || e).clipboardData.getData('text/plain');
-                    content = replacemy(content);
+                    // content = replacemy(content);
                     document.execCommand('insertText', false, content);
                 }
                 else if (window.clipboardData) {
                     content = window.clipboardData.getData('Text');
-                    content = replacemy(content);
+                    // content = replacemy(content);
                     document.selection.createRange().pasteHTML(content);
                 }
               }
@@ -511,7 +528,7 @@ conversationDire.directive("imageMessage", [function() {
         '<span id="{{\'rebox_\'+$id}}" ng-click="showBigImage()"   class="Message-entry gallery" style="">' +
         '<!-- <p>发给您一张示意图</p> -->' +
         // '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" data-image="{{item.imageUri}}" alt=""/>' +
-        '<a href="{{item.imageUri||\'../../static/images/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
+        '<a href="{{item.imageUri||\'assets/img/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
         '</span>' +
         '</div>' +
         '</div>',
@@ -574,7 +591,7 @@ conversationDire.directive("richcontentMessage", [function() {
         '<div class="image-textBox">' +
         '<h4>{{item.title}}</h4>' +
         '<div class="cont clearfix">' +
-        '<img ng-src="{{item.imageUri||\'../../static/images/barBg.png\'}}" alt=""/>' +
+        '<img ng-src="{{item.imageUri||\'assets/img/imageText.png\'}}" alt=""/>' +
         '<div>{{item.content}}</div>' +
         '</div>' +
         '</div>' +
@@ -594,7 +611,7 @@ conversationDire.directive("locationMessage", [function() {
         '<div class="Message-map">' +
         '<span class="Message-entry" style="">' +
         '<div class="mapBox">' +
-        '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" alt=""/>' +
+        '<img ng-src="{{item.content||\'assets/img/barBg.png\'}}" alt=""/>' +
         '<span>{{item.poi}}</span>' +
         '</div>' +
         '</span>' +
@@ -614,82 +631,220 @@ conversationDire.directive("fileMessage", [function() {
               '<img ng-src="{{imgType}}">' +
             '</div>' +
             '<div class="file_name fl">' +
-              '<p class="p1">{{item.name}}.{{item.type}}</p>' +
+              '<p class="p1">{{showName}}</p>' +
               '<p class="p2">{{showSize}}</p>' +
               '<div class="up_process"><div></div></div>' +
             '</div>' +
-            '<div ng-show="isover"  class="file_btn fr" ng-click="Download()">' +
+            '<a ng-show="isover" href="{{item.fileUrl}}">' +
+            // '<div class="file_btn fr" ng-click="Download()">' +
+            '<div class="file_btn fr">' +
             '</div>' +
+            '</a>' +
             '<div ng-show="isuploading" class="file_btn_close fr" ng-click="Cancel()">' +
             '</div>' +
          '</div>' +
         '</div>' +
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
-            var imgType = 'undefined', showSize = '';
-            scope.itemid = scope.$parent.item.messageUId;
-            scope.Cancel =  function(){
-              scope.item.state = 1;
+          var imgType = 'undefined', showSize = '', showName = '',maxSize = 20;
+          showName = scope.item.name;
+          function getBLen(str: string) {
+            if (str == null) return 0;
+            if (typeof str != "string"){
+              str += "";
             }
-            scope.Download =  function(){
-              window.open(scope.item.uri, '_self');
-            }
-            function fomate(num: number){
-              var result = Math.ceil(num * 100);
-              return result / 100;
-            }
-            switch(scope.item.type){
+            return str.replace(/[^\x00-\xff]/g,"01").length;
+          }
+
+          function getStr(str: string, cutLen: number, fromHead: boolean) {
+             var result = "";
+             var len = 0;
+             if(fromHead){
+               for (var i=0; i<str.length && len < cutLen; i++) {
+                 if (str.charCodeAt(i)>127 || str.charCodeAt(i)==94) {
+                      len += 2;
+                  } else {
+                      len ++;
+                  }
+                  result += str[i];
+               }
+             }else{
+               for (var i=str.length-1; i>-1 && len < cutLen; i--) {
+                 if (str.charCodeAt(i)>127 || str.charCodeAt(i)==94) {
+                      len += 2;
+                  } else {
+                      len ++;
+                  }
+                  result = str[i] + result;
+               }
+             }
+             return result;
+          }
+
+          var showNameLen = getBLen(showName),
+               suffix = scope.item.name.replace(/.+\./, "");
+
+          if(showNameLen > maxSize){
+            var _filename = scope.item.name.substr(0, scope.item.name.lastIndexOf('.'));
+            var backLen = maxSize - 10 - 3 - suffix.length - 1;
+            showName = getStr(_filename, 10, true);
+            showName = showName + '...';
+            showName += getStr(_filename, backLen, false);
+            showName = showName + '.' + suffix;
+          }
+          scope.showName = showName;
+
+          scope.itemid = scope.$parent.item.messageUId;
+          scope.Cancel =  function(){
+            RongIMLib.RongUploadLib.getInstance().cancel(scope.itemid);
+            scope.item.state = 1;
+          }
+          scope.Download =  function(){
+          }
+          function fomate(num: number){
+            var result = Math.ceil(num * 100);
+            return result / 100;
+          }
+          if(scope.item.type){
+            switch(scope.item.type.toLowerCase()){
               case 'doc':
               case 'mp3':
               case 'mp4':
               case 'txt':
               case 'xlsx':
+              case 'pdf':
                  imgType = scope.item.type;
                  break;
+              case 'bmp':
+              case 'cod':
+              case 'gif':
+              case 'ief':
+              case 'jpe':
+              case 'jpeg':
+              case 'jpg':
+              case 'jfif':
+              case 'svg':
+              case 'tif':
+              case 'tiff':
+              case 'ras':
+              case 'ico':
+              case 'pbm':
+              case 'pgm':
+              case 'png':
+              case 'pnm':
+              case 'xbm':
+              case 'xpm':
+              case 'xwd':
+              case 'rgb':
+                 imgType = 'pic';
+                 break;
               case 'docx':
+              case 'dot':
                  imgType = 'doc';
                  break;
+              case 'xls':
+              case 'xla':
+              case 'xlc':
+              case 'xlm':
+              case 'xlt':
+              case 'xlw':
+                 imgType = 'xlsx';
+                 break;
+              case 'wav':
+              case 'wma':
+              case 'au':
+              case 'snd':
+              case 'mid':
+              case 'rmi':
+              case 'aif':
+              case 'aifc':
+              case 'aiff':
+              case 'm3u':
+              case 'ra':
+              case 'ram':
+                 imgType = 'mp3';
+                 break;
+              case 'avi':
+              case 'rmvb':
+              case 'mp2':
+              case 'mpa':
+              case 'mpe':
+              case 'mpeg':
+              case 'mpg':
+              case 'mpv2':
+              case 'mov':
+              case 'qt':
+              case 'lsf':
+              case 'lsx':
+              case 'asf':
+              case 'asr':
+              case 'asx':
+              case 'avi':
+              case 'movie':
+              case 'wmv':
+                 imgType = 'mp4';
+                 break;
+              case 'log':
+              case 'html':
+              case 'stm':
+              case 'uls':
+              case 'bas':
+              case 'c':
+              case 'h':
+              case 'rtx':
+              case 'sct':
+              case 'tsv':
+              case 'htt':
+              case 'htc':
+              case 'etx':
+              case 'vcf':
+                 imgType = 'txt';
+                 break;
             }
-            imgType = 'assets/img/' + scope.imgType + '.png';
-            scope.imgType = imgType;
+          }
 
+
+          imgType = 'assets/img/' + imgType + '.png';
+          scope.imgType = imgType;
+
+          updateState();
+          function updateState(){
+            scope.isover = scope.item.state == webimmodel.FileState.Success, scope.isuploading = scope.item.state == webimmodel.FileState.Uploading || scope.item.state == -1;
+            switch (scope.item.state) {
+              case webimmodel.FileState.Canceled:
+                showSize = '已取消';
+                angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                break;
+              case webimmodel.FileState.Failed:
+                showSize = '上传失败';
+                angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                break;
+              case -1:
+              case webimmodel.FileState.Uploading:
+                var kbSize = scope.item.size / 1024;
+                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + ' M' : fomate(kbSize) + ' K';
+                angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'block');
+                angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', scope.item.extra);
+                break;
+              case webimmodel.FileState.Success:
+                var kbSize = scope.item.size / 1024;
+                showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + ' M' : fomate(kbSize) + ' K';
+                angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
+                angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
+                if(typeof unbingWatch === 'function' || typeof unbingWatch === "object"){
+                  unbingWatch();
+                }
+                ele[0].getElementsByClassName("file_btn")[0].parentElement.href = scope.item.fileUrl;
+                break;
+            }
+            scope.showSize = showSize;
+          }
+
+          var unbingWatch = scope.$watch("item.state", function(newVal: any, oldVal: any) {
+            if (newVal === oldVal)
+                return;
             updateState();
-            function updateState(){
-              scope.isover = scope.item.state == webimmodel.FileState.Success, scope.isuploading = scope.item.state == webimmodel.FileState.Uploading || scope.item.state == -1;
-              switch (scope.item.state) {
-                case webimmodel.FileState.Canceled:
-                  showSize = '已取消';
-                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
-                  break;
-                case webimmodel.FileState.Failed:
-                  showSize = '上传失败';
-                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
-                  break;
-                case -1:
-                case webimmodel.FileState.Uploading:
-                  var kbSize = scope.item.size / 1024;
-                  showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';
-                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'block');
-                  angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', scope.item.extra);
-                  break;
-                case webimmodel.FileState.Success:
-                  var kbSize = scope.item.size / 1024;
-                  showSize = kbSize >= 1024 ? fomate(kbSize / 1024) + 'M' : fomate(kbSize) + 'K';
-                  angular.element(ele[0].getElementsByClassName("up_process")[0].children[0]).css('width', '100%');
-                  angular.element(ele[0].getElementsByClassName("up_process")[0]).css('display', 'none');
-                  if(typeof unbingWatch === "function" || typeof unbingWatch === "object"){
-                    unbingWatch();
-                  }
-                  break;
-              }
-              scope.showSize = showSize;
-            }
-
-            var unbingWatch = scope.$watch("item.state", function(newVal: any, oldVal: any) {
-              if (newVal === oldVal)
-                  return;
-              updateState();
-            });
+          });
         }
     }
 }])

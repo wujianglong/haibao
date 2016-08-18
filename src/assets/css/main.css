@@ -8,7 +8,7 @@
     visibility: hidden;
     height: auto;
     width: auto;
-    white-space: nowrap; /* Thanks to Herb Caudill comment */
+    white-space: nowrap; /* for at message */
 }
 
 [contenteditable=true]:empty:before{
@@ -1393,7 +1393,7 @@ input::-ms-clear{display:none;}
     margin-bottom: -118px;
     height: 118px;
     width: 60px;
-    border-right: 1px solid #cdd2d9;
+    border-right: 1px solidg #cdd2d9;
     position: relative;
 }
 .inputBoxInner{
@@ -1919,8 +1919,10 @@ input::-ms-clear{display:none;}
     border-left: 2px solid #0099ff;
 }
 .image-textBox h4{
-    height: 24px;
+    /*height: 24px;*/
     font-size: 16px;
+    padding-bottom: 6px;
+    line-height: 1.4;
 }
 .image-textBox .cont img{
     float: left;
@@ -2463,6 +2465,10 @@ input::-ms-clear{display:none;}
 
     .mainBox {
         /*display: none;*/
+    }
+
+    .no_network{
+      padding-left: 0px !important;
     }
 
     .phone_return {
@@ -3254,9 +3260,11 @@ input::-ms-clear{display:none;}
 
 .no_network{
     text-align: center;
-    position: fixed;
+    position: absolute;;
     top:54px;
     width: 100%;
+    min-width: 1000px;
+    padding-left: 384px;
     z-index: 9999;
     visibility:hidden;
 }
@@ -3284,5 +3292,90 @@ input::-ms-clear{display:none;}
     width: 100%;
     height: 100%;
     position: relative;
-    z-index: 9999;
+    z-index: 999;
+}
+
+/* 正在输入图标 */
+.typingIcon{
+    position: absolute;
+    top: -25px;
+    left: 10px;
+    z-index: 10;
+}
+.typingIcon > i {
+    background-color: #fff;
+    width: 6px;
+    height: 6px;
+    border-radius: 100%;
+    margin: 2px 3px;
+    display: inline-block;
+}
+.typingIcon > i:nth-child(1) {
+    animation: typing1 1s infinite;
+}
+.typingIcon > i:nth-child(2) {
+    animation: typing2 1s  infinite;
+}
+.typingIcon > i:nth-child(3) {
+    animation: typing3 1s  infinite;
+}
+@-webkit-keyframes typing1 {
+    0%,24% {
+        background-color: #fff; }
+
+
+    25%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing1 {
+    0%,24% {
+        background-color: #fff; }
+
+
+    25%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@-webkit-keyframes typing2 {
+    0%,49% {
+        background-color: #fff; }
+
+
+    50%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing2 {
+    0%,49%  {
+        background-color: #fff; }
+
+
+    50%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@-webkit-keyframes typing3 {
+    0%,74% {
+        background-color: #fff; }
+
+
+    75%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
+}
+@keyframes typing3 {
+    0%,74% {
+        background-color: #fff; }
+
+
+    75%,100% {
+        background-color: rgba(0,153,255,.4) }
+
+
 }

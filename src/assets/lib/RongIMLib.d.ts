@@ -1791,6 +1791,14 @@ declare module RongIMLib {
         static obtain(messageUId: string, lastMessageSendTime: number, type: ConversationType): ReadReceiptMessage;
         encode(): string;
     }
+    class TypingStatusMessage implements MessageContent {
+        typingContentType: string;
+        data: any;
+        messageName: string;
+        constructor(message: any);
+        static obtain(typingContentType: string, data: any): TypingStatusMessage;
+        encode(): string;
+    }
     class UnknownMessage implements MessageContent {
         message: UnknownMessage;
         messageName: string;

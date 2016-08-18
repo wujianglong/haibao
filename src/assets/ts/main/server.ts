@@ -320,6 +320,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     var mainDataServer = <mainDataServer>{};
 
     mainDataServer.loginUser = <webimmodel.UserInfo>{};
+    mainDataServer.isConnected = false;
+    mainDataServer.isTyping = false;
     mainDataServer.conversation = {
         totalUnreadCount: 0,
         conversations: <webimmodel.Conversation[]>[],
@@ -389,7 +391,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                   }
                   // item.conversationTitle = group ? group.name : "未知群组";
                   // conversationitem.title = group ? group.name : "未知群组";
-                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.message.content.operation == "Create" && item.latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
                        conversationitem.lastMsg = '你 创建了群组';
                   }
                   conversationitem.firstchar = group ? group.firstchar : "";
@@ -703,6 +705,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               isfirst = true;
                               conversationItem.lastMsg = result.item.lastMsg;
                               conversationItem.unReadNum = result.item.unReadNum;
+                              conversationItem.lastTime = result.item.lastTime;
                               if (msg.senderUserId == mainDataServer.loginUser.id) {
                                 RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
                                 totalUnreadCount = totalUnreadCount - oldUnread;
@@ -1446,7 +1449,7 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
 
     RongIMSDKServer.getHistoryMessages = function(type: number, targetId: string, lastTime:number, num: number) {
         var defer = $q.defer();
-        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, null, num, {
+        RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, lastTime, num, {
             onSuccess: function(data, has) {
                 defer.resolve({
                     data: data,
@@ -1562,6 +1565,8 @@ interface RongIMSDKServer {
 
 interface mainDataServer {
     loginUser: webimmodel.UserInfo
+    isConnected: boolean
+    isTyping: boolean
     conversation: {
         totalUnreadCount: number
         conversations: webimmodel.Conversation[]
