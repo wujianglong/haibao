@@ -990,12 +990,5 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             }
           }
         });
-        // 删除消息数
-        //获取最后一条消息时间
-
-        $scope.$on("$destroy", function() {
-           //清除配置,不然scroll会重复请求
-           conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
-        });
 
     }])
