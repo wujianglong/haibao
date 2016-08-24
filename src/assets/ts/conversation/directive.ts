@@ -635,7 +635,7 @@ conversationDire.directive("fileMessage", [function() {
               '<p class="p2">{{showSize}}</p>' +
               '<div class="up_process"><div></div></div>' +
             '</div>' +
-            '<a ng-show="isover" href="{{item.fileUrl}}">' +
+            '<a ng-show="isover" href="{{item.fileUrl}}" download>' +
             // '<div class="file_btn fr" ng-click="Download()">' +
             '<div class="file_btn fr">' +
             '</div>' +

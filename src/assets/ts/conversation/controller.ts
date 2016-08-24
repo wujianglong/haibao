@@ -268,7 +268,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
           var messageUId = messageuid;
           var lastMessageSendTime = sendtime;
           // 以上 3 个属性在会话的最后一条消息中可以获得。
-          if(targetType != webimmodel.conversationType.Private && targetType != webimmodel.conversationType.Group){
+          // if(targetType != webimmodel.conversationType.Private && targetType != webimmodel.conversationType.Group){
+          if(targetType != webimmodel.conversationType.Private){
             return;
           }
           var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, 1);
