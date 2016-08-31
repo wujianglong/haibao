@@ -20,6 +20,15 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                 mainDataServer.loginUser.token = usertoken;
             } else {
                 $state.go("account.signin");
+                // mainServer.user.logout().success(function () {
+                //     webimutil.CookieHelper.removeCookie("loginuserid");
+                //     mainDataServer.loginUser = new webimmodel.UserInfo();
+                //     conversationServer.historyMessagesCache.length = 0;
+                //     if (window.Electron) {
+                //         window.Electron.webQuit();
+                //     }
+                //     $state.go("account.signin");
+                // });
             }
         }
 
@@ -423,22 +432,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             if (n.data)
                 $state.go("main.chat", { targetId: n.data.targetId, targetType: n.data.targetType });
         }
-        function sendReadReceiptMessage(messageuid: string, sendtime: number, targetType: webimmodel.conversationType, targetId: string){
-          var messageUId = messageuid;
-          var lastMessageSendTime = sendtime;
-          var type = webimmodel.conversationType.Private;
-          // 以上 3 个属性在会话的最后一条消息中可以获得。
-          if(targetType != webimmodel.conversationType.Private){
-            return;
-          }
-          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, 1);
-          // var msg = RongIMLib.TextMessage.obtain('con');
-          RongIMSDKServer.sendMessage(targetType, targetId, msg).then(function() {
-
-          }, function(error) {
-              console.log('sendReadReceiptMessage', error.errorCode);
-          });
-        }
 
         var typingTimeID: any;
         RongIMSDKServer.setOnReceiveMessageListener({
@@ -653,8 +646,12 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         if ($state.is("main.chat") && !document.hidden && msg.conversationType == webimmodel.conversationType.Private && msg.senderUserId == mainDataServer.conversation.currentConversation.targetId) {
                           mainDataServer.isTyping = false;
                         }
-                        if ($state.is("main.chat") && !document.hidden && msg.senderUserId != mainDataServer.loginUser.id){
-                          sendReadReceiptMessage(data.messageUId, data.sentTime, mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                        if ($state.is("main.chat") && !document.hidden && msg.senderUserId != mainDataServer.loginUser.id && msg.conversationType == webimmodel.conversationType.Private){
+                          conversationServer.sendReadReceiptMessage(mainDataServer.conversation.currentConversation.targetId, mainDataServer.conversation.currentConversation.targetType, data.messageUId, data.sentTime);
+                        }
+
+                        if ($state.is("main.chat") && !document.hidden && msg.senderUserId != mainDataServer.loginUser.id && msg.conversationType == webimmodel.conversationType.Group){
+                          conversationServer.sendSyncReadStatusMessage(mainDataServer.conversation.currentConversation.targetId, mainDataServer.conversation.currentConversation.targetType, data.sentTime);
                         }
                         addmessage(msg);
                         //TODO 判断是@消息时添加
@@ -897,14 +894,17 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                     case webimmodel.MessageType.RecallCommandMessage:
                         if(msg.objectName == 'RC:RcCmd'){
-                            if(msg.senderUserId == mainDataServer.loginUser.id){
-                              msg.content = '你' + msg.content;
-                            }
-                            else{
-                              conversationServer.messageAddUserInfo(msg);
-                              msg.content = msg.senderUserName + msg.content;
-                            }
-                            addmessage(msg);
+                            // var withDrawMsg = <any>data.content;
+                            // conversationServer.addWithDrawMessageCache(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
+                            // conversationServer.delWithDrawMessage(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
+                            // if(msg.senderUserId == mainDataServer.loginUser.id){
+                            //   msg.content = '你' + msg.content;
+                            // }
+                            // else{
+                            //   conversationServer.messageAddUserInfo(msg);
+                            //   msg.content = msg.senderUserName + msg.content;
+                            // }
+                            // addmessage(msg);
                         }
                         break;
                     case webimmodel.MessageType.TypingStatusMessage:
@@ -924,6 +924,42 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         //判断如果为当前输入页面用户
                         // msg.content = msg.senderUserName + msg.content;
                         addmessage(msg);
+                        break;
+                    case webimmodel.MessageType.ReadReceiptRequestMessage:
+                        if ($state.is("main.chat") && !document.hidden && msg.conversationType == webimmodel.conversationType.Group && msg.targetId == mainDataServer.conversation.currentConversation.targetId) {
+                          RongIMSDKServer.sendReceiptResponse(msg.conversationType, msg.targetId).then(function() {
+                              console.log('sendReadReceiptResponseMessage success');
+                          }, function(error) {
+                              console.log('sendReadReceiptResponseMessage error', error.errorCode);
+                          });
+                        }
+                        break;
+                    case webimmodel.MessageType.ReadReceiptResponseMessage:
+                        // var ids = msg.content.receiptMessageDic[RongIMLib.Bridge._client.userId];
+                        var receiptResponseItem = <any>data.content;
+                        var ids = receiptResponseItem.receiptMessageDic[mainDataServer.loginUser.id];
+                        if(!ids){
+                           return;
+                        }
+                        for(var i = 0, len = ids.length; i < len; i++){
+                            // console.log(ids[i], msg.receiptResponse[ids[i]]);
+                            var itemById = conversationServer.getMessageById(msg.targetId, msg.conversationType, ids[i]);
+                            if(itemById && msg.receiptResponse[ids[i]]){
+                              itemById.receiptResponse = msg.receiptResponse;
+                              // $('#' + ids[i]).find('span.receiptResponse').text(msg.receiptResponse[ids[i]] + '人已读');
+                            }
+
+                            //遍历,更新缓存中消息的receiptResponse
+                        }
+                        break;
+                    case webimmodel.MessageType.SyncReadStatusMessage:
+                        RongIMSDKServer.clearUnreadCount(msg.conversationType, msg.targetId);
+                        var curCon = mainDataServer.conversation.getConversation(msg.conversationType, msg.targetId);
+                        if (curCon) {
+                            curCon.atStr = '';
+                            mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
+                            curCon.unReadNum = 0;
+                        }
                         break;
                     default:
                         console.log(data.messageType + "：未处理")

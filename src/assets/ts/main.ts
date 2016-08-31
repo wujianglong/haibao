@@ -32,7 +32,7 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
         $httpProvider.defaults.withCredentials = true;
 
 
-        $urlRouterProvider.when("/main", ["$state", "mainDataServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer) {
+        $urlRouterProvider.when("/main", ["$state", "mainDataServer", "mainServer", function($state: angular.ui.IStateService, mainDataServer: mainDataServer, mainServer: mainServer) {
             var userid = webimutil.CookieHelper.getCookie("loginuserid");
             if (userid) {
                 if (!$state.is("main")) {
@@ -41,6 +41,14 @@ webimApp.config(["$provide", "$stateProvider", "$urlRouterProvider", "$httpProvi
                 return;
             } else {
                 $state.go("account.signin");
+                // mainServer.user.logout().success(function () {
+                //     webimutil.CookieHelper.removeCookie("loginuserid");
+                //     mainDataServer.loginUser = new webimmodel.UserInfo();
+                //     if (window.Electron) {
+                //         window.Electron.webQuit();
+                //     }
+                //     $state.go("account.signin");
+                // });
                 return;
             }
         }]).when("/main/chat/:targetId/:targetType", ["$state", "$match", "mainDataServer",

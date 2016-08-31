@@ -225,6 +225,9 @@ conversationDire.directive("conversationItem", ["$timeout", function($timeout: a
                     angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.senderUserId.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
                 }, 50);
             }
+            scope.sendReadReceiptRequestMessage = function(uid: string){
+               scope.$parent.sendReadReceiptRequestMessage(uid);
+            }
         }
     }
 }]);
@@ -473,20 +476,24 @@ conversationDire.directive("textMessage", [function() {
     return {
         restrict: "E",
         scope: {
-            item: "="
+            item: "=",
+            message: "="
         },
-        template: '<div class="" id="{{itemid}}">' +
+        template: '<div class="" id="{{message.messageUId}}">' +
         '<div class="Message-text">' +
         // '<pre class="at_all_people" ng-show="isAtAll">@所有人</pre>' +
         '<pre class="Message-entry" ng-bind-html="content|trustHtml">' +
         // '<i class="at_function" ng-show="isAtPart">@****</i>' +
         '</pre>' +
         '<br></span></div>' +
+        // '<input type="button" value="回执" ng-show="requestShow" ng-click="sendReadReceiptRequestMessage()" >' +
+        // '<span class="receiptResponse"></span>' +
         '</div>',
         replace: true,
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var EMailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/gi
             var EMailArr = <string[]>[];
+            var requestShow = false;
             scope.isAtAll = false;
             scope.isAtPart = false;
             if(scope.$parent.item.mentionedInfo && scope.$parent.item.mentionedInfo.type == webimmodel.AtTarget.All){
@@ -515,6 +522,33 @@ conversationDire.directive("textMessage", [function() {
                 scope.content = scope.content.replace('[email`' + i + ']', '<a href="mailto:' + EMailArr[i] + '">' + EMailArr[i] + '<a>');
             }
             // TODO 匹配 @ 信息显示消息内容
+            // ele.on('contextmenu', function(e) {
+            //     var _parent = <any>e.target.parentNode.parentNode;
+            //     console.log('显示右键菜单', e.which, e.target.id || _parent.id, e);
+            //     e.preventDefault();
+            //     return false;
+            // })
+            scope.sendReadReceiptRequestMessage = function(){
+              scope.$parent.sendReadReceiptRequestMessage(scope.message.messageUId);
+            }
+
+            if(!scope.message.receiptResponse
+              && scope.message.conversationType == webimmodel.conversationType.Group
+              && scope.message.messageDirection == webimmodel.MessageDirection.SEND){
+              requestShow = true;
+            }
+            scope.requestShow = requestShow;
+
+            // if(scope.message.receiptResponse
+            //   && scope.message.conversationType == webimmodel.conversationType.Group
+            //   && scope.message.messageDirection == webimmodel.MessageDirection.SEND){
+            //   $(ele).find('span.receiptResponse').text(scope.message.receiptResponse[scope.message.messageUId] + '人已读');
+            // }
+
+            $(ele).contextmenu(function(e: any){
+              console.log('显示右键菜单', e.which, e.currentTarget.id, e);
+              return false;
+            });
         }
     }
 }])
@@ -523,7 +557,7 @@ conversationDire.directive("imageMessage", [function() {
     return {
         restrict: "E",
         scope: { item: "=" },
-        template: '<div class="">' +
+        template: '<div class="" id={{itemid}}>' +
         '<div class="Message-img">' +
         '<span id="{{\'rebox_\'+$id}}" ng-click="showBigImage()"   class="Message-entry gallery" style="">' +
         '<!-- <p>发给您一张示意图</p> -->' +
@@ -534,6 +568,7 @@ conversationDire.directive("imageMessage", [function() {
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {
             var img = new Image();
+            scope.itemid = scope.$parent.item.messageUId;
             img.src = scope.item.imageUri;
             setTimeout(function() {
                 $('#rebox_' + scope.$id).rebox({ selector: 'a' }).bind("rebox:open", function() {
@@ -552,7 +587,6 @@ conversationDire.directive("imageMessage", [function() {
 
 
             img.onload = function() {
-
                 scope.$apply(function() {
                     scope.item.content = scope.item.imageUri
                 });
@@ -560,6 +594,10 @@ conversationDire.directive("imageMessage", [function() {
             scope.showBigImage = function() {
 
             }
+            $(ele).contextmenu(function(e: any){
+              console.log('显示右键菜单', e.which, e.currentTarget.firstChild.id, e);
+              return false;
+            });
         }
     }
 }])
@@ -847,6 +885,11 @@ conversationDire.directive("fileMessage", [function() {
             if (newVal === oldVal)
                 return;
             updateState();
+          });
+
+          $(ele).contextmenu(function(e: any){
+            console.log('显示右键菜单', e.which, e.currentTarget.firstChild.id, e);
+            return false;
           });
         }
     }

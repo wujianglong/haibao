@@ -29,14 +29,6 @@ html, body {
 }
 body{
     min-width: 1000px;
-<<<<<<< HEAD
-    -webkit-app-region: drag; /* for pc client */
-}
-
-button, input, select, textarea /* for pc client */
-{
-    -webkit-app-region: no-drag;
-=======
 }
 .header, .box_hd, .LeftNav, .drag_area{
   -webkit-app-region: drag;    /* for pc client */
@@ -44,7 +36,6 @@ button, input, select, textarea /* for pc client */
 button, input, select, textarea, #message-content, #Messages /* for pc client */
 {
    -webkit-app-region: no-drag;
->>>>>>> dev
 }
 /** 清除内外边距 **/
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */

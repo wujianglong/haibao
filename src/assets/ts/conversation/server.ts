@@ -14,6 +14,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.conversationMessageListShow = <any>[];
         conversationServer.pullMessageTime = null;
         conversationServer.remainMessageCount = 5;
+        conversationServer.withDrawMessagesCache = <any>{};
 
         function asyncConverGroupNotifition(msgsdk: any, item: any) {
             var detail = <any>msgsdk.content
@@ -136,8 +137,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     if(msglen > 0){
                       conversationServer.pullMessageTime = list[msglen - 1].sentTime;
                     }
+                    var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
+
                     while (msglen--) {
                         var msgsdk = list[msglen];
+                        if(_withDrawMsg && _withDrawMsg.indexOf(msgsdk.messageUId) > -1){
+                            continue;
+                        }
 
                         switch (msgsdk.messageType) {
                             case webimmodel.MessageType.ContactNotificationMessage:
@@ -172,6 +178,16 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                   }
                                 }
                                 break;
+                            case webimmodel.MessageType.RecallCommandMessage:
+                                if (msgsdk.objectName == "RC:RcCmd") {
+                                  // var item = webimmodel.Message.convertMsg(msgsdk);
+                                  // if (item) {
+                                  //     conversationServer.delWithDrawMessage(item.senderUserId, item.conversationType, msgsdk.messageUId);
+                                  //     unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                  // }
+                                  // conversationServer.addWithDrawMessageCache(item.senderUserId, item.conversationType, msgsdk.messageUId);
+                                }
+                                break;
                             case webimmodel.MessageType.InformationNotificationMessage:
                                 var item = webimmodel.Message.convertMsg(msgsdk);
                                 if (item) {
@@ -193,6 +209,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     if (addtime && addtime.panelType != webimmodel.PanelType.Time) {
                         unshiftHistoryMessages(currentConversationTargetId, conver, new webimmodel.TimePanl(conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0].sentTime));
                     }
+                    //遍历缓存,过滤撤回消息
+                    // var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
+                    // if(_withDrawMsg){
+                    //   for(var i = 0;i < _withDrawMsg.length;i++){
+                    //      delWithDrawMessage(currentConversationTargetId, conver, _withDrawMsg[i]);
+                    //   }
+                    // }
 
                     d.resolve(has);
                 }, function(err: any) {
@@ -249,6 +272,80 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
           return sentTime;
         }
 
+        function delWithDrawMessage(id: string, type: string, uid: string){
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          if(currenthis){
+            for (var i = 0; i < currenthis.length; i++) {
+              if (currenthis[i].panelType == webimmodel.PanelType.Message && currenthis[i].messageUId == uid) {
+                  if(i > 0 && i < currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time && currenthis[i + 1].panelType == webimmodel.PanelType.Time
+                      || i == currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time
+                  ){
+                    currenthis.splice(i-1, 2);
+                  }
+                  else{
+                    currenthis.splice(i, 1);
+                  }
+                  break;
+              }
+            }
+          }
+
+          // function dealWithDrawMessage(id: string, type: string, uid: string){
+          //   var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          //   if(currenthis){
+          //     for (var i = 0; i < currenthis.length; i++) {
+          //       if (currenthis[i].panelType == webimmodel.PanelType.Message && currenthis[i].messageUId == uid) {
+          //           if(i > 0 && i < currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time && currenthis[i + 1].panelType == webimmodel.PanelType.Time
+          //               || i == currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time
+          //           ){
+          //             currenthis.splice(i-1, 2);
+          //           }
+          //           else{
+          //             currenthis.splice(i, 1);
+          //           }
+          //           break;
+          //       }
+          //     }
+          //   }
+
+
+
+          currenthis = conversationServer.conversationMessageList;
+          if(currenthis){
+            for (var i = 0; i < currenthis.length; i++) {
+              if (currenthis[i].panelType == webimmodel.PanelType.Message && currenthis[i].messageUId == uid) {
+                  if(i > 0 && i < currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time && currenthis[i + 1].panelType == webimmodel.PanelType.Time
+                      || i == currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time
+                  ){
+                    currenthis.splice(i-1, 2);
+                  }
+                  else{
+                    currenthis.splice(i, 1);
+                  }
+                  break;
+              }
+            }
+          }
+
+          currenthis = conversationServer.conversationMessageListShow;
+          if(currenthis){
+            for (var i = 0; i < currenthis.length; i++) {
+              if (currenthis[i].panelType == webimmodel.PanelType.Message && currenthis[i].messageUId == uid) {
+                  if(i > 0 && i < currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time && currenthis[i + 1].panelType == webimmodel.PanelType.Time
+                      || i == currenthis.length - 1 && currenthis[i - 1].panelType == webimmodel.PanelType.Time
+                  ){
+                    currenthis.splice(i-1, 2);
+                  }
+                  else{
+                    currenthis.splice(i, 1);
+                  }
+                  break;
+              }
+            }
+          }
+
+        }
+
         function compareDateIsAddSpan(first: Date, second: Date) {
             if (Object.prototype.toString.call(first) == "[object Date]" && Object.prototype.toString.call(second) == "[object Date]") {
                 var pre = first.toString();
@@ -295,6 +392,13 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
           conversationServer.atMessagesCache[type + "_" + id].push(atMsg);
         }
 
+        function addWithDrawMessageCache(id: string, type: string, msgUid: string){
+          if (!conversationServer.withDrawMessagesCache[type + "_" + id]) {
+              conversationServer.withDrawMessagesCache[type + "_" + id] = [];
+          }
+          conversationServer.withDrawMessagesCache[type + "_" + id].push(msgUid);
+        }
+
         //消息里没有用户信息，要去本地的好友列表里查找
         function messageAddUserInfo(item: webimmodel.Message) {
             if (!item.senderUserId) {
@@ -310,6 +414,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                 switch (item.conversationType) {
                     case webimmodel.conversationType.Private:
                         user = mainDataServer.contactsList.getFriendById(item.senderUserId);
+                        if(!user){
+                           user = mainDataServer.contactsList.getNonFriendById(item.senderUserId);
+                        }
                         break;
                     case webimmodel.conversationType.Group:
                         user = mainDataServer.contactsList.getGroupMember(item.targetId, item.senderUserId);
@@ -318,11 +425,11 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                         user = mainDataServer.contactsList.getDiscussionMember(item.targetId, item.senderUserId);
                         break;
                     case webimmodel.conversationType.System:
-                        user = mainDataServer.contactsList.getFriendById(item.senderUserId);
-                        if (user) {
+                        // user = mainDataServer.contactsList.getFriendById(item.senderUserId);
+                        // if (user) {
                             user = new webimmodel.Contact();
                             user.name = "系统消息";
-                        }
+                        // }
                         break;
                     default:
                         console.log("暂不支持此会话类型");
@@ -339,7 +446,14 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                         if (rep.code == 200) {
                             item.senderUserName = rep.result.nickname;
                             item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                            item.imgSrc = rep.result.portraitUri
+                            item.imgSrc = rep.result.portraitUri;
+                            var _friend = new webimmodel.Friend({
+                                id: item.senderUserId,
+                                name: item.senderUserName + '(非好友)',
+                                imgSrc: item.imgSrc
+                            });
+                            _friend.firstchar = item.senderUserImgSrc;
+                            mainDataServer.contactsList.addNonFriend(_friend);
                         }
                     }).error(function() {
                         //之前可能清过库没有这个用户TODO：删掉
@@ -377,6 +491,22 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
           return !keepGoing;
         }
 
+        function updateSendMessage(id: string, type: string, msg: webimmodel.Message){
+          var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
+          for(var i = currenthis.length - 1; i > -1; i--){
+            if (currenthis[i].panelType == webimmodel.PanelType.Message
+              && currenthis[i].messageUId == undefined
+              && currenthis[i].messageDirection == webimmodel.MessageDirection.SEND
+              && currenthis[i].messageId == msg.messageId
+            ) {
+                currenthis[i].messageUId = msg.messageUId;
+                currenthis[i].sentStatus = webimmodel.SentStatus.SENT;
+                currenthis.splice(i, 1, msg);
+                break;
+            }
+          }
+        }
+
         function getMessageById(id: string, type: string, messageuid: string){
           var currenthis = conversationServer.historyMessagesCache[type + "_" + id];
           var keepGoing = true;
@@ -392,6 +522,34 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
           return msg;
         }
 
+        function sendReadReceiptMessage(id: string, type: number, messageuid: string, sendtime: number){
+          var messageUId = messageuid;
+          var lastMessageSendTime = sendtime;
+          // if(targetType != webimmodel.conversationType.Private && targetType != webimmodel.conversationType.Group){
+          if(type != webimmodel.conversationType.Private){
+            return;
+          }
+          var msg = RongIMLib.ReadReceiptMessage.obtain(messageUId, lastMessageSendTime, 1);
+          RongIMSDKServer.sendMessage(type, id, msg).then(function() {
+
+          }, function(error) {
+              console.log('sendReadReceiptMessage error', error.errorCode);
+          });
+        }
+
+        function sendSyncReadStatusMessage(id: string, type: number, sendtime: number){
+          var lastMessageSendTime = sendtime;
+          if(type != webimmodel.conversationType.Group){
+            return;
+          }
+          var msg = new RongIMLib.SyncReadStatusMessage({lastMessageSendTime: sendtime});
+          RongIMSDKServer.sendMessage(type, id, msg).then(function() {
+
+          }, function(error) {
+              console.log('sendSyncReadStatusMessage error', error.errorCode);
+          });
+        }
+
         conversationServer.getHistory = getHistory;
         conversationServer.addHistoryMessages = addHistoryMessages;
         conversationServer.messageAddUserInfo = messageAddUserInfo;
@@ -404,12 +562,18 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         conversationServer.clearHistoryMessages = clearHistoryMessages;
         conversationServer.getLastMessageTime = getLastMessageTime;
         conversationServer.getMessageById = getMessageById;
+        conversationServer.updateSendMessage = updateSendMessage;
+        conversationServer.delWithDrawMessage = delWithDrawMessage;
+        conversationServer.addWithDrawMessageCache = addWithDrawMessageCache;
+        conversationServer.sendReadReceiptMessage = sendReadReceiptMessage;
+        conversationServer.sendSyncReadStatusMessage = sendSyncReadStatusMessage;
 
         return conversationServer;
     }])
 
 interface conversationServer {
     atMessagesCache: any
+    withDrawMessagesCache: any
     pullMessageTime: number
     historyMessagesCache: any
     conversationMessageList: any[]
@@ -428,4 +592,9 @@ interface conversationServer {
     getMessageById(id: string, type:number, messageuid: string): webimmodel.Message
     clearHistoryMessages(id: string, type: number): void
     getLastMessageTime(id: string, type: number): number
+    updateSendMessage(id: string, type: number, message: webimmodel.Message): void
+    delWithDrawMessage(id: string, type:number, messageuid: string): void
+    addWithDrawMessageCache(id: string, type:number, messageuid: string): void
+    sendReadReceiptMessage(id: string, type:number, messageuid: string, sendtime: number): void
+    sendSyncReadStatusMessage(id: string, type:number, sendtime: number): void
 }

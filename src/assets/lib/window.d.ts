@@ -39,6 +39,7 @@ declare module RongIMLib {
 
 interface JQuery {
     rebox(target: any): JQuery
+    contextmenu: any
 }
 
 interface Window {

@@ -415,7 +415,18 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                       conversationitem.imgSrc = friendinfo.imgSrc;
                       conversationitem.firstchar = friendinfo.firstchar;
                       conversationitem.everychar = friendinfo.everychar;
-                  } else if (item.targetId) {
+                  }
+                  else if (item.targetId){
+                    var friendinfo = mainDataServer.contactsList.getNonFriendById(item.targetId || item.senderUserId)
+                    if (friendinfo) {
+                        item.conversationTitle = friendinfo.displayName || friendinfo.name;
+                        conversationitem.title = friendinfo.displayName || friendinfo.name;
+                        conversationitem.firstchar = friendinfo.firstchar;
+                        conversationitem.imgSrc = friendinfo.imgSrc;
+                        // conversationitem.firstchar = friendinfo.firstchar;
+                        // conversationitem.everychar = friendinfo.everychar;
+                    }
+                    else{
                       (function(id: string, conv: webimmodel.Conversation) {
                           mainServer.user.getInfo(id).success(function(rep) {
                               conv.title = rep.result.nickname + "(非好友)";
@@ -424,12 +435,20 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                               conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
                               conv.imgSrc = rep.result.portraitUri;
+
+                              var _friend = new webimmodel.Friend({
+                                  id: id,
+                                  name: conv.title,
+                                  imgSrc: conv.imgSrc
+                              });
+                              _friend.firstchar = f;
+                              mainDataServer.contactsList.addNonFriend(_friend);
                           }).error(function() {
                               conv.title = "非系统用户";
                           });
                       })(item.targetId || item.senderUserId, conversationitem)
+                    }
                   }
-
                   break;
               case RongIMLib.ConversationType.SYSTEM:
                   break;
@@ -689,7 +708,12 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
                 return;
             }
-            if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage || msg.messageType == webimmodel.MessageType.TypingStatusMessage){
+            if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage
+              || msg.messageType == webimmodel.MessageType.TypingStatusMessage
+              || msg.messageType == webimmodel.MessageType.SyncReadStatusMessage
+              || msg.messageType == webimmodel.MessageType.ReadReceiptRequestMessage
+              || msg.messageType == webimmodel.MessageType.ReadReceiptResponseMessage
+            ){
               return ;
             }
 
@@ -925,6 +949,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     }
 
     var contactsList = {
+        nonFriendList: <webimmodel.Friend[]>[],
         groupList: <webimmodel.Group[]>[],
         subgroupList: <webimmodel.Subgroup[]>[],
         discussionList: <webimmodel.Discussion[]>[],
@@ -1210,6 +1235,22 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 }
             }
             return false;
+        },
+        getNonFriendById: function(id: string) {
+            for (var i = 0, slen = this.nonFriendList.length; i < slen; i++) {
+              if (this.nonFriendList[i].id == id) {
+                  return this.nonFriendList[i];
+              }
+            }
+            return null;
+        },
+        addNonFriend: function(person: webimmodel.Friend) {
+            if (!contactsList.getNonFriendById(person.id)) {
+                var obj = webimutil.ChineseCharacter.convertToABC(person.name);
+                var f = webimutil.ChineseCharacter.getPortraitChar(person.name);
+                person.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f })
+                this.nonFriendList.push(person);
+            }
         }
     }
     mainDataServer.contactsList = contactsList;
@@ -1352,6 +1393,47 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
                 console.log('发送失败:' + info);
             }
         }, isAtMsg);
+
+        return defer.promise;
+    }
+
+    RongIMSDKServer.sendReceiptResponse = function(conver: number, targetId: string) {
+        var defer = $q.defer();
+
+        RongIMLib.RongIMClient.getInstance().sendReceiptResponse(+conver, targetId, {
+            onSuccess: function(data) {
+                defer.resolve(data);
+            },
+            onError: function(errorCode, message) {
+                defer.reject({ errorCode: errorCode, message: message });
+                var info = '';
+                switch (errorCode) {
+                    case RongIMLib.ErrorCode.TIMEOUT:
+                        info = '超时';
+                        break;
+                    case RongIMLib.ErrorCode.UNKNOWN:
+                        info = '未知错误';
+                        break;
+                    case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                        info = '在黑名单中，无法向对方发送消息';
+                        //TODO:addmessage() 您的消息已经发出,但被对方拒收
+                        break;
+                    case RongIMLib.ErrorCode.NOT_IN_DISCUSSION:
+                        info = '不在讨论组中';
+                        break;
+                    case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                        info = '不在群组中';
+                        break;
+                    case RongIMLib.ErrorCode.NOT_IN_CHATROOM:
+                        info = '不在聊天室中';
+                        break;
+                    default:
+                        info = "";
+                        break;
+                }
+                console.log('发送失败:' + info);
+            }
+        });
 
         return defer.promise;
     }
@@ -1541,6 +1623,7 @@ interface RongIMSDKServer {
     clearUnreadCount(type: number, targetid: string): angular.IPromise<boolean>
     getTotalUnreadCount(): angular.IPromise<number>
     sendMessage(conver: number, targetId: string, content: any, isAt?: boolean): angular.IPromise<RongIMLib.Message>
+    sendReceiptResponse(conver: number, targetId: string): angular.IPromise<RongIMLib.Message>
     // conversationList(): any
     getConversationList(): angular.IPromise<RongIMLib.Conversation[]>
     getConversation(type: number, targetId: string): angular.IPromise<RongIMLib.Conversation>
@@ -1607,6 +1690,8 @@ interface mainDataServer {
         getDiscussionMember(discussionId: string, memberId: string): webimmodel.Member
         addDiscussionMember(discussionId: string, member: webimmodel.Member): any
         removeDiscussionMember(discussionId: string, memberid: string): boolean
+        addNonFriend(group: webimmodel.Friend): void
+        getNonFriendById(id: string): webimmodel.Friend
     }
     notification: {
         hasNewNotification: boolean

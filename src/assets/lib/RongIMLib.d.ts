@@ -686,10 +686,20 @@ declare module RongIMLib {
          */
         sendStatusMessage(messageContent: MessageContent, sendCallback: SendMessageCallback, resultCallback: ResultCallback<Message>): void;
         /**
-         * [sendTextMessage 发送TextMessage快捷方式]
-         * @param  {string}                  content        [消息内容]
+         * [sendReceiptResponse 发送ReadReceiptResponseMessage快捷方式]
+         * @param  {ConversationType}        conversationType [description]
+         * @param  {string}                  targetId         [description]
          * @param  {ResultCallback<Message>} resultCallback [返回值，参数回调]
          */
+         sendReceiptResponse(conversationType: ConversationType, targetId: string, sendMessageCallback: SendMessageCallback): void;
+         /**
+          * [insertMessage 向本地插入一条消息，不发送到服务器。]
+          * @param  {ConversationType}        conversationType [description]
+          * @param  {string}                  targetId         [description]
+          * @param  {string}                  senderUserId     [description]
+          * @param  {MessageContent}          content          [description]
+          * @param  {ResultCallback<Message>} callback         [description]
+          */
         sendTextMessage(conversationType: ConversationType, targetId: string, content: string, sendMessageCallback: SendMessageCallback): void;
         /**
          * [insertMessage 向本地插入一条消息，不发送到服务器。]
@@ -1729,6 +1739,12 @@ declare module RongIMLib {
     }
 }
 declare module RongIMLib {
+    class RecallCommandMessage implements MessageContent {
+        messageName: string;
+        messageUId: string;
+        constructor(message: any);
+        encode(): any;
+    }
     class TextMessage implements MessageContent, UserInfoAttachedMessage, ExtraAttachedMessage {
         userInfo: UserInfo;
         extra: string;
@@ -1782,6 +1798,12 @@ declare module RongIMLib {
         static obtain(title: string, content: string, imageUri: string): RichContentMessage;
         encode(): string;
     }
+    class SyncReadStatusMessage implements MessageContent {
+        lastMessageSendTime: number;
+        messageName: string;
+        constructor(message: any);
+        encode(): string;
+    }
     class ReadReceiptMessage implements MessageContent {
         lastMessageSendTime: number;
         messageUId: string;
@@ -1813,6 +1835,18 @@ declare module RongIMLib {
         messageName: string;
         constructor(message: any);
         static obtain(item: PublicServiceMenuItem): PublicServiceCommandMessage;
+        encode(): string;
+    }
+    class ReadReceiptRequestMessage implements MessageContent {
+        messageName: string;
+        messageUId: string;
+        constructor(message: any);
+        encode(): string;
+    }
+    class ReadReceiptResponseMessage implements MessageContent {
+        messageName: string;
+        receiptMessageDic: any;
+        constructor(message: any);
         encode(): string;
     }
     class PublicServiceMultiRichContentMessage implements MessageContent, UserInfoAttachedMessage {

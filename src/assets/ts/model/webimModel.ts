@@ -140,7 +140,10 @@ module webimmodel {
         GroupNotificationMessage: "GroupNotificationMessage",
         RecallCommandMessage: "RecallCommandMessage",
         InviteMessage: "InviteMessage",
-        HungupMessage: "HungupMessage"
+        HungupMessage: "HungupMessage",
+        ReadReceiptRequestMessage: "ReadReceiptRequestMessage",
+        ReadReceiptResponseMessage: "ReadReceiptResponseMessage",
+        SyncReadStatusMessage: "SyncReadStatusMessage"
     }
 
     export enum conversationType {
@@ -202,6 +205,7 @@ module webimmodel {
         imgSrc: string
         mentionedInfo: any
         isRead: boolean
+        receiptResponse: any;
 
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);
@@ -235,6 +239,7 @@ module webimmodel {
                     // texmsg.content = '<xmp>' + content + '</xmp>';
                     msg.content = texmsg;
                     msg.mentionedInfo = SDKmsg.content.mentionedInfo;
+                    msg.receiptResponse = SDKmsg.receiptResponse;
                     break;
                 case MessageType.ImageMessage:
                     var image = new ImageMessage();
@@ -360,6 +365,15 @@ module webimmodel {
                     // }
                     msg.content = '当前版本暂不支持查看此消息';
                     msg.panelType = webimmodel.PanelType.InformationNotification;
+                    break;
+                case MessageType.ReadReceiptRequestMessage:
+                    msg.content = SDKmsg.content.messageUId;
+                    break;
+                case MessageType.ReadReceiptResponseMessage:
+                    msg.content = SDKmsg.content.receiptMessageDic;
+                    msg.receiptResponse = SDKmsg.receiptResponse;
+                    break;
+                case MessageType.SyncReadStatusMessage:
                     break;
                 default:
                     if (SDKmsg.objectName == "RC:GrpNtf") {
@@ -501,6 +515,17 @@ module webimmodel {
                 // }
 
             }
+            else if(msgtype == webimmodel.MessageType.RecallCommandMessage){
+               msgContent = "撤回一条消息";
+            }
+            // else if(msgtype == webimmodel.MessageType.SyncReadStatusMessage){
+            // }
+            // else if(msgtype == webimmodel.MessageType.ReadReceiptRequestMessage){
+            //
+            // }
+            // else if(msgtype == webimmodel.MessageType.ReadReceiptResponseMessage){
+            //
+            // }
             else {
                 msgContent = "[当前版本暂不支持查看此消息]";
             }
@@ -589,6 +614,14 @@ module webimmodel {
         extra: string;
         state: FileState;
         progress: number;  // 0-100
+    }
+
+    export class ReadReceiptRequestMessage {
+        messageUId: string;
+    }
+
+    export class ReadReceiptResponseMessage {
+        receiptMessageDic: any;
     }
 
     export class GetHistoryPanel extends ChatPanel {
