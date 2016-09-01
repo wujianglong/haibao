@@ -564,6 +564,7 @@ conversationDire.directive("imageMessage", [function() {
         // '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" data-image="{{item.imageUri}}" alt=""/>' +
         '<a href="{{item.imageUri||\'assets/img/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
         '</span>' +
+        // '<a href="{{item.imageUri}}" download>下载</a>' +
         '</div>' +
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attr: any) {

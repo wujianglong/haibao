@@ -3370,3 +3370,67 @@ input::-ms-clear{display:none;}
 
 
 }
+
+/*p.attr.clearfix:nth-child(2) {
+    margin-top: 4px;
+}
+
+.chat_item .info .msg {
+    color: #8e969f;
+    font-size: 12px;
+    width: 100%;
+    display: -webkit-box;
+    height: 24px;
+    line-height: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.chat_item .photo .img {
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+
+.chat_item {
+    padding: 12px 0px 0px 10px;
+    border-bottom: 1px solid #e1e9f1;
+    cursor: pointer;
+    position: relative;
+}
+.ext_info {
+    border-bottom: 1px solid red;
+    overflow: hidden;
+    padding-bottom: 12px;
+}
+.chat_item .ext {
+    float: right;
+    color: #6b6f7c;
+    font-size: 13px;
+    text-align: right;
+    min-width: 55px;
+    margin-top: 5px;
+    margin-right: 6px;
+}
+.chat_item .info .msg {
+    color: #8e969f;
+    font-size: 12px;
+    width: 100%;
+    display: -webkit-box;
+    height: 24px;
+    line-height: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+}*/
+.chat_item .attr span{
+  display: inline-block;
+  float: none !important;
+}

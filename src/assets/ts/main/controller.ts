@@ -19,16 +19,17 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                 mainDataServer.loginUser.id = userid;
                 mainDataServer.loginUser.token = usertoken;
             } else {
-                $state.go("account.signin");
-                // mainServer.user.logout().success(function () {
-                //     webimutil.CookieHelper.removeCookie("loginuserid");
-                //     mainDataServer.loginUser = new webimmodel.UserInfo();
-                //     conversationServer.historyMessagesCache.length = 0;
-                //     if (window.Electron) {
-                //         window.Electron.webQuit();
-                //     }
-                //     $state.go("account.signin");
-                // });
+                // $state.go("account.signin");
+                mainServer.user.logout().success(function () {
+                    webimutil.CookieHelper.removeCookie("loginuserid");
+                    mainDataServer.loginUser = new webimmodel.UserInfo();
+                    conversationServer.historyMessagesCache.length = 0;
+                    if (window.Electron) {
+                        window.Electron.webQuit();
+                    }
+                    $state.go("account.signin");
+                });
+                return;
             }
         }
 
@@ -944,7 +945,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         for(var i = 0, len = ids.length; i < len; i++){
                             // console.log(ids[i], msg.receiptResponse[ids[i]]);
                             var itemById = conversationServer.getMessageById(msg.targetId, msg.conversationType, ids[i]);
-                            if(itemById && msg.receiptResponse[ids[i]]){
+                            if(itemById && msg.receiptResponse && msg.receiptResponse[ids[i]]){
                               itemById.receiptResponse = msg.receiptResponse;
                               // $('#' + ids[i]).find('span.receiptResponse').text(msg.receiptResponse[ids[i]] + '人已读');
                             }
