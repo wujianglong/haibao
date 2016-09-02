@@ -115,6 +115,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 var list = mainDataServer.contactsList.find(str, rawGroutList);
                 $scope.showGroupList = webimutil.Helper.cloneObject(list);
             }
+            setTimeout(function(){
+              var obj = $('div.arobase').find('ul>li:first-child');
+              obj.addClass('selected');
+            })
         }
         if (groupid) {
           $scope.$watch('searchStr', function (newVal: string, oldVal: string) {
@@ -458,6 +462,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(ele && ele.style.visibility == 'visible'){
               return;
             }
+            
+            if($('div.arobase').is(":visible")){
+              var _index = $('div.arobase').find('.selected').index();
+              var curItem = $scope.showGroupList[_index];
+              $scope.selectMember(curItem);
+              return;
+            }
+
+
             var _message = $scope.currentConversation.draftMsg;
             _message = _message.replace(/(^\s*)|(\s*$)/g,'');  //限制消息不能为空格或者空行
             if(_message == ''){

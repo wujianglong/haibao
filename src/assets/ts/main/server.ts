@@ -1142,6 +1142,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     }
                 }
             }
+            console.log('newArr', newArr);
             return newArr;
         },
         getGroupMember: function(groupId: string, memberId: string) {

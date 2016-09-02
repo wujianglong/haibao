@@ -3093,6 +3093,9 @@ input::-ms-clear{display:none;}
 .arobase ul li:hover{
     background:
 }
+.arobase ul li.selected {
+    background: #dde7f0;
+}
 .arobase ul li img{
     width: 26px;
     height: 26px;

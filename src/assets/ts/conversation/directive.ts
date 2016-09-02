@@ -12,6 +12,32 @@ conversationDire.directive('atshowDire', function () {
             element.bind("click", function (e) {
                 scope.cursorPos = document.getSelection().focusOffset;
             });
+            element.bind("keydown", function (e) {
+              if (scope.atShow && (e.keyCode == 38 || e.keyCode == 40 )) {
+                  // console.log(e, $(e.target).parent().find('div.arobase>ul'));
+                  var obj = $(e.target).parent().find('div.arobase>ul');
+                  var selItem = obj.find('.selected');
+                  var nextItem: any;
+                  if(selItem.length == 0){
+                    selItem = obj.find('li:first-child');
+                  }
+                  if(selItem.length){
+                    if (e.keyCode == 38){
+                       nextItem = selItem.prev();
+                    }
+                    else if(e.keyCode == 40){
+                       nextItem = selItem.next();
+                    }
+
+                    if(nextItem.length){
+                       selItem.removeClass('selected');
+                       nextItem.addClass('selected');
+                    }
+                  }
+                  e.preventDefault();
+                  return;
+              }
+            });
             element.bind("keyup", function (e) {
                  var keyCode = e.keyCode;
                  var obj = document.getElementById("message-content");
@@ -23,6 +49,10 @@ conversationDire.directive('atshowDire', function () {
                 if(obj.textContent.length > 500 && keyCode!= 8){
                    e.preventDefault();
                    return;
+                }
+                if (e.keyCode == 38 || e.keyCode == 40){
+                    e.preventDefault();
+                    return;
                 }
             //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
                 if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
@@ -73,9 +103,23 @@ conversationDire.directive('atshowDire', function () {
                      scope.$apply();
                      return;
                    }
-                   if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
-                      scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
-                      scope.$apply();
+                  //  if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90 || keyCode == 32){
+                  //     var text = obj.textContent.slice(0, caretPos);
+                  //     if (text.indexOf('@') == 0) {
+                  //       text = text.substr(1);
+                  //     }
+                  //     scope.searchStr = text;
+                  //     // scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+                  //     scope.$apply();
+                  //  }
+                  if (keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90 || keyCode == 32 || keyCode == 13) {
+                      var text = obj.textContent.slice(0, caretPos);
+                      var strTmp = text.split('@');
+                      if(strTmp.length > 1){
+                         var name = strTmp[strTmp.length - 1];
+                         scope.searchStr = name;
+                         scope.$apply();
+                      }
                    }
                    else if(keyCode == 8 && scope.searchStr){
                      if(scope.searchStr.length > 0){
