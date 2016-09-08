@@ -681,7 +681,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                             isAtMe = true;
                           }
                           if(msg.mentionedInfo.type == webimmodel.AtTarget.Part){
-                            for(var j = 0; j < msg.mentionedInfo.userList.length; j++){
+                            for(var j = 0; j < msg.mentionedInfo.userIdList.length; j++){
                                if(msg.mentionedInfo.userIdList[j] == mainDataServer.loginUser.id){
                                  isAtMe = true;
                                }
