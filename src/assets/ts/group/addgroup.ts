@@ -15,7 +15,8 @@ addgroup.controller("searchgroupController", ["$scope", "$state",
         }
 
         $scope.back = function() {
-            $state.go("main");
+            // $state.go("main");
+            window.history.back();
         }
     }]);
 

@@ -33,7 +33,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var atArray : any[]  = [];  //TODO 删除时 atArray 同步删除
         var isAtScroll = false;
         var rawGroutList: webimmodel.Member[];
-        var lastMsgTime: number = null;
+        var lastMsgUid: string = null;
+        $scope.$emit("refreshSelectCon", targetType + '_' + targetId);
         $scope.cursorPos = -1;
         $scope.searchStr = '';
         $scope.lastSearchStr = '';
@@ -220,6 +221,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if(lastItem && lastItem.messageUId && lastItem.sentTime){
                   conversationServer.sendReadReceiptMessage(targetId, targetType, lastItem.messageUId, lastItem.sentTime.getTime());
                   conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+                  lastMsgUid = lastItem.messageUId;
+
                 }
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
@@ -239,6 +242,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(lastItem && lastItem.messageUId && lastItem.sentTime){
               conversationServer.sendReadReceiptMessage(targetId, targetType, lastItem.messageUId, lastItem.sentTime.getTime());
               conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+              lastMsgUid = lastItem.messageUId;
             }
             setTimeout(function() {
                 adjustScrollbars();
@@ -462,7 +466,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(ele && ele.style.visibility == 'visible'){
               return;
             }
-            
+
             if($('div.arobase').is(":visible")){
               var _index = $('div.arobase').find('.selected').index();
               var curItem = $scope.showGroupList[_index];
@@ -865,6 +869,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // });
         $scope.$on("$destroy", function() {
            conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+
+           if(targetType == webimmodel.conversationType.Group){
+            var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
+
+            var haNew = (lastItem && lastMsgUid != lastItem.messageUId);
+            if(lastItem && lastItem.messageUId && lastItem.sentTime && haNew){
+              conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+            }
+          }
         });
 
     }])

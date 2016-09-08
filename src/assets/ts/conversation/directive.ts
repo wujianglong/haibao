@@ -55,7 +55,8 @@ conversationDire.directive('atshowDire', function () {
                     return;
                 }
             //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
-                if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
+                // if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
+                if(obj.textContent.substr(caretPos - 1, 1) == '@') {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
@@ -67,7 +68,10 @@ conversationDire.directive('atshowDire', function () {
                     //    return;
                     //  }
                    }
+                  $("#atList").scrollTop(0);
                   scope.atShow = true;
+                  var objAtList = $('div.arobase').find('ul>li:first-child');
+                  objAtList.addClass('selected');
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
                   scope.cursorPos = caretPos;
                   scope.$apply();
@@ -338,19 +342,19 @@ conversationDire.directive('contenteditableDire', function() {
             if (!ngModel) return;
 
             element.bind("paste", function(e: any) {
-              var content = '',hasImg = false;
-              if(e.clipboardData.items){
-                  for (var i = 0; i < e.clipboardData.items.length; i++) {
-                      var item = e.clipboardData.items[i];
+              var content = '', hasImg = false, items = (e.clipboardData || e.originalEvent.clipboardData).items;
+              if (items) {
+                  for (var i = 0; i < items.length; i++) {
+                      var item = items[i];
                       if (item.type.indexOf("image") > -1) {
-                        hasImg = true;
-                        break;
+                          hasImg = true;
+                          break;
                       }
                   }
               }
               e.preventDefault();
               if(!hasImg){
-                if (e.clipboardData) {
+                if ((e.originalEvent || e).clipboardData) {
                     content = (e.originalEvent || e).clipboardData.getData('text/plain');
                     // content = replacemy(content);
                     document.execCommand('insertText', false, content);
@@ -552,15 +556,29 @@ conversationDire.directive("textMessage", [function() {
                 return '[email`' + (EMailArr.length - 1) + ']';
             });
 
-            var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/gi
-
-            scope.content = scope.content.replace(URLReg, function(str: any, $1: any) {
-                if ($1) {
-                    return '<a target="_blank" href="' + str + '">' + str + '</a>';
-                } else {
-                    return '<a target="_blank" href="//' + str + '">' + str + '</a>';
-                }
-            });
+            // var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/gi
+            // var URLReg = /(http(s)?:\\)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?/
+            var URLReg = /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
+            var arrContent = scope.content.split(' '), strResult = '';
+            for (var i = 0, lena = arrContent.length; i < lena; i++) {
+                strResult += arrContent[i].replace(URLReg, function (str: any, $1: any) {
+                    if ($1) {
+                        return '<a target="_blank" href="' + str + '">' + str + '</a>';
+                    }
+                    else {
+                        return '<a target="_blank" href="//' + str + '">' + str + '</a>';
+                    }
+                });
+                strResult += ' ';
+            }
+            scope.content = strResult;
+            // scope.content = scope.content.replace(URLReg, function(str: any, $1: any) {
+            //     if ($1) {
+            //         return '<a target="_blank" href="' + str + '">' + str + '</a>';
+            //     } else {
+            //         return '<a target="_blank" href="//' + str + '">' + str + '</a>';
+            //     }
+            // });
 
             for (var i = 0, len = EMailArr.length; i < len; i++) {
                 scope.content = scope.content.replace('[email`' + i + ']', '<a href="mailto:' + EMailArr[i] + '">' + EMailArr[i] + '<a>');
@@ -668,7 +686,8 @@ conversationDire.directive("richcontentMessage", [function() {
         scope: {
             item: "="
         },
-        template: '   <div class="" >' +
+        template: '    <a href="{{item.url}}" target="_blank">' +
+        '<div class="" >' +
         '<div class="Message-image-text">' +
         '<span class="Message-entry" style="">' +
         '<div class="image-textBox">' +
@@ -680,7 +699,8 @@ conversationDire.directive("richcontentMessage", [function() {
         '</div>' +
         '</span>' +
         '</div>' +
-        '</div>'
+        '</div>' +
+        '</a>'
     }
 }]);
 

@@ -49,7 +49,12 @@ userinfo.controller("userinfoController", ["$scope", "$state", "mainServer", "ma
         }
 
         $scope.back = function() {
-            $state.go("main");
+            // $state.go("main");
+            if($scope.editable){
+              $scope.editable = false;
+            }else{
+              window.history.back();
+            }
         }
 
     }])

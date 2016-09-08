@@ -34,7 +34,8 @@ addfirendCtr.controller("searchfriendController", ["$scope", "$state", "mainServ
         }
 
         $scope.back = function() {
-            $state.go("main");
+            // $state.go("main");
+            window.history.back();
         }
 
     }])
@@ -63,7 +64,8 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
             }
 
             mainServer.friend.invite(id, $scope.message).success(function(rep) {
-                $state.go("main");
+                // $state.go("main");
+                $state.go("main.friendinfo", { userid: userId, groupid: groupid, targetid: targetid, conversationtype: conversationtype });
 
                 var action = rep.result.action;
                 if (action == "Added") {

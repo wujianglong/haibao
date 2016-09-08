@@ -230,7 +230,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
         }
 
         function unshiftHistoryMessages(id: string, type: string, item: any) {
-            var arr = conversationServer.historyMessagesCache[type + "_" + id] = conversationServer.historyMessagesCache[type + "_" + id] || [];
+            var arr = conversationServer.historyMessagesCache[type + "_" + id] || [];
             if (arr[0] && item.messageUId && item.messageUId === arr[0].messageUId) {
                 return;
             }
