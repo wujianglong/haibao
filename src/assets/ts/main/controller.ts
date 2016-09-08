@@ -693,32 +693,32 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
 
                         var isself = mainDataServer.loginUser.id == msg.senderUserId;
-                        if (!isself && ($state.is("main.chat") && document.hidden || !$state.is("main.chat"))) {
-                          if(msg.senderUserName){
-                            webimutil.NotificationHelper.showNotification({
-                                title: msg.senderUserName,
-                                icon: "assets/img/SealTalk.ico",
-                                body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
-                            });
-                          }else{
-                            mainServer.user.getInfo(msg.senderUserId).then(function(rep) {
-                                msg.senderUserName = rep.data.result.nickname;
-                                webimutil.NotificationHelper.showNotification({
-                                    title: msg.senderUserName + "(非好友)",
-                                    icon: "assets/img/SealTalk.ico",
-                                    body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
-                                });
-
-                            })
-                          }
-                        }
-                        else{
+                        if(isself || $state.is("main.chat") && !document.hidden && msg.conversationType == mainDataServer.conversation.currentConversation.targetType && msg.senderUserId == mainDataServer.conversation.currentConversation.targetId){
                           RongIMSDKServer.clearUnreadCount(msg.conversationType, msg.targetId);
                           var curCon = mainDataServer.conversation.getConversation(msg.conversationType, msg.targetId);
                           if (curCon) {
                               curCon.atStr = '';
                               mainDataServer.conversation.totalUnreadCount = mainDataServer.conversation.totalUnreadCount - curCon.unReadNum;
                               curCon.unReadNum = 0;
+                          }
+                        }
+                        else{
+                          if (msg.senderUserName) {
+                              webimutil.NotificationHelper.showNotification({
+                                  title: msg.senderUserName,
+                                  icon: "assets/img/SealTalk.ico",
+                                  body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                              });
+                          }
+                          else {
+                              mainServer.user.getInfo(msg.senderUserId).then(function (rep) {
+                                  msg.senderUserName = rep.data.result.nickname;
+                                  webimutil.NotificationHelper.showNotification({
+                                      title: msg.senderUserName + "(非好友)",
+                                      icon: "assets/img/SealTalk.ico",
+                                      body: webimmodel.Message.messageToNotification(data, mainDataServer.loginUser.id, true), data: { targetId: msg.targetId, targetType: msg.conversationType }
+                                  });
+                              });
                           }
                         }
                         break;
