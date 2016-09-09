@@ -324,6 +324,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     mainDataServer.isTyping = false;
     mainDataServer.conversation = {
         totalUnreadCount: 0,
+        lastOfflineMsg: null,
         conversations: <webimmodel.Conversation[]>[],
         currentConversation: <webimmodel.Conversation>{},
         parseConversation: function(item: RongIMLib.Conversation) {
@@ -346,7 +347,6 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                             mainServer.group.getById(id).success(function (rep) {
                                 listi.conversationTitle = rep.result.name;
                                 conv.title = rep.result.name;
-                                var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
                                 var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
                                 var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
                                 conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
@@ -1652,6 +1652,7 @@ interface mainDataServer {
     isTyping: boolean
     conversation: {
         totalUnreadCount: number
+        lastOfflineMsg: any,
         conversations: webimmodel.Conversation[]
         currentConversation: webimmodel.Conversation,
         parseConversation(item: RongIMLib.Conversation): any,

@@ -134,7 +134,8 @@ friendinfo.controller("editfriendinfoController", ["$scope", "$state", "$statePa
 
 
         $scope.back = function() {
-            $state.go("main.friendinfo", { userid: userid, groupid: groupid, targetid: targetid, conversationtype: conversationtype })
+          window.history.back();
+            // $state.go("main.friendinfo", { userid: userid, groupid: groupid, targetid: targetid, conversationtype: conversationtype })
         }
 
         $scope.save = function() {

@@ -33,7 +33,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         var atArray : any[]  = [];  //TODO 删除时 atArray 同步删除
         var isAtScroll = false;
         var rawGroutList: webimmodel.Member[];
-        var lastMsgTime: number = null;
+        var lastMsgUid: string = null;
+        $scope.$emit("refreshSelectCon", targetType + '_' + targetId);
         $scope.cursorPos = -1;
         $scope.searchStr = '';
         $scope.lastSearchStr = '';
@@ -53,6 +54,33 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
           $scope.showGroupList = webimutil.Helper.cloneObject(rawGroutList);
         }
+
+        $scope.initAtDiv = function () {
+          var _atObj = $("#atList");
+          if(_atObj){
+            var selItem = _atObj.find('.selected');
+            if(selItem){
+              selItem.removeClass('selected');
+            }
+            _atObj.scrollTop(0);
+          }
+
+          var objAtList = $('div.arobase').find('ul>li:first-child');
+          objAtList.addClass('selected');
+        }
+
+        $scope.moveToItem = function (target: any) {
+          if(target && target.$index){
+            var obj = $('div.arobase').find('ul');
+            var selItem = obj.find('.selected');
+            var nextItem = obj.find('li:nth-child('+(target.$index + 1)+')');
+            if (nextItem.length) {
+                selItem.removeClass('selected');
+                nextItem.addClass('selected');
+            }
+          }
+        }
+
         $scope.selectMember = function (item: webimmodel.Member) {
             var obj = document.getElementById("message-content");
             var curPos = $scope.cursorPos;
@@ -81,6 +109,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $scope.cursorPos = -1;
             $scope.lastSearchStr = $scope.searchStr;
             $scope.defaultSearch = false;
+
+            var _atObj = $("#atList");
+            if(_atObj){
+              var selItem = _atObj.find('.selected');
+              if(selItem){
+                selItem.removeClass('selected');
+              }
+              _atObj.scrollTop(0);
+            }
         };
         $scope.getCaretPosition = function(editableDiv: any) {
             var caretPos = 0, containerEl:any = null, sel:any , range:any ;
@@ -115,6 +152,10 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 var list = mainDataServer.contactsList.find(str, rawGroutList);
                 $scope.showGroupList = webimutil.Helper.cloneObject(list);
             }
+            setTimeout(function(){
+              var obj = $('div.arobase').find('ul>li:first-child');
+              obj.addClass('selected');
+            })
         }
         if (groupid) {
           $scope.$watch('searchStr', function (newVal: string, oldVal: string) {
@@ -216,6 +257,8 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
                 if(lastItem && lastItem.messageUId && lastItem.sentTime){
                   conversationServer.sendReadReceiptMessage(targetId, targetType, lastItem.messageUId, lastItem.sentTime.getTime());
                   conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+                  lastMsgUid = lastItem.messageUId;
+
                 }
             }, function(err) {
                 conversationServer.conversationMessageList = currenthis;
@@ -235,6 +278,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(lastItem && lastItem.messageUId && lastItem.sentTime){
               conversationServer.sendReadReceiptMessage(targetId, targetType, lastItem.messageUId, lastItem.sentTime.getTime());
               conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+              lastMsgUid = lastItem.messageUId;
             }
             setTimeout(function() {
                 adjustScrollbars();
@@ -458,6 +502,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if(ele && ele.style.visibility == 'visible'){
               return;
             }
+
+            if($('div.arobase').is(":visible")){
+              var _index = $('div.arobase').find('.selected').index();
+              var curItem = $scope.showGroupList[_index];
+              $scope.selectMember(curItem);
+              return;
+            }
+
+
             var _message = $scope.currentConversation.draftMsg;
             _message = _message.replace(/(^\s*)|(\s*$)/g,'');  //限制消息不能为空格或者空行
             if(_message == ''){
@@ -668,6 +721,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if($scope.atShow){
               $scope.$apply(function () {
                 $scope.atShow = false;
+                $scope.initAtDiv();
               });
             }
         });
@@ -852,6 +906,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
         // });
         $scope.$on("$destroy", function() {
            conversationServer.clearHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType);
+
+           if(targetType == webimmodel.conversationType.Group){
+            var lastItem = conversationServer.conversationMessageListShow[conversationServer.conversationMessageListShow.length - 1];
+
+            var haNew = (lastItem && lastMsgUid != lastItem.messageUId);
+            if(lastItem && lastItem.messageUId && lastItem.sentTime && haNew){
+              conversationServer.sendSyncReadStatusMessage(targetId, targetType, lastItem.sentTime.getTime());
+            }
+          }
         });
 
     }])

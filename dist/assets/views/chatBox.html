@@ -71,9 +71,9 @@
             ng-focus="showemoji=fase"  ng-model="currentConversation.draftMsg"
             contenteditable="true" contenteditable-dire ctrl-enter-keys atshow-dire fun="sendBtn()" ctrlenter="false" placeholder="请输入文字..." ondrop="return false;"></pre>
             <a class="sendBtn" href="javascript:void 0" ng-click="sendBtn()">发送</a>
-            <div class="arobase" ng-show="atShow">
+            <div class="arobase" ng-show="atShow" id="atList">
               <ul>
-                  <li ng-repeat="item in showGroupList" ng-click="selectMember(item)">
+                  <li ng-repeat="item in showGroupList" ng-click="moveToItem(this);selectMember(item)">
                       <img ng-src="{{item.imgSrc||'assets/img/barBg.png'}}">
                       <span class="involvesName">{{item.name}}</span>
                   </li>

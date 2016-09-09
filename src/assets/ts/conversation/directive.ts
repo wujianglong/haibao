@@ -9,8 +9,50 @@ conversationDire.directive('atshowDire', function () {
         require: '?ngModel',
         link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
             scope.atShow = false;
+            scope.initAtDiv();
             element.bind("click", function (e) {
                 scope.cursorPos = document.getSelection().focusOffset;
+            });
+            var _scrollTop = 0;
+            element.bind("keydown", function (e) {
+              if (scope.atShow && (e.keyCode == 38 || e.keyCode == 40 )) {
+                  // console.log(e, $(e.target).parent().find('div.arobase>ul'));
+                  var obj = $(e.target).parent().find('div.arobase>ul');
+                  var selItem = obj.find('.selected');
+                  var nextItem: any;
+                  if(selItem.length == 0){
+                    selItem = obj.find('li:first-child');
+                  }
+                  if(selItem.length){
+                    if (e.keyCode == 38){
+                       nextItem = selItem.prev();
+                    }
+                    else if(e.keyCode == 40){
+                       nextItem = selItem.next();
+                    }
+
+                    if(nextItem.length){
+                       selItem.removeClass('selected');
+                       nextItem.addClass('selected');
+                    }
+                    if(nextItem && nextItem.position()){
+                      var _target = $("#atList"), _offsetTop = nextItem.position().top;
+                      if(nextItem.index() == 1){
+                        _scrollTop = 0;
+                      }
+                      if(_offsetTop >= _target.height()){
+                        _scrollTop += 36;  //nextItem.outerHeight()
+                        _target.scrollTop(_scrollTop);
+                      }else if(_offsetTop < 0)
+                      {
+                        _scrollTop -= 36;  //nextItem.outerHeight()
+                        _target.scrollTop(_scrollTop);
+                      }
+                    }
+                  }
+                  e.preventDefault();
+                  return;
+              }
             });
             element.bind("keyup", function (e) {
                  var keyCode = e.keyCode;
@@ -24,8 +66,13 @@ conversationDire.directive('atshowDire', function () {
                    e.preventDefault();
                    return;
                 }
+                if (e.keyCode == 38 || e.keyCode == 40){
+                    e.preventDefault();
+                    return;
+                }
             //  　　if ((e.shiftKey && e.keyCode == '2'.charCodeAt(0)) ) {
-                if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
+                // if(obj.textContent.substr(caretPos - 1, 1) == '@' && e.shiftKey) {
+                if(obj.textContent.substr(caretPos - 1, 1) == '@') {
                    var lastChar = '';
                    if(caretPos > 1){
                      lastChar = obj.textContent.substr(caretPos - 2, 1);
@@ -38,6 +85,13 @@ conversationDire.directive('atshowDire', function () {
                     //  }
                    }
                   scope.atShow = true;
+                  var _atObj = $(e.target).parent().find('div.arobase>ul');
+                  var selItem = _atObj.find('.selected');
+                  if(selItem.length == 0){
+                    $("#atList").scrollTop(0);
+                    var objAtList = $('div.arobase').find('ul>li:first-child');
+                    objAtList.addClass('selected');
+                  }
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
                   scope.cursorPos = caretPos;
                   scope.$apply();
@@ -73,9 +127,23 @@ conversationDire.directive('atshowDire', function () {
                      scope.$apply();
                      return;
                    }
-                   if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90){
-                      scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
-                      scope.$apply();
+                  //  if(keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90 || keyCode == 32){
+                  //     var text = obj.textContent.slice(0, caretPos);
+                  //     if (text.indexOf('@') == 0) {
+                  //       text = text.substr(1);
+                  //     }
+                  //     scope.searchStr = text;
+                  //     // scope.searchStr = scope.searchStr + String.fromCharCode(keyCode);
+                  //     scope.$apply();
+                  //  }
+                  if (keyCode >= 48 && keyCode <= 57 || keyCode >= 65 && keyCode <= 90 || keyCode == 32 || keyCode == 13) {
+                      var text = obj.textContent.slice(0, caretPos);
+                      var strTmp = text.split('@');
+                      if(strTmp.length > 1){
+                         var name = strTmp[strTmp.length - 1];
+                         scope.searchStr = name;
+                         scope.$apply();
+                      }
                    }
                    else if(keyCode == 8 && scope.searchStr){
                      if(scope.searchStr.length > 0){
@@ -85,6 +153,7 @@ conversationDire.directive('atshowDire', function () {
                    }
                    else if(keyCode != 16){
                      scope.atShow = false;
+                     scope.initAtDiv();
                    }
                 }
             });
@@ -294,19 +363,19 @@ conversationDire.directive('contenteditableDire', function() {
             if (!ngModel) return;
 
             element.bind("paste", function(e: any) {
-              var content = '',hasImg = false;
-              if(e.clipboardData.items){
-                  for (var i = 0; i < e.clipboardData.items.length; i++) {
-                      var item = e.clipboardData.items[i];
+              var content = '', hasImg = false, items = (e.clipboardData || e.originalEvent.clipboardData).items;
+              if (items) {
+                  for (var i = 0; i < items.length; i++) {
+                      var item = items[i];
                       if (item.type.indexOf("image") > -1) {
-                        hasImg = true;
-                        break;
+                          hasImg = true;
+                          break;
                       }
                   }
               }
               e.preventDefault();
               if(!hasImg){
-                if (e.clipboardData) {
+                if ((e.originalEvent || e).clipboardData) {
                     content = (e.originalEvent || e).clipboardData.getData('text/plain');
                     // content = replacemy(content);
                     document.execCommand('insertText', false, content);
@@ -508,7 +577,9 @@ conversationDire.directive("textMessage", [function() {
                 return '[email`' + (EMailArr.length - 1) + ']';
             });
 
-            var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/gi
+            // var URLReg = /(((ht|f)tp(s?))\:\/\/)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|(www.|[a-zA-Z].)[a-zA-Z0-9\-\.]+\.(com|cn|edu|gov|mil|net|org|biz|info|name|museum|us|ca|uk|me|im))(\:[0-9]+)*(\/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*/gi
+            // var URLReg = /(http(s)?:\\)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?/
+            var URLReg = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig;
 
             scope.content = scope.content.replace(URLReg, function(str: any, $1: any) {
                 if ($1) {
@@ -517,6 +588,13 @@ conversationDire.directive("textMessage", [function() {
                     return '<a target="_blank" href="//' + str + '">' + str + '</a>';
                 }
             });
+            // scope.content = scope.content.replace(URLReg, function(str: any, $1: any) {
+            //     if ($1) {
+            //         return '<a target="_blank" href="' + str + '">' + str + '</a>';
+            //     } else {
+            //         return '<a target="_blank" href="//' + str + '">' + str + '</a>';
+            //     }
+            // });
 
             for (var i = 0, len = EMailArr.length; i < len; i++) {
                 scope.content = scope.content.replace('[email`' + i + ']', '<a href="mailto:' + EMailArr[i] + '">' + EMailArr[i] + '<a>');
@@ -624,7 +702,8 @@ conversationDire.directive("richcontentMessage", [function() {
         scope: {
             item: "="
         },
-        template: '   <div class="" >' +
+        template: '    <a href="{{item.url}}" target="_blank">' +
+        '<div class="" >' +
         '<div class="Message-image-text">' +
         '<span class="Message-entry" style="">' +
         '<div class="image-textBox">' +
@@ -636,7 +715,8 @@ conversationDire.directive("richcontentMessage", [function() {
         '</div>' +
         '</span>' +
         '</div>' +
-        '</div>'
+        '</div>' +
+        '</a>'
     }
 }]);
 

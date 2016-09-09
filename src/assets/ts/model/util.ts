@@ -60,6 +60,14 @@ module webimutil {
                 str = str.replace(/"/g, '&quot;');
                 str = str.replace(/'/g, '&#039;');
                 return str;
+            },
+            replaceSymbol: function (str: string) {
+                if (!str)
+                    return '';
+                str = str.replace(/&lt;/g, '<');
+                str = str.replace(/&gt;/g, '>');
+                str = str.replace(/&quot;/g, '"');
+                return str;
             }
         }
 

@@ -266,6 +266,7 @@ module webimmodel {
                     rich.content = SDKmsg.content.content;
                     rich.title = SDKmsg.content.title;
                     rich.imageUri = SDKmsg.content.imageUri;
+                    rich.url = SDKmsg.content.url;
 
                     msg.content = rich;
                     break;
@@ -511,7 +512,7 @@ module webimmodel {
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");
-                msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+                // msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
                 // }
 
             }
@@ -591,6 +592,7 @@ module webimmodel {
         content: string;
         title: string;
         imageUri: string;
+        url: string;
     }
 
     export class DiscussionNotificationMessage {
