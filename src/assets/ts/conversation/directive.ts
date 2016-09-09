@@ -37,6 +37,9 @@ conversationDire.directive('atshowDire', function () {
                     }
                     if(nextItem && nextItem.position()){
                       var _target = $("#atList"), _offsetTop = nextItem.position().top;
+                      if(nextItem.index() == 1){
+                        _scrollTop = 0;
+                      }
                       if(_offsetTop >= _target.height()){
                         _scrollTop += 36;  //nextItem.outerHeight()
                         _target.scrollTop(_scrollTop);
