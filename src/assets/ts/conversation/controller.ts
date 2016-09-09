@@ -54,6 +54,33 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
           $scope.showGroupList = webimutil.Helper.cloneObject(rawGroutList);
         }
+
+        $scope.initAtDiv = function () {
+          var _atObj = $("#atList");
+          if(_atObj){
+            var selItem = _atObj.find('.selected');
+            if(selItem){
+              selItem.removeClass('selected');
+            }
+            _atObj.scrollTop(0);
+          }
+
+          var objAtList = $('div.arobase').find('ul>li:first-child');
+          objAtList.addClass('selected');
+        }
+
+        $scope.moveToItem = function (target: any) {
+          if(target && target.$index){
+            var obj = $('div.arobase').find('ul');
+            var selItem = obj.find('.selected');
+            var nextItem = obj.find('li:nth-child('+(target.$index + 1)+')');
+            if (nextItem.length) {
+                selItem.removeClass('selected');
+                nextItem.addClass('selected');
+            }
+          }
+        }
+
         $scope.selectMember = function (item: webimmodel.Member) {
             var obj = document.getElementById("message-content");
             var curPos = $scope.cursorPos;
@@ -82,6 +109,15 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             $scope.cursorPos = -1;
             $scope.lastSearchStr = $scope.searchStr;
             $scope.defaultSearch = false;
+
+            var _atObj = $("#atList");
+            if(_atObj){
+              var selItem = _atObj.find('.selected');
+              if(selItem){
+                selItem.removeClass('selected');
+              }
+              _atObj.scrollTop(0);
+            }
         };
         $scope.getCaretPosition = function(editableDiv: any) {
             var caretPos = 0, containerEl:any = null, sel:any , range:any ;
@@ -685,6 +721,7 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
             if($scope.atShow){
               $scope.$apply(function () {
                 $scope.atShow = false;
+                $scope.initAtDiv();
               });
             }
         });

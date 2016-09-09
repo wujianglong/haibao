@@ -9,9 +9,11 @@ conversationDire.directive('atshowDire', function () {
         require: '?ngModel',
         link: function(scope: any, element: angular.IRootElementService, attrs: angular.IAttributes, ngModel: angular.INgModelController) {
             scope.atShow = false;
+            scope.initAtDiv();
             element.bind("click", function (e) {
                 scope.cursorPos = document.getSelection().focusOffset;
             });
+            var _scrollTop = 0;
             element.bind("keydown", function (e) {
               if (scope.atShow && (e.keyCode == 38 || e.keyCode == 40 )) {
                   // console.log(e, $(e.target).parent().find('div.arobase>ul'));
@@ -32,6 +34,17 @@ conversationDire.directive('atshowDire', function () {
                     if(nextItem.length){
                        selItem.removeClass('selected');
                        nextItem.addClass('selected');
+                    }
+                    if(nextItem && nextItem.position()){
+                      var _target = $("#atList"), _offsetTop = nextItem.position().top;
+                      if(_offsetTop >= _target.height()){
+                        _scrollTop += 36;  //nextItem.outerHeight()
+                        _target.scrollTop(_scrollTop);
+                      }else if(_offsetTop < 0)
+                      {
+                        _scrollTop -= 36;  //nextItem.outerHeight()
+                        _target.scrollTop(_scrollTop);
+                      }
                     }
                   }
                   e.preventDefault();
@@ -68,10 +81,14 @@ conversationDire.directive('atshowDire', function () {
                     //    return;
                     //  }
                    }
-                  $("#atList").scrollTop(0);
                   scope.atShow = true;
-                  var objAtList = $('div.arobase').find('ul>li:first-child');
-                  objAtList.addClass('selected');
+                  var _atObj = $(e.target).parent().find('div.arobase>ul');
+                  var selItem = _atObj.find('.selected');
+                  if(selItem.length == 0){
+                    $("#atList").scrollTop(0);
+                    var objAtList = $('div.arobase').find('ul>li:first-child');
+                    objAtList.addClass('selected');
+                  }
                   scope.searchStr = scope.defaultSearch ? scope.lastSearchStr : '';
                   scope.cursorPos = caretPos;
                   scope.$apply();
@@ -133,6 +150,7 @@ conversationDire.directive('atshowDire', function () {
                    }
                    else if(keyCode != 16){
                      scope.atShow = false;
+                     scope.initAtDiv();
                    }
                 }
             });
