@@ -42,7 +42,7 @@ mainDire.directive("conversation", ["$state", "mainDataServer", function($state:
         '</div>',
         link: function(scope: any, ele: angular.IRootElementService, attrs: any, ngModel: any) {
             // scope.isCurrentConversation = scope.item.targetType == mainDataServer.conversation.currentConversation.targetType && scope.item.targetId == mainDataServer.conversation.currentConversation.targetId;
-            scope.item.lastMsg = webimutil.Helper.escapeSymbol.replaceSymbol(scope.item.lastMsg);
+            // scope.item.lastMsg = webimutil.Helper.escapeSymbol.replaceSymbol(scope.item.lastMsg);
             if(!scope.item.targetId){
               scope.item.imgSrc='assets/img/barBg.png';
             }

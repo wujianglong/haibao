@@ -512,7 +512,7 @@ module webimmodel {
                 // if (!webimutil.Helper.browser.chrome) {
                 msgContent = msgContent.replace(/\n/g, " ");
                 msgContent = msgContent.replace(/([\w]{49,50})/g, "$1 ");
-                msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+                // msgContent = msgContent.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
                 // }
 
             }
