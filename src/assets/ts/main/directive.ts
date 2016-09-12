@@ -126,9 +126,7 @@ mainDire.directive("groupitem", ["$state", function($state: angular.ui.IStateSer
         '</div>',
         replace: true,
         link: function(scope: any, ele: any, attr: any) {
-
             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-
             ele.on("click", function() {
                 // $state.go("main.groupinfo", { groupid: scope.item.id, conversationtype: "0" });
                 scope.$parent.selectGoGroup(scope.item.id, webimmodel.conversationType.Group);
@@ -142,7 +140,7 @@ mainDire.directive("frienditem", ["$state", function($state: angular.ui.IStateSe
         restrict: "E",
         scope: { item: "=" },
         replace: true,
-        template: '<div class="members_item " >' +
+        template: '<div class="members_item ">' +
         '<div class="photo">' +
         '<img class="img" ng-show="item.imgSrc" ng-src="{{item.imgSrc||\'assets/img/barBg.png\'}}" alt="">' +
         '<div class="portrait" ng-show="!item.imgSrc">{{item.firstchar}}</div>' +
@@ -157,7 +155,6 @@ mainDire.directive("frienditem", ["$state", function($state: angular.ui.IStateSe
         '</div>',
         link: function(scope: any, ele: any, attr: any) {
             angular.element(ele[0].getElementsByClassName("portrait")[0]).css("background-color", webimutil.Helper.portraitColors[scope.item.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-
             ele.on("click", function() {
                 // $state.go("main.friendinfo", { userid: scope.item.id, groupid: "0", targetid: "0", conversationtype: "0" });
                 scope.$parent.selectGo(scope.item.id, webimmodel.conversationType.Private);
