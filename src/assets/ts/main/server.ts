@@ -1,6 +1,6 @@
 /// <reference path="../../../../typings/angularjs/angular.d.ts"/>
 /// <reference path="../model/webimModel.ts"/>
-/// <reference path="../../lib/RongIMlib.d.ts"/>
+/// <reference path="../../lib/RongIMLib.d.ts"/>
 
 
 var mainServer = angular.module("webim.main.server", []);
