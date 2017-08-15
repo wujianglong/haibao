@@ -2,13 +2,18 @@
 
 ## Environment Setup
 
+### Mac 环境下开发
+
+如有必要，使用 `sudo npm`
+需修改 typings 目录的访问权限，否则执行 grunt build 会报错
+如typescript 编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为 1.6.2， 然后在 grunt-typescript 执行 npm install
+
+
 ### 初始化开发工具
 
 ```
 npm install -g typescript@1.6.0beta tsd coffee-script grunt-cli karma-cli
 ```
-
-如有必要，使用 `sudo npm`
 
 ### 安装依赖库
 
@@ -47,12 +52,6 @@ grunt connect
 ### 在浏览器中打开
 
 [http://localhost:8181](http://localhost:8181)  端口号请与Gruntfile中实际配置保持一致
-执行 grunt build 前将 app.config 文件中的 serverUrl 和 appkey 改为自己应用的值
-SDK 使用高版本 typescript 语法写的可能编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为 1.6.2， 然后在 grunt-typescript 执行一下 npm install
-
-### Mac 环境下开发
-
-Mac 环境下开发需修改 typings 目录的访问权限，否则执行 grunt build 会报错
 
 ## Coding Guidelines
 
