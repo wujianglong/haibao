@@ -20,10 +20,16 @@ bower install
 tsd install
 ```
 
+### 修改配置，配置文件 /src/assets/app.config
+```
+appkey: 从融云注册的应用 key，注册地址：https://developer.rongcloud.cn/signup
+serverUrl: App Server 地址，使用 https://github.com/sealtalk/sealtalk-server 部署后获取
+```
+
 ### 编译开发代码
 
 ```
-grunt build
+grunt build (输出Waiting...时，build成功)
 ```
 
 ### 发布正式代码
@@ -40,7 +46,7 @@ grunt connect
 
 ### 在浏览器中打开
 
-[http://localhost:8181](http://localhost:8181)  
+[http://localhost:8181](http://localhost:8181)  端口号请与Gruntfile中实际配置保持一致
 执行 grunt build 前将 app.config 文件中的 serverUrl 和 appkey 改为自己应用的值
 SDK 使用高版本 typescript 语法写的可能编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为 1.6.2， 然后在 grunt-typescript 执行一下 npm install
 
@@ -56,8 +62,6 @@ https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 ## 站点部署说明
 
 ```
-1.修改 /src/assets/app.config 中 serverUrl 和 appkey 的值（ ServerUrl 为后台 Server 地址，AppKey 为从融云注册的应用 key）
-2.项目根目录执行命令 grunt release
-3.将 dist 目录下的文件以静态文件形式部署在服务器上。程序入口页面 index.html。
-4.本代码不能直接运行,需要结合后台 Sever 一起使用。Server 源码参考 https://github.com/sealtalk/sealtalk-server
+1.项目根目录执行命令 grunt release
+2.将 dist 目录下的文件以静态文件形式部署在服务器上。程序入口页面 index.html
 ```
