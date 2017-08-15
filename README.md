@@ -5,8 +5,10 @@
 ### Mac 环境下开发
 
 如有必要，使用 `sudo npm`
+
 需修改 typings 目录的访问权限，否则执行 grunt build 会报错
-如typescript 编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为 1.6.2， 然后在 grunt-typescript 执行 npm install
+
+如 typescript 编译不过，请打开 node_modules/grunt-typescript/package.json 文件，将 typescript 版本改为 1.6.2， 然后在 grunt-typescript 执行 npm install
 
 
 ### 初始化开发工具
