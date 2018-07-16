@@ -14,7 +14,7 @@
 ### 初始化开发工具
 
 ```
-npm install -g typescript@1.6.0beta tsd coffee-script grunt-cli karma-cli
+npm install -g typescript@1.6.0beta tsd coffee-script grunt-cli
 ```
 
 ### 安装依赖库

@@ -253,10 +253,6 @@ module.exports = (grunt) ->
           'clean:map'
         ]
 
-    karma:
-      unit:
-        configFile: 'karma.conf.coffee'
-
     typescript:
       build:
         options:
@@ -299,7 +295,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
-  grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-typescript'
   grunt.loadNpmTasks 'grunt-filerev'
   grunt.loadNpmTasks 'grunt-usemin'
@@ -310,8 +305,6 @@ module.exports = (grunt) ->
     'copy:build'
     'concat:build'
     'typescript:build'
-    # 'filerev'
-    # 'usemin'
     'clean:map'
     'watch:build'
   ]
@@ -326,15 +319,6 @@ module.exports = (grunt) ->
     'uglify:release'
     'filerev'
     'usemin'
-  ]
-
-  grunt.registerTask 'test', [
-    # 'rev:build'
-    # 'useminPrepare'
-    'filerev'
-    'print'
-    'usemin'
-    # 'filerev'
   ]
 
   grunt.registerTask 'print', ->

@@ -11,7 +11,7 @@
     "IM"
   ],
   "license": "MIT",
-  "homepage": "http://rong.io",
+  "homepage": "http://www.rongcloud.cn",
   "dependencies": {
     "angular": "~1.4.5",
     "angular-bootstrap": "~0.13.4",

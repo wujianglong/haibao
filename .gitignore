@@ -7,3 +7,4 @@ typings
 .tscache
 *.log
 src/test.html
+.DS_Store
