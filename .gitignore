@@ -3,7 +3,6 @@ src/assets/lib/rongsdk.js
 node_modules
 build
 temp
-typings
 .tscache
 *.log
 src/test.html
