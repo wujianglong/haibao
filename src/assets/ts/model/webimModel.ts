@@ -377,7 +377,7 @@ module webimmodel {
                 case MessageType.SyncReadStatusMessage:
                     break;
                 default:
-                    if (SDKmsg.objectName == "RC:GrpNtf") {
+                    if (SDKmsg.objectName == "ST:GrpNtf") {
                         var groupnot = new webimmodel.InformationNotificationMessage();
                         groupnot.content = SDKmsg.content.message;
                         msg.content = groupnot;
@@ -416,7 +416,7 @@ module webimmodel {
                 msgContent = "[文件] " + msg.content.name;
             } else if (msgtype == MessageType.ContactNotificationMessage || msgtype == MessageType.CommandNotificationMessage || msgtype == MessageType.InformationNotificationMessage) {
                 msgContent = "[通知消息]";
-            } else if (msg.objectName == "RC:GrpNtf") {
+            } else if (msg.objectName == "ST:GrpNtf") {
               // var data = msg.content.message.content.data.data;
               var data = msg.content.data;
               // switch (msg.content.message.content.operation) {

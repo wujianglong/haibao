@@ -357,7 +357,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
                   } else {
                       //TODO:添加最后一条消息的发送人
-                      if (conversationitem.lastMsg && item.latestMessage.objectName != "RC:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
+                      if (conversationitem.lastMsg && item.latestMessage.objectName != "ST:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
                           var atStr = '';
                           if(item.mentionedMsg){
                              conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
@@ -391,7 +391,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                   }
                   // item.conversationTitle = group ? group.name : "未知群组";
                   // conversationitem.title = group ? group.name : "未知群组";
-                  if (conversationitem.lastMsg && item.latestMessage.objectName == "RC:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
+                  if (conversationitem.lastMsg && item.latestMessage.objectName == "ST:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
                        conversationitem.lastMsg = '你 创建了群组';
                   }
                   conversationitem.firstchar = group ? group.firstchar : "";
@@ -500,7 +500,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //
         //                     } else {
         //                         //TODO:添加最后一条消息的发送人
-        //                         if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
+        //                         if (conversationitem.lastMsg && list[i].latestMessage.objectName != "ST:GrpNtf" && list[i].latestMessage.objectName != "RC:InfoNtf") {
         //                             var member = mainDataServer.contactsList.getGroupMember(group.id, list[i].latestMessage.senderUserId);
         //                             if (member) {
         //                                 conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
@@ -517,7 +517,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //                     }
         //                     // list[i].conversationTitle = group ? group.name : "未知群组";
         //                     // conversationitem.title = group ? group.name : "未知群组";
-        //                     if (conversationitem.lastMsg && list[i].latestMessage.objectName == "RC:GrpNtf" && list[i].latestMessage.content.message.content.operation == "Create" && list[i].latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
+        //                     if (conversationitem.lastMsg && list[i].latestMessage.objectName == "ST:GrpNtf" && list[i].latestMessage.content.message.content.operation == "Create" && list[i].latestMessage.content.message.content.operatorUserId == mainDataServer.loginUser.id) {
         //                          conversationitem.lastMsg = '你 创建了群组';
         //                     }
         //                     conversationitem.firstchar = group ? group.firstchar : "";
@@ -592,9 +592,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             //更新未读总数
             var defer = $q.defer();
             var allUnreadCount = 0;
-            RongIMSDKServer.getTotalUnreadCount().then(function(data) {
-                allUnreadCount = data;
-            });
+            // RongIMSDKServer.getTotalUnreadCount().then(function(data) {
+            //     allUnreadCount = data;
+            // });
 
             RongIMSDKServer.getConversationList().then(function(list) {
                 RongIMLib.RongIMClient.getInstance().sortConversationList(list);
@@ -604,6 +604,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     allUnreadCount = allUnreadCount - result.removeUnreadCount;
                     if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM  || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
                     mainDataServer.conversation.conversations.push(result.item);
+                    allUnreadCount += list[i].unreadMessageCount;
                 }
                 mainDataServer.conversation.totalUnreadCount = allUnreadCount;
                 defer.resolve();
@@ -819,7 +820,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //            curCon.lastMsg = msg.content;
         //            break;
         //        case webimmodel.MessageType.UnknownMessage:
-        //            if (msg.objectName == "RC:GrpNtf"){
+        //            if (msg.objectName == "ST:GrpNtf"){
         //                curCon.lastMsg = msg.content;
         //            }
         //            break;
@@ -834,7 +835,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //            curCon.lastMsg = '未解析';
         //      }
         //      if (type == webimmodel.conversationType.Group && msg.messageType!=webimmodel.MessageType.UnknownMessage && msg.messageType!=webimmodel.MessageType.InformationNotificationMessage){
-        //          //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "RC:GrpNtf") {
+        //          //  if (conversationitem.lastMsg && list[i].latestMessage.objectName != "ST:GrpNtf") {
         //               var member = mainDataServer.contactsList.getGroupMember(msg.targetId, msg.senderUserId);
         //               if (member) {
         //                   curCon.lastMsg = member.name + "：" + curCon.lastMsg;
@@ -1293,6 +1294,9 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     RongIMSDKServer.init = function(appkey: string) {
         // RongIMLib.RongIMClient.init(appkey, new RongIMLib.WebSQLDataProvider());
         RongIMLib.RongIMClient.init(appkey);
+        var mesasgeTag = new RongIMLib.MessageTag(false, true);
+        RongIMLib.RongIMClient.registerMessageType('GroupNotificationMessage', 'ST:GrpNtf', mesasgeTag, ['operatorUserId', 'operation', 'data', 'message']);
+        RongIMLib.RongIMClient.registerMessageType('ContactNotificationMessage', 'ST:ContactNtf', mesasgeTag, ['targetUserId', 'sourceUserId', 'operation', 'message']);
     }
 
     RongIMSDKServer.connect = function(token: string) {
@@ -1473,6 +1477,9 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getConversationList({
             onSuccess: function(data) {
+                data = data.filter(function (item: any) {
+                    return item.conversationType != 6;
+                });
                 defer.resolve(data);
             },
             onError: function(error) {

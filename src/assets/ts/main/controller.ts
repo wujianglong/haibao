@@ -723,7 +723,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
                         break;
                     case webimmodel.MessageType.GroupNotificationMessage:
-                        if (data.objectName == "RC:GrpNtf" && !data.hasReceivedByOtherClient) {
+                        if (data.objectName == "ST:GrpNtf" && !data.hasReceivedByOtherClient) {
                             //群组信息更新，已经在其他端接收过不做处理。
                             var groupNotification = <any>data.content;
                             var isself = false;
@@ -914,17 +914,17 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         break;
                     case webimmodel.MessageType.RecallCommandMessage:
                         if(msg.objectName == 'RC:RcCmd'){
-                            // var withDrawMsg = <any>data.content;
-                            // conversationServer.addWithDrawMessageCache(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
-                            // conversationServer.delWithDrawMessage(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
-                            // if(msg.senderUserId == mainDataServer.loginUser.id){
-                            //   msg.content = '你' + msg.content;
-                            // }
-                            // else{
-                            //   conversationServer.messageAddUserInfo(msg);
-                            //   msg.content = msg.senderUserName + msg.content;
-                            // }
-                            // addmessage(msg);
+                            var withDrawMsg = <any>data.content;
+                            conversationServer.addWithDrawMessageCache(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
+                            conversationServer.delWithDrawMessage(msg.senderUserId, msg.conversationType, withDrawMsg.messageUId);
+                            if(msg.senderUserId == mainDataServer.loginUser.id){
+                              msg.content = '你' + msg.content;
+                            }
+                            else{
+                              conversationServer.messageAddUserInfo(msg);
+                              msg.content = msg.senderUserName + msg.content;
+                            }
+                            addmessage(msg);
                         }
                         break;
                     case webimmodel.MessageType.TypingStatusMessage:

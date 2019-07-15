@@ -161,7 +161,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 }
                                 break;
                             case webimmodel.MessageType.GroupNotificationMessage:
-                                if (msgsdk.objectName == "RC:GrpNtf") {
+                                if (msgsdk.objectName == "ST:GrpNtf") {
                                   var item = webimmodel.Message.convertMsg(msgsdk);
                                   if (item) {
                                       conversationServer.asyncConverGroupNotifition(msgsdk, item);
@@ -170,7 +170,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 }
                                 break;
                             case webimmodel.MessageType.UnknownMessage:
-                                if (msgsdk.objectName == "RC:GrpNtf") {
+                                if (msgsdk.objectName == "ST:GrpNtf") {
                                   var item = webimmodel.Message.convertMsg(msgsdk);
                                   if (item) {
                                       conversationServer.asyncConverGroupNotifition(msgsdk, item);
@@ -180,12 +180,12 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                                 break;
                             case webimmodel.MessageType.RecallCommandMessage:
                                 if (msgsdk.objectName == "RC:RcCmd") {
-                                  // var item = webimmodel.Message.convertMsg(msgsdk);
-                                  // if (item) {
-                                  //     conversationServer.delWithDrawMessage(item.senderUserId, item.conversationType, msgsdk.messageUId);
-                                  //     unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                  // }
-                                  // conversationServer.addWithDrawMessageCache(item.senderUserId, item.conversationType, msgsdk.messageUId);
+                                  var item = webimmodel.Message.convertMsg(msgsdk);
+                                  if (item) {
+                                      conversationServer.delWithDrawMessage(item.senderUserId, item.conversationType, msgsdk.messageUId);
+                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
+                                  }
+                                  conversationServer.addWithDrawMessageCache(item.senderUserId, item.conversationType, msgsdk.messageUId);
                                 }
                                 break;
                             case webimmodel.MessageType.InformationNotificationMessage:

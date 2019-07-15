@@ -66,7 +66,7 @@ module.exports = (grunt) ->
             dest: './build/assets/js/angular.min.js'
           }
           {
-            src: './bower_components/jquery/dist/jquery.js'
+            src: './src/assets/lib/jquery.min.js'
             dest: './build/assets/js/jquery.min.js'
           }
           {
@@ -80,6 +80,10 @@ module.exports = (grunt) ->
           {
             src: './src/index.html'
             dest: './build/index.html'
+          }
+          {
+            src: './src/download/index.html',
+            dest: './build/download/index.html'
           }
           {
             expand: true
@@ -132,6 +136,10 @@ module.exports = (grunt) ->
             dest: './dist/index.html'
           }
           {
+            src: './src/download/index.html',
+            dest: './dist/download/index.html'
+          }
+          {
             expand: true
             cwd: './src/assets/lib'
             src: [
@@ -140,7 +148,7 @@ module.exports = (grunt) ->
             dest: './dist/assets/js'
           }
           {
-            src: './bower_components/jquery/dist/jquery.min.js'
+            src: './build/assets/js/jquery.min.js'
             dest: './dist/assets/js/jquery.min.js'
           }
           {
@@ -181,6 +189,10 @@ module.exports = (grunt) ->
             ]
             dest:'./temp/main.css'
           }
+          {
+            src: ['./src/assets/css/download.css']
+            dest:'./temp/download.css'
+          }
         ]
       build:
         files:[
@@ -209,6 +221,10 @@ module.exports = (grunt) ->
             ]
             dest:'./build/assets/css/main.css'
           }
+          {
+            src: [ './src/assets/css/download.css' ]
+            dest:'./build/assets/css/download.css'
+          }
         ]
 
     cssmin:
@@ -217,6 +233,10 @@ module.exports = (grunt) ->
           {
             src:"./temp/main.css"
             dest:"./dist/assets/css/main.css"
+          }
+          {
+            src: './temp/download.css'
+            dest:'./dist/assets/css/download.css'
           }
         ]
 
