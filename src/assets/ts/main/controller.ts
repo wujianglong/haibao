@@ -309,10 +309,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
               RongIMSDKServer.getConversationList().then(function(list) {
                   mainDataServer.conversation.updateConversations();
               });
-              RongIMLib.RongUploadLib.init(
-                {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
-                {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
-              );
           }, function(error) {
               if (error.tokenError) {
                   //token 错误。
@@ -323,10 +319,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                               RongIMSDKServer.getConversationList().then(function(list) {
                                   mainDataServer.conversation.updateConversations();
                               });
-                              RongIMLib.RongUploadLib.init(
-                                {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
-                                {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
-                              );
                           }, function(error) {
                               if (error.tokenError) {
                                   //token 错误。
@@ -353,10 +345,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                       RongIMSDKServer.getConversationList().then(function(list) {
                           mainDataServer.conversation.updateConversations();
                       });
-                      RongIMLib.RongUploadLib.init(
-                        {domain:IMGDOMAIN,drop_element:'',container:'MessageForm',browse_button:'upload-image'},
-                        {domain:FILEDOMAIN,drop_element:'chatMain',container:'MessageForm',browse_button:'upload-file'}
-                      );
                   }, function(error) {
                       if (error.tokenError) {
                           //token 错误。

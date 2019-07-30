@@ -2399,6 +2399,11 @@ input::-ms-clear{display:none;}
 .MessageForm-appearance{
     position: relative;
 }
+.MessageForm-tool input[type=file] {
+   width: 25px;
+   opacity: 0;
+}
+
 #message-content {
     /*border: 1px solid #ccc;
     border-radius: 5px;*/

@@ -42,6 +42,8 @@ interface JQuery {
     contextmenu: any
 }
 
+declare var UploadClient:any;
+
 interface Window {
     webkitURL: URL
     // URL: URL

@@ -5,12 +5,12 @@
 
 var mainServer = angular.module("webim.main.server", []);
 
-mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: angular.IHttpService, $q: angular.IQService, appconfig: any) {
+mainServer.factory("mainServer", ["$http", "$q", "appconfig", function ($http: angular.IHttpService, $q: angular.IQService, appconfig: any) {
 
     var serverBaseUrl = appconfig.getBaseUrl();
     var mainServer = {
         user: {
-            sendCode: function(phone: string, region: string) {
+            sendCode: function (phone: string, region: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/send_code",
@@ -20,7 +20,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            verifyCode: function(phone: string, region: string, code: string) {
+            verifyCode: function (phone: string, region: string, code: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/verify_code",
@@ -31,7 +31,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            checkUsernameAvailable: function(userName: string) {
+            checkUsernameAvailable: function (userName: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/check_username_available",
@@ -40,7 +40,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            checkPhoneAvailable: function(phone: string, region: string) {
+            checkPhoneAvailable: function (phone: string, region: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/check_phone_available",
@@ -50,7 +50,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            signup: function(nickname: string, password: string, token: string) {
+            signup: function (nickname: string, password: string, token: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/register",
@@ -61,7 +61,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            signin: function(phone: string, region: string, password: string) {
+            signin: function (phone: string, region: string, password: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/login",
@@ -72,26 +72,26 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            logout: function() {
+            logout: function () {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user//logout"
                 })
             },
-            getInfo: function(id: string) {
+            getInfo: function (id: string) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/" + id
                 })
             },
-            getBatchInfo: function(ids: string[]) {
+            getBatchInfo: function (ids: string[]) {
                 var param = ids.join("&id=")
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/batch?id=" + param
                 })
             },
-            setNickName: function(nickname: string) {
+            setNickName: function (nickname: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/set_nickname",
@@ -100,13 +100,13 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            getUserByPhone: function(region: string, phone: string) {
+            getUserByPhone: function (region: string, phone: string) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/find/" + region + "/" + phone
                 });
             },
-            resetPassword: function(password: string, token: string) {
+            resetPassword: function (password: string, token: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/reset_password",
@@ -116,7 +116,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            modefiyPassword: function(newPassword: string, oldPassword: string) {
+            modefiyPassword: function (newPassword: string, oldPassword: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/change_password",
@@ -126,19 +126,19 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            getToken: function() {
+            getToken: function () {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/get_token"
                 })
             },
-            getBlackList: function() {
+            getBlackList: function () {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/blacklist"
                 });
             },
-            addToBlackList: function(userId: string) {
+            addToBlackList: function (userId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/add_to_blacklist",
@@ -147,7 +147,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            removeFromBlackList: function(userId: string) {
+            removeFromBlackList: function (userId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/user/remove_from_blacklist",
@@ -156,7 +156,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            sync: function(version: number) {
+            sync: function (version: number) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/sync",
@@ -165,13 +165,13 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 });
             },
-            getMyGroups: function() {
+            getMyGroups: function () {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/groups"
                 });
             },
-            getImageToken: function() {
+            getImageToken: function () {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/user/get_image_token"
@@ -179,7 +179,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
             }
         },
         friend: {
-            invite: function(friendId: string, message: string) {
+            invite: function (friendId: string, message: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/friendship/invite",
@@ -189,13 +189,13 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 });
             },
-            getAll: function() {
+            getAll: function () {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/friendship/all",
                 });
             },
-            agree: function(friendId: string) {
+            agree: function (friendId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/friendship/agree",
@@ -204,7 +204,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            ignore: function(friendId: string) {
+            ignore: function (friendId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/friendship/ignore",
@@ -213,7 +213,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            delete: function(friendId: string) {
+            delete: function (friendId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/friendship/delete",
@@ -222,13 +222,13 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            getProfile: function(id: string) {
+            getProfile: function (id: string) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/friendship/" + id + "/profile",
                 });
             },
-            setDisplayName: function(friendId: string, displayName: string) {
+            setDisplayName: function (friendId: string, displayName: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/friendship/set_display_name",
@@ -240,7 +240,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
             }
         },
         group: {
-            create: function(name: string, memberIds: string[]) {
+            create: function (name: string, memberIds: string[]) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/create",
@@ -250,7 +250,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            rename: function(groupId: string, name: string) {
+            rename: function (groupId: string, name: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/rename",
@@ -260,19 +260,19 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            getById: function(id: string) {
+            getById: function (id: string) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/group/" + id
                 })
             },
-            getGroupMember: function(id: string) {
+            getGroupMember: function (id: string) {
                 return $http({
                     method: "get",
                     url: serverBaseUrl + "/group/" + id + "/members"
                 })
             },
-            addMember: function(groupId: string, memberIds: string[]) {
+            addMember: function (groupId: string, memberIds: string[]) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/add",
@@ -282,7 +282,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            kickMember: function(groupId: string, memberIds: string[]) {
+            kickMember: function (groupId: string, memberIds: string[]) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/kick",
@@ -292,7 +292,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            dismissGroup: function(groupId: string) {
+            dismissGroup: function (groupId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/dismiss",
@@ -301,7 +301,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
                     }
                 })
             },
-            quit: function(groupId: string) {
+            quit: function (groupId: string) {
                 return $http({
                     method: "POST",
                     url: serverBaseUrl + "/group/quit",
@@ -315,7 +315,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function($http: an
     return mainServer;
 }])
 
-mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", function($q: angular.IQService, RongIMSDKServer: RongIMSDKServer, mainServer: mainServer) {
+mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", function ($q: angular.IQService, RongIMSDKServer: RongIMSDKServer, mainServer: mainServer) {
 
     var mainDataServer = <mainDataServer>{};
 
@@ -327,137 +327,137 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         lastOfflineMsg: null,
         conversations: <webimmodel.Conversation[]>[],
         currentConversation: <webimmodel.Conversation>{},
-        parseConversation: function(item: RongIMLib.Conversation) {
-          var conversationitem = webimmodel.Conversation.convertToWebIM(item, mainDataServer.loginUser.id);
-          var removeUnreadCount = 0;
-          if (item.unreadMessageCount) {
-             removeUnreadCount = item.unreadMessageCount;
-          }
-          switch (item.conversationType) {
-              case RongIMLib.ConversationType.CHATROOM:
-                  conversationitem.title = "聊天室" + item.targetId;
-                  break;
-              case RongIMLib.ConversationType.GROUP:
-                  let group = mainDataServer.contactsList.getGroupById(item.targetId);
-                  removeUnreadCount = 0;
-                  if (!group) {
-                      if (item.targetId == '__system__') {
-                      }else{
-                        (function (id: string, conv: webimmodel.Conversation, listi: any) {
-                            mainServer.group.getById(id).success(function (rep) {
-                                listi.conversationTitle = rep.result.name;
-                                conv.title = rep.result.name;
-                                var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
-                                var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
-                                conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
-                                conv.imgSrc = rep.result.portraitUri;
-                            });
-                        }(item.targetId, conversationitem, item));
-                      }
+        parseConversation: function (item: RongIMLib.Conversation) {
+            var conversationitem = webimmodel.Conversation.convertToWebIM(item, mainDataServer.loginUser.id);
+            var removeUnreadCount = 0;
+            if (item.unreadMessageCount) {
+                removeUnreadCount = item.unreadMessageCount;
+            }
+            switch (item.conversationType) {
+                case RongIMLib.ConversationType.CHATROOM:
+                    conversationitem.title = "聊天室" + item.targetId;
+                    break;
+                case RongIMLib.ConversationType.GROUP:
+                    let group = mainDataServer.contactsList.getGroupById(item.targetId);
+                    removeUnreadCount = 0;
+                    if (!group) {
+                        if (item.targetId == '__system__') {
+                        } else {
+                            (function (id: string, conv: webimmodel.Conversation, listi: any) {
+                                mainServer.group.getById(id).success(function (rep) {
+                                    listi.conversationTitle = rep.result.name;
+                                    conv.title = rep.result.name;
+                                    var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
+                                    var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
+                                    conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+                                    conv.imgSrc = rep.result.portraitUri;
+                                });
+                            }(item.targetId, conversationitem, item));
+                        }
 
-                  } else {
-                      //TODO:添加最后一条消息的发送人
-                      if (conversationitem.lastMsg && item.latestMessage.objectName != "ST:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
-                          var atStr = '';
-                          if(item.mentionedMsg){
-                             conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
-                             var atType = conversationitem.mentionedInfo.type;
-                             var atUsers = conversationitem.mentionedInfo.userIdList;
-                             if(atType == webimmodel.AtTarget.All){
-                                atStr = "[有人@我]";
-                             }else if(atType == webimmodel.AtTarget.Part){
-                                  for(var i = 0; i < atUsers.length; i++){
-                                      if(atUsers[i] == mainDataServer.loginUser.id){
-                                         atStr = "[有人@我]";
-                                         break;
-                                      }
-                                  }
-                             }
-                             conversationitem.atStr = atStr;
-                          }
-                          var member = mainDataServer.contactsList.getGroupMember(group.id, item.latestMessage.senderUserId);
-                          if (member) {
-                              conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
-                          } else {
-                              (function(id: string, conv: webimmodel.Conversation) {
-                                  mainServer.user.getInfo(id).success(function(user) {
-                                      conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
-                                  });
-                              } (item.latestMessage.senderUserId, conversationitem))
-                          }
-                      }
-                      item.conversationTitle = group ? group.name : "未知群组";
-                      conversationitem.title = group ? group.name : "未知群组";
-                  }
-                  // item.conversationTitle = group ? group.name : "未知群组";
-                  // conversationitem.title = group ? group.name : "未知群组";
-                  if (conversationitem.lastMsg && item.latestMessage.objectName == "ST:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
-                       conversationitem.lastMsg = '你 创建了群组';
-                  }
-                  conversationitem.firstchar = group ? group.firstchar : "";
-                  conversationitem.imgSrc = group ? group.imgSrc : "";
-                  conversationitem.firstchar = group ? group.firstchar : "";
-                  conversationitem.everychar = group ? group.everychar : "";
-                  break;
-              case RongIMLib.ConversationType.PRIVATE:
-                  if (item.latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
-                      RongIMSDKServer.removeConversation(RongIMLib.ConversationType.PRIVATE, item.targetId).then(function() {
+                    } else {
+                        //TODO:添加最后一条消息的发送人
+                        if (conversationitem.lastMsg && item.latestMessage.objectName != "ST:GrpNtf" && item.latestMessage.objectName != "RC:InfoNtf") {
+                            var atStr = '';
+                            if (item.mentionedMsg) {
+                                conversationitem.mentionedInfo = item.mentionedMsg.mentionedInfo;
+                                var atType = conversationitem.mentionedInfo.type;
+                                var atUsers = conversationitem.mentionedInfo.userIdList;
+                                if (atType == webimmodel.AtTarget.All) {
+                                    atStr = "[有人@我]";
+                                } else if (atType == webimmodel.AtTarget.Part) {
+                                    for (var i = 0; i < atUsers.length; i++) {
+                                        if (atUsers[i] == mainDataServer.loginUser.id) {
+                                            atStr = "[有人@我]";
+                                            break;
+                                        }
+                                    }
+                                }
+                                conversationitem.atStr = atStr;
+                            }
+                            var member = mainDataServer.contactsList.getGroupMember(group.id, item.latestMessage.senderUserId);
+                            if (member) {
+                                conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
+                            } else {
+                                (function (id: string, conv: webimmodel.Conversation) {
+                                    mainServer.user.getInfo(id).success(function (user) {
+                                        conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
+                                    });
+                                }(item.latestMessage.senderUserId, conversationitem))
+                            }
+                        }
+                        item.conversationTitle = group ? group.name : "未知群组";
+                        conversationitem.title = group ? group.name : "未知群组";
+                    }
+                    // item.conversationTitle = group ? group.name : "未知群组";
+                    // conversationitem.title = group ? group.name : "未知群组";
+                    if (conversationitem.lastMsg && item.latestMessage.objectName == "ST:GrpNtf" && item.latestMessage.content.operation == "Create" && item.latestMessage.content.operatorUserId == mainDataServer.loginUser.id) {
+                        conversationitem.lastMsg = '你 创建了群组';
+                    }
+                    conversationitem.firstchar = group ? group.firstchar : "";
+                    conversationitem.imgSrc = group ? group.imgSrc : "";
+                    conversationitem.firstchar = group ? group.firstchar : "";
+                    conversationitem.everychar = group ? group.everychar : "";
+                    break;
+                case RongIMLib.ConversationType.PRIVATE:
+                    if (item.latestMessage.messageType == webimmodel.MessageType.ContactNotificationMessage) {
+                        RongIMSDKServer.removeConversation(RongIMLib.ConversationType.PRIVATE, item.targetId).then(function () {
 
-                      });
-                      break;
-                  }
-                  removeUnreadCount = 0;
-                  var friendinfo = mainDataServer.contactsList.getFriendById(item.targetId || item.senderUserId)
-                  if (friendinfo) {
-                      item.conversationTitle = friendinfo.displayName || friendinfo.name;
-                      conversationitem.title = friendinfo.displayName || friendinfo.name;
-                      conversationitem.firstchar = friendinfo.firstchar;
-                      conversationitem.imgSrc = friendinfo.imgSrc;
-                      conversationitem.firstchar = friendinfo.firstchar;
-                      conversationitem.everychar = friendinfo.everychar;
-                  }
-                  else if (item.targetId){
-                    var friendinfo = mainDataServer.contactsList.getNonFriendById(item.targetId || item.senderUserId)
+                        });
+                        break;
+                    }
+                    removeUnreadCount = 0;
+                    var friendinfo = mainDataServer.contactsList.getFriendById(item.targetId || item.senderUserId)
                     if (friendinfo) {
                         item.conversationTitle = friendinfo.displayName || friendinfo.name;
                         conversationitem.title = friendinfo.displayName || friendinfo.name;
                         conversationitem.firstchar = friendinfo.firstchar;
                         conversationitem.imgSrc = friendinfo.imgSrc;
-                        // conversationitem.firstchar = friendinfo.firstchar;
-                        // conversationitem.everychar = friendinfo.everychar;
+                        conversationitem.firstchar = friendinfo.firstchar;
+                        conversationitem.everychar = friendinfo.everychar;
                     }
-                    else{
-                      (function(id: string, conv: webimmodel.Conversation) {
-                          mainServer.user.getInfo(id).success(function(rep) {
-                              conv.title = rep.result.nickname + "(非好友)";
-                              conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                              var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
-                              var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                              conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
-                              conv.imgSrc = rep.result.portraitUri;
+                    else if (item.targetId) {
+                        var friendinfo = mainDataServer.contactsList.getNonFriendById(item.targetId || item.senderUserId)
+                        if (friendinfo) {
+                            item.conversationTitle = friendinfo.displayName || friendinfo.name;
+                            conversationitem.title = friendinfo.displayName || friendinfo.name;
+                            conversationitem.firstchar = friendinfo.firstchar;
+                            conversationitem.imgSrc = friendinfo.imgSrc;
+                            // conversationitem.firstchar = friendinfo.firstchar;
+                            // conversationitem.everychar = friendinfo.everychar;
+                        }
+                        else {
+                            (function (id: string, conv: webimmodel.Conversation) {
+                                mainServer.user.getInfo(id).success(function (rep) {
+                                    conv.title = rep.result.nickname + "(非好友)";
+                                    conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                    var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
+                                    var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                    conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+                                    conv.imgSrc = rep.result.portraitUri;
 
-                              var _friend = new webimmodel.Friend({
-                                  id: id,
-                                  name: conv.title,
-                                  imgSrc: conv.imgSrc
-                              });
-                              _friend.firstchar = f;
-                              mainDataServer.contactsList.addNonFriend(_friend);
-                          }).error(function() {
-                              conv.title = "非系统用户";
-                          });
-                      })(item.targetId || item.senderUserId, conversationitem)
+                                    var _friend = new webimmodel.Friend({
+                                        id: id,
+                                        name: conv.title,
+                                        imgSrc: conv.imgSrc
+                                    });
+                                    _friend.firstchar = f;
+                                    mainDataServer.contactsList.addNonFriend(_friend);
+                                }).error(function () {
+                                    conv.title = "非系统用户";
+                                });
+                            })(item.targetId || item.senderUserId, conversationitem)
+                        }
                     }
-                  }
-                  break;
-              case RongIMLib.ConversationType.SYSTEM:
-                  break;
-              case RongIMLib.ConversationType.DISCUSSION:
-                   break;
-              case RongIMLib.ConversationType.CUSTOMER_SERVICE:
-                  break;
-          }
-          return {'item': conversationitem, 'removeUnreadCount': removeUnreadCount};
+                    break;
+                case RongIMLib.ConversationType.SYSTEM:
+                    break;
+                case RongIMLib.ConversationType.DISCUSSION:
+                    break;
+                case RongIMLib.ConversationType.CUSTOMER_SERVICE:
+                    break;
+            }
+            return { 'item': conversationitem, 'removeUnreadCount': removeUnreadCount };
         },
         // updateConversations: function() {
         //     //更新未读总数
@@ -588,7 +588,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //     return defer.promise;
         //
         // },
-        updateConversations: function() {
+        updateConversations: function () {
             //更新未读总数
             var defer = $q.defer();
             var allUnreadCount = 0;
@@ -596,25 +596,25 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             //     allUnreadCount = data;
             // });
 
-            RongIMSDKServer.getConversationList().then(function(list) {
+            RongIMSDKServer.getConversationList().then(function (list) {
                 RongIMLib.RongIMClient.getInstance().sortConversationList(list);
                 mainDataServer.conversation.conversations = [];
                 for (var i = 0, length = list.length; i < length; i++) {
                     var result = mainDataServer.conversation.parseConversation(list[i]);
                     allUnreadCount = allUnreadCount - result.removeUnreadCount;
-                    if(list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION  || list[i].conversationType == RongIMLib.ConversationType.SYSTEM  || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
+                    if (list[i].conversationType == RongIMLib.ConversationType.CUSTOMER_SERVICE || list[i].conversationType == RongIMLib.ConversationType.DISCUSSION || list[i].conversationType == RongIMLib.ConversationType.SYSTEM || list[i].conversationType == RongIMLib.ConversationType.CHATROOM) continue;
                     mainDataServer.conversation.conversations.push(result.item);
                     allUnreadCount += list[i].unreadMessageCount;
                 }
                 mainDataServer.conversation.totalUnreadCount = allUnreadCount;
                 defer.resolve();
-            }, function() {
+            }, function () {
                 defer.reject();
             })
             return defer.promise;
 
         },
-        createConversation: function(targetType: number, targetId: string) {
+        createConversation: function (targetType: number, targetId: string) {
             var item = new webimmodel.Conversation();
             item.targetId = targetId;
             item.targetType = targetType;
@@ -627,11 +627,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         item.firstchar = friendinfo.firstchar;
                         item.imgSrc = friendinfo.imgSrc;
                     } else {
-                        mainServer.user.getInfo(targetId).success(function(rep) {
+                        mainServer.user.getInfo(targetId).success(function (rep) {
                             item.title = rep.result.nickname + "(非好友)";
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
                             item.imgSrc = rep.result.portraitUri;
-                        }).error(function() {
+                        }).error(function () {
 
                         });
                     }
@@ -642,14 +642,14 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         item.title = groupinfo.name;
                         item.firstchar = groupinfo.firstchar;
                     } else {
-                        mainServer.group.getById(targetId).success(function(rep) {
+                        mainServer.group.getById(targetId).success(function (rep) {
                             item.title = rep.result.name;
                             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
                             var obj = webimutil.ChineseCharacter.convertToABC(rep.result.name);
                             var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.name);
-                            item.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f});
+                            item.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
                             item.imgSrc = rep.result.portraitUri;
-                        }).error(function() {
+                        }).error(function () {
 
                         });
                     }
@@ -676,7 +676,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
             return item;
         },
-        getConversation: function(type: number, id: string) {
+        getConversation: function (type: number, id: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
                     return mainDataServer.conversation.conversations[i];
@@ -684,7 +684,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
-        updateConversationTitle: function(type: number, id: string, title: string) {
+        updateConversationTitle: function (type: number, id: string, title: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
                     mainDataServer.conversation.conversations[i].title = title;
@@ -693,7 +693,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        updateConversationDetail: function(type: number, id: string, title: string, portrait: string) {
+        updateConversationDetail: function (type: number, id: string, title: string, portrait: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
                     mainDataServer.conversation.conversations[i].title = title;
@@ -703,68 +703,68 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
-            var type = msg.conversationType , id = msg.targetId;
+        updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat: boolean) {
+            var type = msg.conversationType, id = msg.targetId;
             var hasCon = false;
             if (type == webimmodel.conversationType.Discussion || type == webimmodel.conversationType.System && msg.messageType != webimmodel.MessageType.ContactNotificationMessage || type == webimmodel.conversationType.ChartRoom) {
                 return;
             }
-            if(msg.messageType == webimmodel.MessageType.ReadReceiptMessage
-              || msg.messageType == webimmodel.MessageType.TypingStatusMessage
-              || msg.messageType == webimmodel.MessageType.SyncReadStatusMessage
-              || msg.messageType == webimmodel.MessageType.ReadReceiptRequestMessage
-              || msg.messageType == webimmodel.MessageType.ReadReceiptResponseMessage
-            ){
-              return ;
+            if (msg.messageType == webimmodel.MessageType.ReadReceiptMessage
+                || msg.messageType == webimmodel.MessageType.TypingStatusMessage
+                || msg.messageType == webimmodel.MessageType.SyncReadStatusMessage
+                || msg.messageType == webimmodel.MessageType.ReadReceiptRequestMessage
+                || msg.messageType == webimmodel.MessageType.ReadReceiptResponseMessage
+            ) {
+                return;
             }
 
             RongIMSDKServer.getConversation(type, id).then(function (data) {
                 if (data) {
                     var result = mainDataServer.conversation.parseConversation(data);
-                    var oldUnread = 0, totalUnreadCount = mainDataServer.conversation.totalUnreadCount, isfirst = false, conversationItem:webimmodel.Conversation;
+                    var oldUnread = 0, totalUnreadCount = mainDataServer.conversation.totalUnreadCount, isfirst = false, conversationItem: webimmodel.Conversation;
                     for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                         conversationItem = mainDataServer.conversation.conversations[i];
                         if (conversationItem.targetType == type && conversationItem.targetId == id) {
                             oldUnread = conversationItem.unReadNum;
-                            if(i == 0){
-                              isfirst = true;
-                              conversationItem.lastMsg = result.item.lastMsg;
-                              conversationItem.unReadNum = result.item.unReadNum;
-                              conversationItem.lastTime = result.item.lastTime;
-                              if (msg.senderUserId == mainDataServer.loginUser.id) {
-                                RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
-                                totalUnreadCount = totalUnreadCount - oldUnread;
-                                result.item.unReadNum = 0;
-                                conversationItem.atStr = '';
-                              }
-                              else{
-                                conversationItem.atStr = result.item.atStr;
-                              }
+                            if (i == 0) {
+                                isfirst = true;
+                                conversationItem.lastMsg = result.item.lastMsg;
+                                conversationItem.unReadNum = result.item.unReadNum;
+                                conversationItem.lastTime = result.item.lastTime;
+                                if (msg.senderUserId == mainDataServer.loginUser.id) {
+                                    RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                                    totalUnreadCount = totalUnreadCount - oldUnread;
+                                    result.item.unReadNum = 0;
+                                    conversationItem.atStr = '';
+                                }
+                                else {
+                                    conversationItem.atStr = result.item.atStr;
+                                }
                             }
-                            else{
-                              mainDataServer.conversation.conversations.splice(i, 1);
+                            else {
+                                mainDataServer.conversation.conversations.splice(i, 1);
                             }
                             break;
                         }
                     }
-                   if(isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId){
-                       RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
-                       totalUnreadCount = totalUnreadCount - oldUnread;
-                       result.item.unReadNum = 0;
-                       result.item.atStr = '';
-                   }else{
-                     if(msg.senderUserId == mainDataServer.loginUser.id){
-                       RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
-                       totalUnreadCount = totalUnreadCount - oldUnread;
-                       result.item.unReadNum = 0;
-                       result.item.atStr = '';
-                     }
-                     else{
-                       totalUnreadCount = totalUnreadCount - oldUnread + result.item.unReadNum;
-                     }
-                   }
+                    if (isChat && type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
+                        RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                        totalUnreadCount = totalUnreadCount - oldUnread;
+                        result.item.unReadNum = 0;
+                        result.item.atStr = '';
+                    } else {
+                        if (msg.senderUserId == mainDataServer.loginUser.id) {
+                            RongIMSDKServer.clearUnreadCount(mainDataServer.conversation.currentConversation.targetType, mainDataServer.conversation.currentConversation.targetId);
+                            totalUnreadCount = totalUnreadCount - oldUnread;
+                            result.item.unReadNum = 0;
+                            result.item.atStr = '';
+                        }
+                        else {
+                            totalUnreadCount = totalUnreadCount - oldUnread + result.item.unReadNum;
+                        }
+                    }
                     mainDataServer.conversation.totalUnreadCount = totalUnreadCount;
-                    if(add && !isfirst){
+                    if (add && !isfirst) {
                         mainDataServer.conversation.conversations.unshift(result.item);
                     }
                 }
@@ -772,7 +772,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     console.log('无法获取该会话', type, id);
                 }
             }, function (err) {
-              console.log("RongIMSDKServer.getConversation err:" + err, type, id);
+                console.log("RongIMSDKServer.getConversation err:" + err, type, id);
             });
         },
         // updateConStatic: function (msg: webimmodel.Message, add: boolean, isChat:boolean) {
@@ -879,7 +879,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         //     }
         //   }
         // },
-        setDraft: function(type: string, id: string, msg: string) {
+        setDraft: function (type: string, id: string, msg: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == id) {
                     mainDataServer.conversation.conversations[i].draftMsg = msg;
@@ -888,7 +888,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        clearMessagesUnreadStatus: function(type: string, targetid: string) {
+        clearMessagesUnreadStatus: function (type: string, targetid: string) {
             for (var i = 0, len = mainDataServer.conversation.conversations.length; i < len; i++) {
                 if (mainDataServer.conversation.conversations[i].targetType == type && mainDataServer.conversation.conversations[i].targetId == targetid) {
                     mainDataServer.conversation.conversations[i].unReadNum = 0;
@@ -897,7 +897,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        find: function(str: string, arr: webimmodel.Conversation[]) {
+        find: function (str: string, arr: webimmodel.Conversation[]) {
             var num = /^[0-9]+$/, abc = /^[a-zA-Z]+$/, reg = /^[0-9a-zA-Z\-]+$/;
             var str = str.trim();
             var newArr = <webimmodel.Conversation[]>[];
@@ -926,11 +926,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
     mainDataServer.blackList = {
         list: [],
-        add: function(item: webimmodel.Friend) {
+        add: function (item: webimmodel.Friend) {
             item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
             this.list.push(item);
         },
-        remove: function(id: string) {
+        remove: function (id: string) {
             for (var i = 0, len = this.list.length; i < len; i++) {
                 if (this.list[i].id == id) {
                     this.list.splice(i, 1);
@@ -939,7 +939,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        getById: function(id: string) {
+        getById: function (id: string) {
             for (var i = 0, len = this.list.length; i < len; i++) {
                 if (this.list[i].id == id) {
                     return this.list[i];
@@ -954,7 +954,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
         groupList: <webimmodel.Group[]>[],
         subgroupList: <webimmodel.Subgroup[]>[],
         discussionList: <webimmodel.Discussion[]>[],
-        getGroupById: function(id: string) {
+        getGroupById: function (id: string) {
             for (let i = 0; i < this.groupList.length; i++) {
                 let item = this.groupList[i];
                 if (item.id == id) {
@@ -963,7 +963,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
-        updateGroupNameById: function(id: string, name: string) {
+        updateGroupNameById: function (id: string, name: string) {
             for (let i = 0; i < this.groupList.length; i++) {
                 let item = this.groupList[i];
                 if (item.id == id) {
@@ -976,7 +976,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        getDiscussionById: function(id: string) {
+        getDiscussionById: function (id: string) {
             for (let i = 0; i < this.discussionList.length; i++) {
                 let item = this.discussionList[i];
                 if (item.id == id) {
@@ -985,7 +985,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
-        getFriendById: function(id: string) {
+        getFriendById: function (id: string) {
             for (var i = 0, slen = this.subgroupList.length; i < slen; i++) {
                 var list = this.subgroupList[i].list;
                 for (var j = 0, flen = list.length; j < flen; j++) {
@@ -996,7 +996,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
-        quickGetFriend: function(id: string, firstchar: string) {
+        quickGetFriend: function (id: string, firstchar: string) {
             for (var i = 0, slen = this.subgroupList.length; i < slen; i++) {
                 var list = this.subgroupList[i].list;
                 if (this.subgroupList[i].title == firstchar) {
@@ -1009,7 +1009,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return null;
         },
-        addFriend: function(friend: webimmodel.Friend) {
+        addFriend: function (friend: webimmodel.Friend) {
             var obj = webimutil.ChineseCharacter.convertToABC(friend.name);
             var f = webimutil.ChineseCharacter.getPortraitChar(friend.name);
             friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
@@ -1022,11 +1022,11 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     }
                 }
                 this.subgroupList.push(new webimmodel.Subgroup(f, [friend]));
-                this.subgroupList.sort(function(a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
+                this.subgroupList.sort(function (a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
                 return friend;
             }
         },
-        removeFriend: function(friendId: string) {
+        removeFriend: function (friendId: string) {
             for (var i = 0, slen = this.subgroupList.length; i < slen; i++) {
                 var list = this.subgroupList[i].list;
                 for (var j = 0, flen = list.length; j < flen; j++) {
@@ -1042,28 +1042,28 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        removeFriendFromSubgroup: function(friend: webimmodel.Friend) {
-              var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
-              var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
-              friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-              f = webimutil.ChineseCharacter.getPortraitChar2(friend.displayName || friend.name);
-              for (var i = 0, len = this.subgroupList.length; i < len; i++) {
-                  if (this.subgroupList[i].title == f) {
-                      for (var j = 0, lenj = this.subgroupList[i].list.length; j < lenj; j++) {
-                          if (this.subgroupList[i].list[j].id == friend.id) {
-                              this.subgroupList[i].list.splice(j, 1);
-                              break;
-                          }
-                      }
-                      if (this.subgroupList[i].list.length)
-                          break;
-                      this.subgroupList.splice(i, 1);
-                      break;
-                  }
-              }
+        removeFriendFromSubgroup: function (friend: webimmodel.Friend) {
+            var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
+            var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
+            friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+            f = webimutil.ChineseCharacter.getPortraitChar2(friend.displayName || friend.name);
+            for (var i = 0, len = this.subgroupList.length; i < len; i++) {
+                if (this.subgroupList[i].title == f) {
+                    for (var j = 0, lenj = this.subgroupList[i].list.length; j < lenj; j++) {
+                        if (this.subgroupList[i].list[j].id == friend.id) {
+                            this.subgroupList[i].list.splice(j, 1);
+                            break;
+                        }
+                    }
+                    if (this.subgroupList[i].list.length)
+                        break;
+                    this.subgroupList.splice(i, 1);
+                    break;
+                }
+            }
 
         },
-        updateOrAddFriend: function(friend: webimmodel.Friend) {
+        updateOrAddFriend: function (friend: webimmodel.Friend) {
             var obj = webimutil.ChineseCharacter.convertToABC(friend.displayName || friend.name);
             var f = webimutil.ChineseCharacter.getPortraitChar(friend.displayName || friend.name);
             friend.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
@@ -1077,14 +1077,14 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                     }
                 }
                 this.subgroupList.push(new webimmodel.Subgroup(f, [friend]));
-                this.subgroupList.sort(function(a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
+                this.subgroupList.sort(function (a: webimmodel.Subgroup, b: webimmodel.Subgroup) { return a.title.charCodeAt(0) - b.title.charCodeAt(0); });
                 return friend;
             } else {
                 angular.extend(oldFriend, friend);
                 return oldFriend;
             }
         },
-        addGroup: function(group: webimmodel.Group) {
+        addGroup: function (group: webimmodel.Group) {
             if (!contactsList.getGroupById(group.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(group.name);
                 var f = webimutil.ChineseCharacter.getPortraitChar(group.name);
@@ -1092,7 +1092,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 this.groupList.push(group);
             }
         },
-        removeGroup: function(groupId: string) {
+        removeGroup: function (groupId: string) {
             for (var i = 0, len = this.groupList.length; i < len; i++) {
                 if (this.groupList[i].id == groupId) {
                     this.groupList.splice(i, 1);
@@ -1102,7 +1102,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        addDiscussion: function(discussion: webimmodel.Discussion) {
+        addDiscussion: function (discussion: webimmodel.Discussion) {
             if (!contactsList.getDiscussionById(discussion.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(discussion.name);
                 var f = webimutil.ChineseCharacter.getPortraitChar(discussion.name);
@@ -1110,7 +1110,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 this.discussionList.push(discussion);
             }
         },
-        removeDiscussion: function(discussionId: string) {
+        removeDiscussion: function (discussionId: string) {
             for (var i = 0, len = this.discussionList.length; i < len; i++) {
                 if (this.discussionList[i].id == discussionId) {
                     this.discussionList.splice(i, 1);
@@ -1120,7 +1120,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        find: function(str: string, arr: webimmodel.Contact[]) {
+        find: function (str: string, arr: webimmodel.Contact[]) {
             var num = /^[0-9]+$/, abc = /^[a-zA-Z]+$/, reg = /^[0-9a-zA-Z\-]+$/;
             var str = str.trim();
             var newArr = <webimmodel.Contact[]>[];
@@ -1145,7 +1145,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return newArr;
         },
-        getGroupMember: function(groupId: string, memberId: string) {
+        getGroupMember: function (groupId: string, memberId: string) {
             var item = this.getGroupById(groupId);
             if (item) {
                 for (let i = 0, len = item.memberList.length; i < len; i++) {
@@ -1159,7 +1159,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
             return null;
         },
-        addGroupMember: function(groupId: string, member: webimmodel.Member) {
+        addGroupMember: function (groupId: string, member: webimmodel.Member) {
             var item = this.getGroupById(groupId);
             if (item && !contactsList.getGroupMember(groupId, member.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(member.name);
@@ -1167,17 +1167,17 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                 var f = webimutil.ChineseCharacter.getPortraitChar(member.name);
 
                 member.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-                if(member.role == "0"){
-                  item.memberList.unshift(member);
-                }else{
-                  item.memberList.push(member);
+                if (member.role == "0") {
+                    item.memberList.unshift(member);
+                } else {
+                    item.memberList.push(member);
                 }
                 item.fact = item.memberList.length;
             } else {
 
             }
         },
-        removeGroupMember: function(groupId: string, memberid: string) {
+        removeGroupMember: function (groupId: string, memberid: string) {
             var item = this.getGroupById(groupId);
             if (!item) {
                 throw Error("not found group:" + groupId);
@@ -1193,7 +1193,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        getDiscussionMember: function(discussionId: string, memberId: string) {
+        getDiscussionMember: function (discussionId: string, memberId: string) {
             var item = this.getDiscussionById(discussionId);
             if (item) {
                 for (let i = 0, len = item.memberList.length; i < len; i++) {
@@ -1207,7 +1207,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
             return null;
         },
-        addDiscussionMember: function(discussionId: string, member: webimmodel.Member) {
+        addDiscussionMember: function (discussionId: string, member: webimmodel.Member) {
             var item = this.getDiscussionById(discussionId);
             if (item && !contactsList.getDiscussionMember(discussionId, member.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(member.name);
@@ -1221,7 +1221,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
 
             }
         },
-        removeDiscussionMember: function(discussionId: string, memberid: string) {
+        removeDiscussionMember: function (discussionId: string, memberid: string) {
             var item = this.getDiscussionById(discussionId);
             if (!item) {
                 throw Error("not found discussion:" + discussionId);
@@ -1237,15 +1237,15 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        getNonFriendById: function(id: string) {
+        getNonFriendById: function (id: string) {
             for (var i = 0, slen = this.nonFriendList.length; i < slen; i++) {
-              if (this.nonFriendList[i].id == id) {
-                  return this.nonFriendList[i];
-              }
+                if (this.nonFriendList[i].id == id) {
+                    return this.nonFriendList[i];
+                }
             }
             return null;
         },
-        addNonFriend: function(person: webimmodel.Friend) {
+        addNonFriend: function (person: webimmodel.Friend) {
             if (!contactsList.getNonFriendById(person.id)) {
                 var obj = webimutil.ChineseCharacter.convertToABC(person.name);
                 var f = webimutil.ChineseCharacter.getPortraitChar(person.name);
@@ -1260,15 +1260,15 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     mainDataServer.notification = {
         hasNewNotification: false,
         notificationList: [],
-        addNotification: function(item: webimmodel.NotificationFriend) {
+        addNotification: function (item: webimmodel.NotificationFriend) {
             if (!this._findFriendApply(item)) {
-                if(item.name)
-                   item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
+                if (item.name)
+                    item.firstchar = webimutil.ChineseCharacter.getPortraitChar(item.name);
                 this.notificationList.unshift(item);
             }
         },
         //离线补偿已经排除
-        _findFriendApply: function(item: webimmodel.NotificationFriend) {
+        _findFriendApply: function (item: webimmodel.NotificationFriend) {
             if (item.id) {
                 for (var i = 0, len = this.notificationList.length; i < len; i++) {
                     if (item.id === this.notificationList[i]["id"] && this.notificationList[i]["status"] == webimmodel.FriendStatus.Requested) {
@@ -1278,8 +1278,8 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
             }
             return false;
         },
-        _sort: function() {
-            mainDataServer.notification.notificationList = mainDataServer.notification.notificationList.sort(function(a, b) {
+        _sort: function () {
+            mainDataServer.notification.notificationList = mainDataServer.notification.notificationList.sort(function (a, b) {
                 return parseInt(a.timestamp) - parseInt(b.timestamp);
             });
         }
@@ -1288,10 +1288,10 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
     return mainDataServer;
 }]);
 
-mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
+mainServer.factory("RongIMSDKServer", ["$q", function ($q: angular.IQService) {
     var RongIMSDKServer = <any>{};
 
-    RongIMSDKServer.init = function(appkey: string) {
+    RongIMSDKServer.init = function (appkey: string) {
         // RongIMLib.RongIMClient.init(appkey, new RongIMLib.WebSQLDataProvider());
         RongIMLib.RongIMClient.init(appkey);
         var mesasgeTag = new RongIMLib.MessageTag(false, true);
@@ -1299,16 +1299,16 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         RongIMLib.RongIMClient.registerMessageType('ContactNotificationMessage', 'ST:ContactNtf', mesasgeTag, ['targetUserId', 'sourceUserId', 'operation', 'message']);
     }
 
-    RongIMSDKServer.connect = function(token: string) {
+    RongIMSDKServer.connect = function (token: string) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.connect(token, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onTokenIncorrect: function() {
+            onTokenIncorrect: function () {
                 defer.reject({ tokenError: true });
             },
-            onError: function(errorCode) {
+            onError: function (errorCode) {
                 defer.reject({ errorCode: errorCode });
                 var info = '';
                 switch (errorCode) {
@@ -1347,27 +1347,27 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         return defer.promise;
     }
 
-    RongIMSDKServer.getInstance = function() {
+    RongIMSDKServer.getInstance = function () {
         return RongIMLib.RongIMClient.getInstance();
     }
 
-    RongIMSDKServer.setOnReceiveMessageListener = function(option: any) {
+    RongIMSDKServer.setOnReceiveMessageListener = function (option: any) {
         RongIMLib.RongIMClient.setOnReceiveMessageListener(option);
     }
 
-    RongIMSDKServer.setConnectionStatusListener = function(option: any) {
+    RongIMSDKServer.setConnectionStatusListener = function (option: any) {
         RongIMLib.RongIMClient.setConnectionStatusListener(option);
     }
 
-    RongIMSDKServer.sendMessage = function(conver: number, targetId: string, content: any, isAt: boolean) {
+    RongIMSDKServer.sendMessage = function (conver: number, targetId: string, content: any, isAt: boolean) {
         var defer = $q.defer();
         var isAtMsg = isAt || false;
 
         RongIMLib.RongIMClient.getInstance().sendMessage(+conver, targetId, content, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onError: function(errorCode, message) {
+            onError: function (errorCode, message) {
                 defer.reject({ errorCode: errorCode, message: message });
                 var info = '';
                 switch (errorCode) {
@@ -1401,14 +1401,14 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         return defer.promise;
     }
 
-    RongIMSDKServer.sendReceiptResponse = function(conver: number, targetId: string) {
+    RongIMSDKServer.sendReceiptResponse = function (conver: number, targetId: string) {
         var defer = $q.defer();
 
         RongIMLib.RongIMClient.getInstance().sendReceiptResponse(+conver, targetId, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onError: function(errorCode, message) {
+            onError: function (errorCode, message) {
                 defer.reject({ errorCode: errorCode, message: message });
                 var info = '';
                 switch (errorCode) {
@@ -1442,17 +1442,17 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
         return defer.promise;
     }
 
-    RongIMSDKServer.reconnect = function(callback: any) {
+    RongIMSDKServer.reconnect = function (callback: any) {
         RongIMLib.RongIMClient.reconnect(callback);
     }
 
-    RongIMSDKServer.clearUnreadCount = function(type: number, targetid: string) {
+    RongIMSDKServer.clearUnreadCount = function (type: number, targetid: string) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().clearUnreadCount(type, targetid, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         });
@@ -1460,29 +1460,29 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     }
 
 
-    RongIMSDKServer.getTotalUnreadCount = function() {
+    RongIMSDKServer.getTotalUnreadCount = function () {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getTotalUnreadCount({
-            onSuccess: function(num) {
+            onSuccess: function (num) {
                 defer.resolve(num);
             },
-            onError: function() {
+            onError: function () {
                 defer.reject();
             }
         });
         return defer.promise;
     }
 
-    RongIMSDKServer.getConversationList = function() {
+    RongIMSDKServer.getConversationList = function () {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getConversationList({
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 data = data.filter(function (item: any) {
                     return item.conversationType != 6;
                 });
                 defer.resolve(data);
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         }, null);
@@ -1494,128 +1494,153 @@ mainServer.factory("RongIMSDKServer", ["$q", function($q: angular.IQService) {
     //     // return RongIMLib.RongIMClient.conversationMap.conversationList;
     // }
 
-    RongIMSDKServer.removeConversation = function(type: number, targetId: string) {
+    RongIMSDKServer.removeConversation = function (type: number, targetId: string) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().removeConversation(type, targetId, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         });
         return defer.promise;
     }
 
-    RongIMSDKServer.createConversation = function(type: number, targetId: string, title: string) {
+    RongIMSDKServer.createConversation = function (type: number, targetId: string, title: string) {
         RongIMLib.RongIMClient.getInstance().createConversation(type, targetId, title);
     }
 
-    RongIMSDKServer.getConversation = function(type: number, targetId: string) {
+    RongIMSDKServer.getConversation = function (type: number, targetId: string) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getConversation(type, targetId, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve(data);
             },
-            onError: function() {
+            onError: function () {
                 defer.reject();
             }
         });
         return defer.promise;
     }
 
-    RongIMSDKServer.getDraft = function(type: number, targetId: string) {
+    RongIMSDKServer.getDraft = function (type: number, targetId: string) {
         return RongIMLib.RongIMClient.getInstance().getTextMessageDraft(type, targetId) || "";
     }
 
-    RongIMSDKServer.setDraft = function(type: number, targetId: string, value: string) {
+    RongIMSDKServer.setDraft = function (type: number, targetId: string, value: string) {
         return RongIMLib.RongIMClient.getInstance().saveTextMessageDraft(type, targetId, value);
     }
 
-    RongIMSDKServer.clearDraft = function(type: number, targetId: string) {
+    RongIMSDKServer.clearDraft = function (type: number, targetId: string) {
         return RongIMLib.RongIMClient.getInstance().clearTextMessageDraft(type, targetId);
     }
 
-    RongIMSDKServer.getHistoryMessages = function(type: number, targetId: string, lastTime:number, num: number) {
+    RongIMSDKServer.getHistoryMessages = function (type: number, targetId: string, lastTime: number, num: number) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getHistoryMessages(type, targetId, lastTime, num, {
-            onSuccess: function(data, has) {
+            onSuccess: function (data, has) {
                 defer.resolve({
                     data: data,
                     has: has
                 });
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         })
         return defer.promise;
     }
 
-    RongIMSDKServer.disconnect = function() {
+    RongIMSDKServer.disconnect = function () {
         RongIMLib.RongIMClient.getInstance().disconnect();
     }
 
-    RongIMSDKServer.logout = function() {
+    RongIMSDKServer.logout = function () {
         if (RongIMLib && RongIMLib.RongIMClient) {
             RongIMLib.RongIMClient.getInstance().logout();
         }
     }
 
-    RongIMSDKServer.createDiscussion = function(name: string, userIdList: string[]) {
+    RongIMSDKServer.createDiscussion = function (name: string, userIdList: string[]) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().createDiscussion(name, userIdList, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve({
                     data: data
                 });
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         })
         return defer.promise;
     }
 
-    RongIMSDKServer.addMemberToDiscussion = function(discussionId: string, userIdList: string[], callback: any) {
+    RongIMSDKServer.addMemberToDiscussion = function (discussionId: string, userIdList: string[], callback: any) {
         return RongIMLib.RongIMClient.getInstance().addMemberToDiscussion(discussionId, userIdList, callback);
     }
 
-    RongIMSDKServer.removeMemberFromDiscussion = function(discussionId: string, userId: string, callback: any) {
+    RongIMSDKServer.removeMemberFromDiscussion = function (discussionId: string, userId: string, callback: any) {
         return RongIMLib.RongIMClient.getInstance().removeMemberFromDiscussion(discussionId, userId, callback);
     }
 
-    RongIMSDKServer.setDiscussionName = function(discussionId: string, name: string, callback: any) {
+    RongIMSDKServer.setDiscussionName = function (discussionId: string, name: string, callback: any) {
         return RongIMLib.RongIMClient.getInstance().setDiscussionName(discussionId, name, callback);
     }
 
-    RongIMSDKServer.getDiscussion = function(discussionId: string, callback: any) {
+    RongIMSDKServer.getDiscussion = function (discussionId: string, callback: any) {
         var defer = $q.defer();
         RongIMLib.RongIMClient.getInstance().getDiscussion(discussionId, {
-            onSuccess: function(data) {
+            onSuccess: function (data) {
                 defer.resolve({
                     data: data
                 });
             },
-            onError: function(error) {
+            onError: function (error) {
                 defer.reject(error);
             }
         })
         return defer.promise;
     }
 
-    RongIMSDKServer.quitDiscussion = function(discussionId: string, callback: any) {
+    RongIMSDKServer.getFileToken = function (type: number) {
+        var defer = $q.defer();
+        RongIMLib.RongIMClient.getInstance().getFileToken(type, {
+            onSuccess: function (data: any) {
+                defer.resolve(data);
+            },
+            onError: function (error: any) {
+                defer.reject(error);
+            }
+        })
+        return defer.promise;
+    };
+    RongIMSDKServer.getFileUrl = function (type: number, hash: string, name: string) {
+        var defer = $q.defer();
+        RongIMLib.RongIMClient.getInstance().getFileUrl(type, hash, name, {
+            onSuccess: function (data: any) {
+                defer.resolve(data);
+            },
+            onError: function (error: any) {
+                defer.reject(error);
+            }
+        })
+        return defer.promise;
+    }
+
+    RongIMSDKServer.quitDiscussion = function (discussionId: string, callback: any) {
         return RongIMLib.RongIMClient.getInstance().quitDiscussion(discussionId, callback);
     }
 
     // RongIMSDKServer.sortConversationList = function(list: RongIMLib.Conversation[]) {
     //     return RongIMLib.RongIMClient.getInstance().sortConversationList(list);
     // }
-    RongIMSDKServer.registerMessageType = function(messageType: string, objectName: string, messageTag: any, messageContent: any) {
+    RongIMSDKServer.registerMessageType = function (messageType: string, objectName: string, messageTag: any, messageContent: any) {
         return RongIMLib.RongIMClient.registerMessageType(messageType, objectName, messageTag, messageContent);
     }
 
-    RongIMSDKServer.RegisterMessage = function() {
+    RongIMSDKServer.RegisterMessage = function () {
         return RongIMLib.RongIMClient.RegisterMessage;
     }
     return RongIMSDKServer;
@@ -1638,18 +1663,20 @@ interface RongIMSDKServer {
     getDraft(type: number, targetId: string): string
     setDraft(type: number, targetId: string, valur: string): boolean
     clearDraft(type: number, targetId: string): boolean
-    getHistoryMessages(type: number, targetId: string, lastTime:number, num: number): angular.IPromise<{ data: RongIMLib.Message[], has: boolean }>
+    getHistoryMessages(type: number, targetId: string, lastTime: number, num: number): angular.IPromise<{ data: RongIMLib.Message[], has: boolean }>
     disconnect(): void
     logout(): void
     reconnect(callback?: any): void
-    createDiscussion(name: string, userIdList: string[]): angular.IPromise<{data: string}>
+    createDiscussion(name: string, userIdList: string[]): angular.IPromise<{ data: string }>
     addMemberToDiscussion(discussionId: string, userIdList: string[], callback?: any): void
     removeMemberFromDiscussion(discussionId: string, userId: string, callback?: any): void
     setDiscussionName(discussionId: string, name: string, callback?: any): void
-    getDiscussion(discussionId: string): angular.IPromise<{data: RongIMLib.Discussion}>
+    getDiscussion(discussionId: string): angular.IPromise<{ data: RongIMLib.Discussion }>
     quitDiscussion(discussionId: string, callback?: any): void
     registerMessageType(messageType: string, objectName: string, messageTag: any, messageContent: any): void
     RegisterMessage(): any
+    getFileToken(type: number):  angular.IPromise<any>
+    getFileUrl(type: number, hash: string, name: string): angular.IPromise<any>
     // sortConversationList(list: RongIMLib.Conversation[]): void
 }
 
@@ -1668,7 +1695,7 @@ interface mainDataServer {
         getConversation(type: number, id: string): webimmodel.Conversation
         updateConversationTitle(type: number, targetId: string, title: string): boolean
         updateConversationDetail(type: number, targetId: string, title: string, portrait: string): boolean
-        updateConStatic(msg: webimmodel.Message, add: boolean, isChat:boolean): void
+        updateConStatic(msg: webimmodel.Message, add: boolean, isChat: boolean): void
         setDraft(type: string, id: string, msg: string): boolean
         clearMessagesUnreadStatus(type: string, id: string): boolean
         find(str: string, arr: webimmodel.Conversation[]): webimmodel.Conversation[]

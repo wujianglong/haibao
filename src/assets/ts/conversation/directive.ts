@@ -818,8 +818,12 @@ conversationDire.directive("fileMessage", [function() {
 
           scope.itemid = scope.$parent.item.messageUId;
           scope.Cancel =  function(){
-            RongIMLib.RongUploadLib.getInstance().cancel(scope.itemid);
+            // RongIMLib.RongUploadLib.getInstance().cancel(scope.itemid);
             scope.item.state = 1;
+            var uploadFile = scope.$parent.$parent.$parent.$parent.uploads[scope.itemid];
+            if(uploadFile){
+              uploadFile.cancel();
+            }
           }
           scope.Download =  function(){
           }

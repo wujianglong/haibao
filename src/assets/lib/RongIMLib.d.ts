@@ -678,6 +678,8 @@ declare module RongIMLib {
          * @param  {string}                  pushData         []
          */
         sendMessage(conversationType: ConversationType, targetId: string, messageContent: MessageContent, sendCallback: SendMessageCallback, isFirstSendMsg?: boolean): void;
+        getFileToken(type: number, callback: any):void;
+        getFileUrl(type: number, hash: string, name: string, callback: any):void;
         /**
          * [sendStatusMessage description]
          * @param  {MessageContent}          messageContent [description]
@@ -1753,6 +1755,18 @@ declare module RongIMLib {
         mentionedInfo: RongIMLib.MentionedInfo;
         constructor(message: any);
         static obtain(text: string): TextMessage;
+        encode(): string;
+    }
+    class FileMessage implements MessageContent, UserInfoAttachedMessage, ExtraAttachedMessage {
+        userInfo: UserInfo;
+        extra: string;
+        name: string;
+        size: number;
+        type: string;
+        fileUrl: string;
+        messageName: string;
+        mentionedInfo: RongIMLib.MentionedInfo;
+        constructor(message: any);
         encode(): string;
     }
     class VoiceMessage implements MessageContent, UserInfoAttachedMessage, ExtraAttachedMessage {
