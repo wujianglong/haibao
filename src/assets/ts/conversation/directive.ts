@@ -640,7 +640,7 @@ conversationDire.directive("imageMessage", [function() {
         '<span id="{{\'rebox_\'+$id}}" ng-click="showBigImage()"   class="Message-entry gallery" style="">' +
         '<!-- <p>发给您一张示意图</p> -->' +
         // '<img ng-src="{{item.content||\'../../static/images/barBg.png\'}}" data-image="{{item.imageUri}}" alt=""/>' +
-        '<a href="{{item.imageUri||\'assets/img/barBg.png\'}}"><img ng-src="{{item.content||\'../../static/images/barBg.png\'}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
+        '<a><img ng-src="{{getImageContent()}}"  data-image="{{item.imageUri}}" alt=""/></a>' +
         '</span>' +
         // '<a href="{{item.imageUri}}" download>下载</a>' +
         '</div>' +
@@ -649,34 +649,21 @@ conversationDire.directive("imageMessage", [function() {
             var img = new Image();
             scope.itemid = scope.$parent.item.messageUId;
             img.src = scope.item.imageUri;
-            setTimeout(function() {
-                $('#rebox_' + scope.$id).rebox({ selector: 'a' }).bind("rebox:open", function() {
-                    //jQuery rebox 点击空白关闭
-                    var rebox = <any>document.getElementsByClassName("rebox")[0];
-                    rebox.onclick = function(e: any) {
-                        if (e.target.tagName.toLowerCase() != "img") {
-                            var rebox_close = <any>document.getElementsByClassName("rebox-close")[0];
-                            rebox_close.click();
-                            rebox = null; rebox_close = null;
-                        }
-                    }
-                });
-            })
 
+            scope.getImageContent = function () {
+              var item = scope.item;
+              var imageUri = item.imageUri;
+              if (imageUri.indexOf('.gif') !== -1) {
+                return imageUri;
+              } else {
+                return item.content || '../../static/images/barBg.png';
+              }
+            };
 
-
-            img.onload = function() {
-                scope.$apply(function() {
-                    scope.item.content = scope.item.imageUri
-                });
+            scope.showBigImage = function () {
+              /* 新增代码 */
+              webimutil.Helper.showBigImage(scope.item.imageUri);
             }
-            scope.showBigImage = function() {
-
-            }
-            $(ele).contextmenu(function(e: any){
-              console.log('显示右键菜单', e.which, e.currentTarget.firstChild.id, e);
-              return false;
-            });
         }
     }
 }])

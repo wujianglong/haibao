@@ -3442,3 +3442,40 @@ input::-ms-clear{display:none;}
   display: inline-block;
   float: none !important;
 }
+
+.rong-big-image-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(1, 1, 1, 0.5);
+}
+
+.rong-big-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+.rong-big-image-close {
+    background-color: rgba(0,0,0,.7);
+    border-radius: 50%;
+    color: #fff;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.rong-big-image-close:hover {
+    transition: 0.3s;
+    transform: scale(1.3);
+    cursor: pointer;
+}

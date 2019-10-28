@@ -260,12 +260,12 @@ function cancelScollStyle() {
     var len = listScroll.length;
 
 
-    for (var i = 0; i < len; i++) {
-        if (listScroll[i] == 'body') {
-            $("body").on('mousewheel', bindScroll);
-        }
-        $(document.body).on('mousewheel', listScroll[i], bindScroll);
-    }
+    // for (var i = 0; i < len; i++) {
+        // if (listScroll[i] == 'body') {
+        //     $("body").on('mousewheel', bindScroll);
+        // }
+        // $(document.body).on('mousewheel', listScroll[i], bindScroll);
+    // }
 }
 
 webimApp.run(["RongIMSDKServer", "$state", "$rootScope", function(RongIMSDKServer: RongIMSDKServer, $state: angular.ui.IStateService, $rootScope: angular.IRootScopeService) {

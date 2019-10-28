@@ -108,6 +108,34 @@ module webimutil {
         static os = {
             mac: (userAgent.match(/Mac\s+OS/i))
         };
+        static showBigImage = function (url: string) {
+            var div = document.createElement('div');
+            div.className = 'rong-big-image-box';
+            div.style.display = 'none';
+            var img = document.createElement('img');
+            img.className = 'rong-big-image';
+            img.src = url;
+            img.style.display = 'none';
+
+            var append = function () {
+                document.body.appendChild(div);
+                document.body.appendChild(img);
+            };
+            var remove = function () {
+                document.body.removeChild(div);
+                document.body.removeChild(img);
+            };
+
+            var span = document.createElement('span');
+            span.className = 'rong-big-image-close';
+            span.textContent = '×';
+            div.onclick = remove;
+
+            div.appendChild(span);
+            append();
+            div.style.display = 'block';
+            img.style.display = 'block';
+        }
 
     }
 
