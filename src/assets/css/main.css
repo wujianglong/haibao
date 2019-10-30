@@ -3459,6 +3459,8 @@ input::-ms-clear{display:none;}
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 100;
+    max-height: 100%;
+    max-width: 100%;
 }
 .rong-big-image-close {
     background-color: rgba(0,0,0,.7);
@@ -3472,10 +3474,22 @@ input::-ms-clear{display:none;}
     width: 40px;
     height: 40px;
     vertical-align: middle;
+    z-index: 999;
 }
 
 .rong-big-image-close:hover {
     transition: 0.3s;
     transform: scale(1.3);
     cursor: pointer;
+}
+
+.Message-img button.rong-msg-forward-btn {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.Message-img:hover button.rong-msg-forward-btn {
+    display: block;
 }

@@ -13,7 +13,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function ($http: a
             sendCode: function (phone: string, region: string) {
                 return $http({
                     method: "POST",
-                    url: serverBaseUrl + "/user/send_code",
+                    url: serverBaseUrl + "/user/send_code_yp",
                     data: {
                         phone: phone,
                         region: region
@@ -23,7 +23,7 @@ mainServer.factory("mainServer", ["$http", "$q", "appconfig", function ($http: a
             verifyCode: function (phone: string, region: string, code: string) {
                 return $http({
                     method: "POST",
-                    url: serverBaseUrl + "/user/verify_code",
+                    url: serverBaseUrl + "/user/verify_code_yp",
                     data: {
                         phone: phone,
                         region: region,
