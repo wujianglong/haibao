@@ -7,3 +7,4 @@ temp
 *.log
 src/test.html
 .DS_Store
+package-lock.json

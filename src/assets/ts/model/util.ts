@@ -108,6 +108,72 @@ module webimutil {
         static os = {
             mac: (userAgent.match(/Mac\s+OS/i))
         };
+        static showBigImage = function (url: string) {
+            var div = document.createElement('div');
+            div.className = 'rong-big-image-box';
+            div.style.display = 'none';
+            var img = document.createElement('img');
+            img.className = 'rong-big-image';
+            img.src = url;
+            img.style.display = 'none';
+
+            var append = function () {
+                document.body.appendChild(div);
+                document.body.appendChild(img);
+            };
+            var remove = function () {
+                document.body.removeChild(div);
+                document.body.removeChild(img);
+            };
+
+            var span = document.createElement('span');
+            span.className = 'rong-big-image-close';
+            span.textContent = '×';
+            div.onclick = remove;
+
+            div.appendChild(span);
+            append();
+            div.style.display = 'block';
+            img.style.display = 'block';
+        }
+
+        static compressImage = function(base64:string, callback: any) {
+            var maxLength = 55490; // 108kb
+            if (!base64) {
+                return callback(base64);
+            }
+            if (base64.length < maxLength) {
+                return callback(base64);
+            }
+            var img = new Image();
+            var prefix = 'data:image/jpg;base64,';
+            img.src = prefix + base64;
+            img.onload = function (e) {
+                var width = img.width,
+                    height = img.height;
+                var quality = maxLength / base64.length;
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                var anw: any = document.createAttribute("width");
+                anw.nodeValue = width;
+                var anh: any = document.createAttribute("height");
+                anh.nodeValue = height;
+                canvas.setAttributeNode(anw);
+                canvas.setAttributeNode(anh);
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+                base64 = canvas.toDataURL('image/jpeg', quality);
+                base64 = base64.substring(prefix.length + 1);
+                if (base64.length > maxLength) {
+                    return webimutil.Helper.compressImage(base64, callback);
+                }
+                callback(base64);
+            };
+            img.onerror = function () {
+                callback(base64.substring(0, maxLength));
+            };
+        }
 
     }
 

@@ -714,19 +714,19 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
 
     //显示表情
     $scope.showemoji = false;
-    document.addEventListener("click", function (e: any) {
-      if ($scope.showemoji && e.target.className != "iconfont-smile") {
-        $scope.$apply(function () {
-          $scope.showemoji = false;
-        });
-      }
-      if ($scope.atShow) {
-        $scope.$apply(function () {
-          $scope.atShow = false;
-          $scope.initAtDiv();
-        });
-      }
-    });
+    // document.addEventListener("click", function (e: any) {
+    //   if ($scope.showemoji && e.target.className != "iconfont-smile") {
+    //     $scope.$apply(function () {
+    //       $scope.showemoji = false;
+    //     });
+    //   }
+    //   if ($scope.atShow) {
+    //     $scope.$apply(function () {
+    //       $scope.atShow = false;
+    //       $scope.initAtDiv();
+    //     });
+    //   }
+    // });
     // $scope.emojiList = RongIMLib.Expression.getAllExpression(60, 0);
 
     $scope.emojiList = RongIMLib.RongIMEmoji.emojis.slice(0, 60);  //128
@@ -801,16 +801,19 @@ conversationCtr.controller("conversationController", ["$scope", "$state", "mainD
       },
       onCompleted: function (data: any, type: number, messageId?: string) {
         data.fileType = type;
-        getFileUrl(data, function (message: any) {
-          RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, message).then(function (msg: any) {
-            if (type == 1) {
-              conversationServer.addHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType, webimmodel.Message.convertMsg(msg));
-            } else {
-              var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, messageId);
-              item.content.fileUrl = msg.content.fileUrl;
-              item.content.state = webimmodel.FileState.Success;
-            }
-          })
+        webimutil.Helper.compressImage(data.thumbnail, function (compressBase64:string) {
+          data.thumbnail = compressBase64;
+          getFileUrl(data, function (message: any) {
+            RongIMSDKServer.sendMessage($scope.currentConversation.targetType, $scope.currentConversation.targetId, message).then(function (msg: any) {
+              if (type == 1) {
+                conversationServer.addHistoryMessages($scope.currentConversation.targetId, $scope.currentConversation.targetType, webimmodel.Message.convertMsg(msg));
+              } else {
+                var item = conversationServer.getMessageById($scope.currentConversation.targetId, $scope.currentConversation.targetType, messageId);
+                item.content.fileUrl = msg.content.fileUrl;
+                item.content.state = webimmodel.FileState.Success;
+              }
+            })
+          });
         });
 
         $scope.uploadStatus.show = false;
