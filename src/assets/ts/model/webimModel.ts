@@ -210,6 +210,20 @@ module webimmodel {
         constructor(content?: any, conversationType?: string, extra?: string, objectName?: string, messageDirection?: MessageDirection, messageId?: string, receivedStatus?: ReceivedStatus, receivedTime?: number, senderUserId?: string, sentStatus?: SentStatus, sentTime?: number, targetId?: string, messageType?: string) {
             super(PanelType.Message);
         }
+        static formatGIFMsg(data: any){
+            if(data.objectName == 'RC:GIFMsg' && data.messageType == "UnknownMessage"){
+                data.objectName = 'RC:ImgMsg';
+                var unknownMsg:any = data.content;
+                var _msg = unknownMsg.message;
+                var _content = _msg.content;
+                data.content = new RongIMLib.ImageMessage({
+                    content: _content.remoteUrl,
+                    imageUri: _content.remoteUrl
+                });
+                data.messageType = 'ImageMessage';
+            }
+            return data;
+        }
         static convertMsg(SDKmsg: any) {
 
             var msg = new Message();
@@ -244,7 +258,7 @@ module webimmodel {
                 case MessageType.ImageMessage:
                     var image = new ImageMessage();
                     var content = SDKmsg.content.content || "";
-                    if (typeof content == "string" && content.indexOf("base64,") == -1) {
+                    if (typeof content == "string" && content.indexOf("base64,") == -1 && content.indexOf('http') == -1) {
                         content = "data:image/png;base64," + content;
                     }
                     image.content = content;
@@ -404,7 +418,7 @@ module webimmodel {
             if (!msg)
                 return null;
             var msgtype = msg.messageType, msgContent: string;
-            if (msgtype == MessageType.ImageMessage) {
+            if (msgtype == MessageType.ImageMessage || msg.objectName == 'RC:GIFMsg') {
                 msgContent = "[图片]";
             } else if (msgtype == MessageType.LocationMessage) {
                 msgContent = "[位置]";

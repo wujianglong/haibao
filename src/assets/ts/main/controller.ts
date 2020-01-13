@@ -432,8 +432,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     var eleplay = <any>document.getElementById("playsound");
                     eleplay.play();
                 }
-
-                var msg = <any>webimmodel.Message.convertMsg(data);
+                var msg = <any>webimmodel.Message.formatGIFMsg(data);
+                msg = <any>webimmodel.Message.convertMsg(msg);
 
                 //同自己会话删除targetid为空
                 // if (msg.targetId == "") {
@@ -518,119 +518,6 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                         }
                         break;
                     case webimmodel.MessageType.DiscussionNotificationMessage:
-                        // if (data.objectName == "RC:DizNtf" && !data.hasReceivedByOtherClient) {
-                        //     //群组信息更新，已经在其他端接收过不做处理。
-                        //     var discussionNotification = <any>data;
-                        //     switch (discussionNotification.content.type) {
-                        //         case 1:   //join
-                        //             var changemembers = discussionNotification.content.extension.split(",");
-                        //             var targetid = data.targetId;
-                        //             var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
-                        //             if (self == -1) {
-                        //                 for (var a = 0, len = changemembers.length; a < len; a++) {
-                        //                     mainServer.user.getInfo(changemembers[a]).success(function(rep) {
-                        //                         mainDataServer.contactsList.addDiscussionMember(targetid, new webimmodel.Member({
-                        //                             id: rep.result.id,
-                        //                             name: rep.result.nickname,
-                        //                             imgSrc: rep.result.portraitUri,
-                        //                             role: "1"
-                        //                         }));
-                        //                     }).error(function() {
-                        //
-                        //                     });
-                        //                 }
-                        //             } else {
-                        //               RongIMSDKServer.getDiscussion(targetid).then(function (rep) {
-                        //                   var discuss = rep.data;
-                        //                   var members = discuss.memberIdList;
-                        //                   // conv.title = discuss.name;
-                        //                   // conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(discuss.name);
-                        //
-                        //                   var temporarynotifi = new webimmodel.WarningNoticeMessage("邀请进入讨论组" + '"' + discuss.name + '"');
-                        //                   mainDataServer.notification.addNotification(temporarynotifi);
-                        //                   if (!$state.is("main.notification")) {
-                        //                       mainDataServer.notification.hasNewNotification = true;
-                        //                   }
-                        //
-                        //                   mainDataServer.contactsList.addDiscussion(new webimmodel.Discussion({
-                        //                       id: discuss.id,
-                        //                       name: discuss.name,
-                        //                       imgSrc: '',
-                        //                       upperlimit: 500,
-                        //                       fact: 1,
-                        //                       creater: discuss.creatorId,
-                        //                       isOpen: true
-                        //                   }));
-                        //                   for (var j = 0, len = discuss.memberIdList.length; j < len; j++) {
-                        //                       mainServer.user.getInfo(discuss.memberIdList[j]).then(function (repmem) {
-                        //                           var member = new webimmodel.Member({
-                        //                               id: repmem.data.result.id,
-                        //                               name: repmem.data.result.nickname,
-                        //                               imgSrc: repmem.data.result.portraitUri,
-                        //                               role: "1"
-                        //                           });
-                        //                           mainDataServer.contactsList.addDiscussionMember(discuss.id, member);
-                        //                       });
-                        //                   }
-                        //
-                        //                   refreshconversationList();
-                        //               }, function () {
-                        //                   // conv.title = "未知讨论组";
-                        //               });
-                        //             }
-                        //             break;
-                        //         case 2:   //quit
-                        //             var changemembers = discussionNotification.content.extension.split(",");
-                        //             var targetid = data.targetId;
-                        //             var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
-                        //             if (self == -1) {
-                        //                 mainDataServer.contactsList.removeDiscussionMember(targetid, changemembers[0]);
-                        //             } else {
-                        //                 mainDataServer.contactsList.removeDiscussion(targetid);
-                        //
-                        //                 RongIMSDKServer.removeConversation(webimmodel.conversationType.Discussion, targetid).then(function() {
-                        //                     refreshconversationList();
-                        //                 });
-                        //             }
-                        //             break;
-                        //         case 4:  //kick
-                        //             var changemembers = discussionNotification.content.extension.split(",");
-                        //             var targetid = data.targetId;
-                        //             var self = changemembers.indexOf(mainDataServer.loginUser.id + "");
-                        //             if (self == -1) {
-                        //                 for (var a = 0, len = changemembers.length; a < len; a++) {
-                        //                     mainDataServer.contactsList.removeDiscussionMember(targetid, changemembers[a]);
-                        //                 }
-                        //             } else {
-                        //                 var temporarynotifi = new webimmodel.WarningNoticeMessage("讨论组" + '"' + mainDataServer.contactsList.getDiscussionById(targetid).name + '"' + '已将您踢出');
-                        //                 mainDataServer.notification.addNotification(temporarynotifi);
-                        //                 if (!$state.is("main.notification")) {
-                        //                     mainDataServer.notification.hasNewNotification = true;
-                        //                 }
-                        //                 mainDataServer.contactsList.removeDiscussion(targetid);
-                        //                 RongIMSDKServer.removeConversation(webimmodel.conversationType.Discussion, targetid).then(function() {
-                        //                     refreshconversationList();
-                        //                 });
-                        //                 //退出会话状态
-                        //                 if ($state.is("main.chat") && $state.params["targetId"] == targetid && $state.params["targetType"] == webimmodel.conversationType.Discussion) {
-                        //                     $state.go("main");
-                        //                 }
-                        //             }
-                        //             break;
-                        //         case 3:  // rename
-                        //             console.log("TODO:暂不做修改讨论组名称");
-                        //             // var temporarynotifi = new webimmodel.WarningNoticeMessage("讨论组已更名为" + '"' + mainDataServer.contactsList.getDiscussionById(targetid).name + '"');
-                        //             // mainDataServer.notification.addNotification(temporarynotifi);
-                        //             // if (!$state.is("main.notification")) {
-                        //             //     mainDataServer.notification.hasNewNotification = true;
-                        //             // }
-                        //             break;
-                        //         default:
-                        //             console.log("不支持操作类型" + discussionNotification.content.type);
-                        //     }
-                        //     conversationServer.asyncConverDiscussionNotifition(data, msg);
-                        //     addmessage(msg);
-                        // }
                         break;
                     case webimmodel.MessageType.VoiceMessage:
                         msg.isUnReade = true;

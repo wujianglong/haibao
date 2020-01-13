@@ -144,7 +144,7 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                         if(_withDrawMsg && _withDrawMsg.indexOf(msgsdk.messageUId) > -1){
                             continue;
                         }
-
+                        msgsdk = webimmodel.Message.formatGIFMsg(msgsdk);
                         switch (msgsdk.messageType) {
                             case webimmodel.MessageType.ContactNotificationMessage:
                                 //历史邀请消息不做处理
