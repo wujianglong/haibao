@@ -65,6 +65,7 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
 
             mainServer.friend.invite(id, $scope.message).success(function(rep) {
                 // $state.go("main");
+                // 
                 $state.go("main.friendinfo", { userid: userId, groupid: groupid, targetid: targetid, conversationtype: conversationtype });
 
                 var action = rep.result.action;
@@ -74,9 +75,9 @@ addfirendCtr.controller("applyfriendController", ["$scope", "$state", "$statePar
                         name: userName,
                         imgSrc: ""
                     });
-                    mainServer.user.getInfo(id).success(function(rep) {
-                        addfriend.imgSrc = rep.result.portraitUri;
-                    });
+                    
+                    addfriend.imgSrc = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3";
+                    
                     mainDataServer.contactsList.addFriend(addfriend);
                     webimutil.Helper.alertMessage.success("已成为好友！", 2);
                 } else if (action == "Sent") {

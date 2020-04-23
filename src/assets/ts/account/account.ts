@@ -37,35 +37,54 @@ account.controller("signinController", ["$scope", "$state", "mainServer", "mainD
 
         }
 
+        
+
         $scope.signin = function() {
             $scope.formSignin.submitted = true;
             webimutil.CookieHelper.removeCookie("loginuserid");//清除登录状态
             mainDataServer.loginUser = new webimmodel.UserInfo();//清除用户信息
 
-            if ($scope.formSignin.$valid) {
-                mainServer.user.signin($scope.user.accountNumber, "86", $scope.user.passWord).success(function(rep) {
-                    if (rep.code === 200) {
-                        // 登录账户
-                        mainDataServer.loginUser.id = rep.result.id;
-                        mainDataServer.loginUser.token = rep.result.token;
-                        var exdate = new Date();
+            // let id_c = "912a1a4e584e77e527249f5b8d1ecfba"
+            // let token_c = "2B2hJEhN1sBjCe1EKixXHFu6XkQZGBew93P/JZWXRj9jC23eJq1aYIvsBtopRTlOgqPF1+aEZNs=@54ny.cn.rongnav.com;54ny.cn.rongcfg.com"
+
+            var id_c = localStorage.getItem("rc_id")
+            var token_c = localStorage.getItem("rc_token")
+
+            console.log("11", id_c)
+            console.log("22", token_c)
+            
+            mainDataServer.loginUser.id = id_c;
+            mainDataServer.loginUser.token = token_c;
+            var exdate = new Date();
 　　　　                 exdate.setDate(exdate.getDate() + 30);
-                        webimutil.CookieHelper.setCookie("loginuserid", rep.result.id, exdate.toGMTString());
-                        webimutil.CookieHelper.setCookie("loginusertoken", rep.result.token, exdate.toGMTString());
-                        $state.go("main");
+            webimutil.CookieHelper.setCookie("loginuserid", id_c, exdate.toGMTString());
+            webimutil.CookieHelper.setCookie("loginusertoken", token_c, exdate.toGMTString());
+            $state.go("main");
 
-                    } else if (rep.code === 1000) {
-                        //用户或密码错误
-                        $scope.userorpwdIsError = true;
-                    } else {
+//             if ($scope.formSignin.$valid) {
+//                 mainServer.user.signin($scope.user.accountNumber, "86", $scope.user.passWord).success(function(rep) {
+//                     if (rep.code === 200) {
+//                         // 登录账户
+//                         mainDataServer.loginUser.id = rep.result.id;
+//                         mainDataServer.loginUser.token = rep.result.token;
+//                         var exdate = new Date();
+// 　　　　                 exdate.setDate(exdate.getDate() + 30);
+//                         webimutil.CookieHelper.setCookie("loginuserid", rep.result.id, exdate.toGMTString());
+//                         webimutil.CookieHelper.setCookie("loginusertoken", rep.result.token, exdate.toGMTString());
+//                         $state.go("main");
 
-                    }
-                }).error(function(error, code) {
-                    if (code == 400) {
-                        webimutil.Helper.alertMessage.error("无效的手机号", 2);
-                    }
-                });
-            }
+//                     } else if (rep.code === 1000) {
+//                         //用户或密码错误
+//                         $scope.userorpwdIsError = true;
+//                     } else {
+
+//                     }
+//                 }).error(function(error, code) {
+//                     if (code == 400) {
+//                         webimutil.Helper.alertMessage.error("无效的手机号", 2);
+//                     }
+//                 });
+//             }
         }
 
     }])

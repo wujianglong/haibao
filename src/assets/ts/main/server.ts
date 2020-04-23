@@ -380,9 +380,9 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                                 conversationitem.lastMsg = member.name + "：" + conversationitem.lastMsg;
                             } else {
                                 (function (id: string, conv: webimmodel.Conversation) {
-                                    mainServer.user.getInfo(id).success(function (user) {
-                                        conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
-                                    });
+                                    // mainServer.user.getInfo(id).success(function (user) {
+                                    //     conv.lastMsg = user.result.nickname + "：" + conversationitem.lastMsg;
+                                    // });
                                 }(item.latestMessage.senderUserId, conversationitem))
                             }
                         }
@@ -428,24 +428,44 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                         }
                         else {
                             (function (id: string, conv: webimmodel.Conversation) {
-                                mainServer.user.getInfo(id).success(function (rep) {
-                                    conv.title = rep.result.nickname + "(非好友)";
-                                    conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                                    var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
-                                    var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                                    conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-                                    conv.imgSrc = rep.result.portraitUri;
+                                // mainServer.user.getInfo(id).success(function (rep) {
+                                //     conv.title = rep.result.nickname + "(非好友)";
+                                //     conv.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                //     var obj = webimutil.ChineseCharacter.convertToABC(rep.result.nickname);
+                                //     var f = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+                                //     conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+                                //     conv.imgSrc = rep.result.portraitUri;
 
-                                    var _friend = new webimmodel.Friend({
-                                        id: id,
-                                        name: conv.title,
-                                        imgSrc: conv.imgSrc
-                                    });
-                                    _friend.firstchar = f;
-                                    mainDataServer.contactsList.addNonFriend(_friend);
-                                }).error(function () {
-                                    conv.title = "非系统用户";
-                                });
+                                //     var _friend = new webimmodel.Friend({
+                                //         id: id,
+                                //         name: conv.title,
+                                //         imgSrc: conv.imgSrc
+                                //     });
+                                //     _friend.firstchar = f;
+                                //     mainDataServer.contactsList.addNonFriend(_friend);
+                                // }).error(function () {
+                                //     conv.title = "企业";
+                                // });
+
+
+                             
+
+                              conv.firstchar = webimutil.ChineseCharacter.getPortraitChar("企业用户");
+                              var obj = webimutil.ChineseCharacter.convertToABC("企业用户");
+                              var f = webimutil.ChineseCharacter.getPortraitChar("wjl");
+                              conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
+                              conv.imgSrc = "wjl1"
+
+                              var _friend = new webimmodel.Friend({
+                                  id: id,
+                                  name: conv.title,
+                                  imgSrc: conv.imgSrc
+                              });
+                              _friend.firstchar = f;
+                              mainDataServer.contactsList.addNonFriend(_friend);
+                              conv.title = "企业用户";
+
+                                
                             })(item.targetId || item.senderUserId, conversationitem)
                         }
                     }

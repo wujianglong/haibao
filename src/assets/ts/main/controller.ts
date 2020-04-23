@@ -33,18 +33,22 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }
         }
 
-        mainServer.user.getInfo(mainDataServer.loginUser.id).success(function(rep) {
-            if (rep.code == 200) {
-                mainDataServer.loginUser.nickName = rep.result.nickname
-                mainDataServer.loginUser.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                mainDataServer.loginUser.portraitUri = rep.result.portraitUri
-                angular.element(document.getElementById("loginuser")).css("background-color", webimutil.Helper.portraitColors[mainDataServer.loginUser.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
-            } else {
-                console.log("get user info error")
-            }
-        }).error(function() {
+        mainDataServer.loginUser.nickName = "wjl"
+        mainDataServer.loginUser.firstchar = "wjl1";
+        mainDataServer.loginUser.portraitUri = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3"
 
-        })
+        // mainServer.user.getInfo(mainDataServer.loginUser.id).success(function(rep) {
+        //     if (rep.code == 200) {
+        //         mainDataServer.loginUser.nickName = rep.result.nickname
+        //         mainDataServer.loginUser.firstchar = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
+        //         mainDataServer.loginUser.portraitUri = rep.result.portraitUri
+        //         angular.element(document.getElementById("loginuser")).css("background-color", webimutil.Helper.portraitColors[mainDataServer.loginUser.id.charCodeAt(0) % webimutil.Helper.portraitColors.length]);
+        //     } else {
+        //         console.log("get user info error")
+        //     }
+        // }).error(function() {
+
+        // })
 
         $scope.mainData = <mainDataServer>mainDataServer;
         $scope.$on('refreshSelectCon', function(event: any, data: string) {
@@ -222,92 +226,92 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         //初始化好友数据   邀请通知一起通过好友关系表获取解析
         mainDataServer.notification.notificationList = [];
         mainDataServer.contactsList.subgroupList = [];
-        mainServer.friend.getAll().success(function(rep) {
-            var arr = rep.result;
-            for (let i = 0, len = arr.length; i < len; i++) {
-                switch (arr[i].status) {
-                    case webimmodel.FriendStatus.Agreed:
-                        mainDataServer.contactsList.addFriend(new webimmodel.Friend({
-                            id: arr[i].user.id,
-                            name: arr[i].displayName || arr[i].user.nickname,
-                            imgSrc: arr[i].user.portraitUri,
-                        }));
-                        break;
-                    case webimmodel.FriendStatus.Requested:
-                        mainDataServer.notification.addNotification(new webimmodel.NotificationFriend({
-                            id: arr[i].user.id,
-                            name: arr[i].user.nickname,
-                            portraitUri: arr[i].user.portraitUri,
-                            status: arr[i].status,
-                            content: arr[i].message,
-                            timestamp: (new Date(arr[i].updatedAt)).getTime()
-                        }));
-                        break;
-                }
-            }
+        // mainServer.friend.getAll().success(function(rep) {
+        //     var arr = rep.result;
+        //     for (let i = 0, len = arr.length; i < len; i++) {
+        //         switch (arr[i].status) {
+        //             case webimmodel.FriendStatus.Agreed:
+        //                 mainDataServer.contactsList.addFriend(new webimmodel.Friend({
+        //                     id: arr[i].user.id,
+        //                     name: arr[i].displayName || arr[i].user.nickname,
+        //                     imgSrc: arr[i].user.portraitUri,
+        //                 }));
+        //                 break;
+        //             case webimmodel.FriendStatus.Requested:
+        //                 mainDataServer.notification.addNotification(new webimmodel.NotificationFriend({
+        //                     id: arr[i].user.id,
+        //                     name: arr[i].user.nickname,
+        //                     portraitUri: arr[i].user.portraitUri,
+        //                     status: arr[i].status,
+        //                     content: arr[i].message,
+        //                     timestamp: (new Date(arr[i].updatedAt)).getTime()
+        //                 }));
+        //                 break;
+        //         }
+        //     }
 
-            mainDataServer.notification._sort();
-        }).error(function(e) {
-            console.log(e);
-        })
+        //     mainDataServer.notification._sort();
+        // }).error(function(e) {
+        //     console.log(e);
+        // })
 
         //初始化黑名单数据
         mainDataServer.blackList.list = [];
-        mainServer.user.getBlackList().success(function(rep) {
-            var blist = rep.result;
-            for (var i = 0, len = blist.length; i < len; i++) {
-                mainDataServer.blackList.add(new webimmodel.Friend({
-                    id: blist[i].user.id,
-                    name: blist[i].user.nickname,
-                    imgSrc: blist[i].user.portraitUri
-                }));
-            }
-        }).error(function() {
+        // mainServer.user.getBlackList().success(function(rep) {
+        //     var blist = rep.result;
+        //     for (var i = 0, len = blist.length; i < len; i++) {
+        //         mainDataServer.blackList.add(new webimmodel.Friend({
+        //             id: blist[i].user.id,
+        //             name: blist[i].user.nickname,
+        //             imgSrc: blist[i].user.portraitUri
+        //         }));
+        //     }
+        // }).error(function() {
 
-        });
+        // });
 
         //初始化群组数据
         mainDataServer.contactsList.groupList = [];
-        mainServer.user.getMyGroups().success(function(rep) {
-            var groups = rep.result;
-            for (var i = 0, len = groups.length; i < len; i++) {
-                var group = new webimmodel.Group({
-                    id: groups[i].group.id,
-                    name: groups[i].group.name,
-                    imgSrc: groups[i].group.portraitUri,
-                    upperlimit: 500,
-                    fact: 1,
-                    creater: groups[i].group.creatorId
-                });
-                mainDataServer.contactsList.addGroup(group);
-                //获取群成员
-                !function(groupid: string) {
-                    mainServer.group.getGroupMember(group.id).success(function(rep) {
-                        var members = rep.result;
-                        for (var j = 0, len = members.length; j < len; j++) {
-                            var member = new webimmodel.Member({
-                                id: members[j].user.id,
-                                name: members[j].user.nickname,
-                                imgSrc: members[j].user.portraitUri,
-                                role: members[j].role,
-                                displayName: members[j].displayName
-                            });
-                            mainDataServer.contactsList.addGroupMember(groupid, member);
-                        }
-                    });
-                } (group.id);
-            }
-        }).error(function(err) {
+        // mainServer.user.getMyGroups().success(function(rep) {
+        //     var groups = rep.result;
+        //     for (var i = 0, len = groups.length; i < len; i++) {
+        //         var group = new webimmodel.Group({
+        //             id: groups[i].group.id,
+        //             name: groups[i].group.name,
+        //             imgSrc: groups[i].group.portraitUri,
+        //             upperlimit: 500,
+        //             fact: 1,
+        //             creater: groups[i].group.creatorId
+        //         });
+        //         mainDataServer.contactsList.addGroup(group);
+        //         //获取群成员
+        //         !function(groupid: string) {
+        //             mainServer.group.getGroupMember(group.id).success(function(rep) {
+        //                 var members = rep.result;
+        //                 for (var j = 0, len = members.length; j < len; j++) {
+        //                     var member = new webimmodel.Member({
+        //                         id: members[j].user.id,
+        //                         name: members[j].user.nickname,
+        //                         imgSrc: members[j].user.portraitUri,
+        //                         role: members[j].role,
+        //                         displayName: members[j].displayName
+        //                     });
+        //                     mainDataServer.contactsList.addGroupMember(groupid, member);
+        //                 }
+        //             });
+        //         } (group.id);
+        //     }
+        // }).error(function(err) {
 
-        })
+        // })
 
         RongIMSDKServer.init(appconfig.getAppKey());
 
         if(mainDataServer.loginUser.token){
           RongIMSDKServer.connect(<string>mainDataServer.loginUser.token).then(function(userId) {
-              console.log("connect success1:" + userId);
               RongIMSDKServer.getConversationList().then(function(list) {
-                  mainDataServer.conversation.updateConversations();
+                mainDataServer.conversation.updateConversations();
+                $state.go("main.chat", { targetId: localStorage.getItem("chat_id"), targetType: 1 });
               });
           }, function(error) {
               if (error.tokenError) {
@@ -694,7 +698,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                         });
                                         //退出会话状态
                                         if ($state.is("main.chat") && $state.params["targetId"] == groupid && $state.params["targetType"] == webimmodel.conversationType.Group) {
-                                            $state.go("main");
+                                          $state.go("main");
                                         }
                                     }
                                     break;
@@ -761,7 +765,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                                     });
                                     //退出会话状态
                                     if ($state.is("main.chat") && $state.params["targetId"] == groupid && $state.params["targetType"] == webimmodel.conversationType.Group) {
-                                        $state.go("main");
+                                      $state.go("main");
                                     }
                                     break;
                                 default:

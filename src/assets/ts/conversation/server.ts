@@ -442,23 +442,17 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                     if(item.senderUserId == '__system__') {
                       return;
                     }
-                    mainServer.user.getInfo(item.senderUserId).success(function(rep) {
-                        if (rep.code == 200) {
-                            item.senderUserName = rep.result.nickname;
-                            item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar(rep.result.nickname);
-                            item.imgSrc = rep.result.portraitUri;
-                            var _friend = new webimmodel.Friend({
-                                id: item.senderUserId,
-                                name: item.senderUserName + '(非好友)',
-                                imgSrc: item.imgSrc
-                            });
-                            _friend.firstchar = item.senderUserImgSrc;
-                            mainDataServer.contactsList.addNonFriend(_friend);
-                        }
-                    }).error(function() {
-                        //之前可能清过库没有这个用户TODO：删掉
-                        console.log("无此用户:" + item.senderUserId);
+                    
+                    item.senderUserName = "wjl1";
+                    item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar("wjl1");
+                    item.imgSrc = "http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo";
+                    var _friend = new webimmodel.Friend({
+                        id: item.senderUserId,
+                        name: item.senderUserName + '(非好友)',
+                        imgSrc: item.imgSrc
                     });
+                    _friend.firstchar = item.senderUserImgSrc;
+                    mainDataServer.contactsList.addNonFriend(_friend);
                 }
             }
             return item;
