@@ -448,9 +448,9 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                       return;
                     }
                     
-                    item.senderUserName = "http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo";
-                    item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar("http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo");
-                    item.imgSrc = "http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo";
+                    item.senderUserName = "企业用户";
+                    item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar("企业用户");
+                    item.imgSrc = "http://121.41.9.232:8051/house.png";
                     var _friend = new webimmodel.Friend({
                         id: item.senderUserId,
                         name: item.senderUserName + '(非好友)',

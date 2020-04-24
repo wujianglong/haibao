@@ -34,8 +34,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
         }
 
         mainDataServer.loginUser.nickName = "我"
-        mainDataServer.loginUser.firstchar = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3";
-        mainDataServer.loginUser.portraitUri = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3"
+        mainDataServer.loginUser.firstchar = "http://121.41.9.232:8051/user.png";
+        mainDataServer.loginUser.portraitUri = "http://121.41.9.232:8051/user.png"
 
         // mainServer.user.getInfo(mainDataServer.loginUser.id).success(function(rep) {
         //     if (rep.code == 200) {
@@ -393,7 +393,7 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
                     case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
                         console.log('其他设备登录');
                         if (!$state.is("account.signin")) {
-                            $state.go("account.signin");
+                            // $state.go("account.signin");
                             webimutil.Helper.alertMessage.error("您的账号在其他地方登录!");
                             webimutil.NotificationHelper.showNotification({
                                 title: "SealTalk",
