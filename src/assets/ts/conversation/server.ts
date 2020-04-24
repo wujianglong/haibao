@@ -129,102 +129,101 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                 conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId] = [];
             }
 
-            try {
+            // try {
+            //     RongIMSDKServer.getHistoryMessages(+conver, currentConversationTargetId, lastTime, count).then(function(data) {
+            //         var has = data.has, list = <RongIMLib.Message[]>data.data;
+            //         var msglen = list.length;
+            //         if(msglen > 0){
+            //           conversationServer.pullMessageTime = list[msglen - 1].sentTime;
+            //         }
+            //         var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
 
-                RongIMSDKServer.getHistoryMessages(+conver, currentConversationTargetId, lastTime, count).then(function(data) {
-                    var has = data.has, list = <RongIMLib.Message[]>data.data;
-                    var msglen = list.length;
-                    if(msglen > 0){
-                      conversationServer.pullMessageTime = list[msglen - 1].sentTime;
-                    }
-                    var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
+            //         while (msglen--) {
+            //             var msgsdk = list[msglen];
+            //             if(_withDrawMsg && _withDrawMsg.indexOf(msgsdk.messageUId) > -1){
+            //                 continue;
+            //             }
+            //             msgsdk = webimmodel.Message.formatGIFMsg(msgsdk);
+            //             switch (msgsdk.messageType) {
+            //                 case webimmodel.MessageType.ContactNotificationMessage:
+            //                     //历史邀请消息不做处理
+            //                     break;
+            //                 case webimmodel.MessageType.TextMessage:
+            //                 case webimmodel.MessageType.VoiceMessage:
+            //                 case webimmodel.MessageType.LocationMessage:
+            //                 case webimmodel.MessageType.ImageMessage:
+            //                 case webimmodel.MessageType.RichContentMessage:
+            //                 case webimmodel.MessageType.FileMessage:
+            //                     var item = webimmodel.Message.convertMsg(msgsdk);
+            //                     if (item) {
+            //                         unshiftHistoryMessages(currentConversationTargetId, conver, item);
+            //                     }
+            //                     break;
+            //                 case webimmodel.MessageType.GroupNotificationMessage:
+            //                     if (msgsdk.objectName == "ST:GrpNtf") {
+            //                       var item = webimmodel.Message.convertMsg(msgsdk);
+            //                       if (item) {
+            //                           conversationServer.asyncConverGroupNotifition(msgsdk, item);
+            //                           unshiftHistoryMessages(currentConversationTargetId, conver, item);
+            //                       }
+            //                     }
+            //                     break;
+            //                 case webimmodel.MessageType.UnknownMessage:
+            //                     if (msgsdk.objectName == "ST:GrpNtf") {
+            //                       var item = webimmodel.Message.convertMsg(msgsdk);
+            //                       if (item) {
+            //                           conversationServer.asyncConverGroupNotifition(msgsdk, item);
+            //                           unshiftHistoryMessages(currentConversationTargetId, conver, item);
+            //                       }
+            //                     }
+            //                     break;
+            //                 case webimmodel.MessageType.RecallCommandMessage:
+            //                     if (msgsdk.objectName == "RC:RcCmd") {
+            //                       var item = webimmodel.Message.convertMsg(msgsdk);
+            //                       if (item) {
+            //                           conversationServer.delWithDrawMessage(item.senderUserId, item.conversationType, msgsdk.messageUId);
+            //                           unshiftHistoryMessages(currentConversationTargetId, conver, item);
+            //                       }
+            //                       conversationServer.addWithDrawMessageCache(item.senderUserId, item.conversationType, msgsdk.messageUId);
+            //                     }
+            //                     break;
+            //                 case webimmodel.MessageType.InformationNotificationMessage:
+            //                     var item = webimmodel.Message.convertMsg(msgsdk);
+            //                     if (item) {
+            //                         unshiftHistoryMessages(currentConversationTargetId, conver, item);
+            //                     }
+            //                     break;
+            //                 case webimmodel.MessageType.DiscussionNotificationMessage:
+            //                     if (msgsdk.objectName == "RC:DizNtf") {
 
-                    while (msglen--) {
-                        var msgsdk = list[msglen];
-                        if(_withDrawMsg && _withDrawMsg.indexOf(msgsdk.messageUId) > -1){
-                            continue;
-                        }
-                        msgsdk = webimmodel.Message.formatGIFMsg(msgsdk);
-                        switch (msgsdk.messageType) {
-                            case webimmodel.MessageType.ContactNotificationMessage:
-                                //历史邀请消息不做处理
-                                break;
-                            case webimmodel.MessageType.TextMessage:
-                            case webimmodel.MessageType.VoiceMessage:
-                            case webimmodel.MessageType.LocationMessage:
-                            case webimmodel.MessageType.ImageMessage:
-                            case webimmodel.MessageType.RichContentMessage:
-                            case webimmodel.MessageType.FileMessage:
-                                var item = webimmodel.Message.convertMsg(msgsdk);
-                                if (item) {
-                                    unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                }
-                                break;
-                            case webimmodel.MessageType.GroupNotificationMessage:
-                                if (msgsdk.objectName == "ST:GrpNtf") {
-                                  var item = webimmodel.Message.convertMsg(msgsdk);
-                                  if (item) {
-                                      conversationServer.asyncConverGroupNotifition(msgsdk, item);
-                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                  }
-                                }
-                                break;
-                            case webimmodel.MessageType.UnknownMessage:
-                                if (msgsdk.objectName == "ST:GrpNtf") {
-                                  var item = webimmodel.Message.convertMsg(msgsdk);
-                                  if (item) {
-                                      conversationServer.asyncConverGroupNotifition(msgsdk, item);
-                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                  }
-                                }
-                                break;
-                            case webimmodel.MessageType.RecallCommandMessage:
-                                if (msgsdk.objectName == "RC:RcCmd") {
-                                  var item = webimmodel.Message.convertMsg(msgsdk);
-                                  if (item) {
-                                      conversationServer.delWithDrawMessage(item.senderUserId, item.conversationType, msgsdk.messageUId);
-                                      unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                  }
-                                  conversationServer.addWithDrawMessageCache(item.senderUserId, item.conversationType, msgsdk.messageUId);
-                                }
-                                break;
-                            case webimmodel.MessageType.InformationNotificationMessage:
-                                var item = webimmodel.Message.convertMsg(msgsdk);
-                                if (item) {
-                                    unshiftHistoryMessages(currentConversationTargetId, conver, item);
-                                }
-                                break;
-                            case webimmodel.MessageType.DiscussionNotificationMessage:
-                                if (msgsdk.objectName == "RC:DizNtf") {
+            //                     }
+            //                     break;
+            //                 default:
+            //                     console.log("此消息类型未处理：" + msgsdk.messageType);
+            //                     break;
+            //             }
 
-                                }
-                                break;
-                            default:
-                                console.log("此消息类型未处理：" + msgsdk.messageType);
-                                break;
-                        }
+            //         }
+            //         var addtime = conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0];
+            //         if (addtime && addtime.panelType != webimmodel.PanelType.Time) {
+            //             unshiftHistoryMessages(currentConversationTargetId, conver, new webimmodel.TimePanl(conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0].sentTime));
+            //         }
+            //         //遍历缓存,过滤撤回消息
+            //         // var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
+            //         // if(_withDrawMsg){
+            //         //   for(var i = 0;i < _withDrawMsg.length;i++){
+            //         //      delWithDrawMessage(currentConversationTargetId, conver, _withDrawMsg[i]);
+            //         //   }
+            //         // }
 
-                    }
-                    var addtime = conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0];
-                    if (addtime && addtime.panelType != webimmodel.PanelType.Time) {
-                        unshiftHistoryMessages(currentConversationTargetId, conver, new webimmodel.TimePanl(conversationServer.historyMessagesCache[conver + "_" + currentConversationTargetId][0].sentTime));
-                    }
-                    //遍历缓存,过滤撤回消息
-                    // var _withDrawMsg = conversationServer.withDrawMessagesCache[conver + "_" + currentConversationTargetId];
-                    // if(_withDrawMsg){
-                    //   for(var i = 0;i < _withDrawMsg.length;i++){
-                    //      delWithDrawMessage(currentConversationTargetId, conver, _withDrawMsg[i]);
-                    //   }
-                    // }
-
-                    d.resolve(has);
-                }, function(err: any) {
-                    d.reject(err);
-                    console.log('获取历史消息失败');
-                });
-            } catch (err) {
-                console.log("SDK error" + err);
-            }
+            //         d.resolve(has);
+            //     }, function(err: any) {
+            //         d.reject(err);
+            //         console.log('获取历史消息失败');
+            //     });
+            // } catch (err) {
+            //     console.log("SDK error" + err);
+            // }
 
             return d.promise;
         }
@@ -379,9 +378,15 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
             messageAddUserInfo(item);
             arr.push(item);
             //判断如果是当前会话的消息则加入
-            if (type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
-              conversationServer.conversationMessageListShow.push(item);
-            }
+            
+            conversationServer.conversationMessageListShow.push(item);
+
+            // if (type == mainDataServer.conversation.currentConversation.targetType && id == mainDataServer.conversation.currentConversation.targetId) {
+            //   conversationServer.conversationMessageListShow.push(item);
+            // }
+
+
+            console.log('输出消息列表，消息已发出', conversationServer.conversationMessageListShow)
         }
 
         function addAtMessage(id: string, type: string, item: webimmodel.Message){
@@ -443,8 +448,8 @@ conversationServer.factory("conversationServer", ["$q", "mainDataServer", "mainS
                       return;
                     }
                     
-                    item.senderUserName = "wjl1";
-                    item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar("wjl1");
+                    item.senderUserName = "http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo";
+                    item.senderUserImgSrc = webimutil.ChineseCharacter.getPortraitChar("http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo");
                     item.imgSrc = "http://7xogjk.com1.z0.glb.clouddn.com/Fq1YArlqcsIVE0jukH6PLU8mwdDo";
                     var _friend = new webimmodel.Friend({
                         id: item.senderUserId,

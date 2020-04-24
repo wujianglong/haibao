@@ -33,8 +33,8 @@ mainCtr.controller("mainController", ["$scope", "$state", "$window", "$timeout",
             }
         }
 
-        mainDataServer.loginUser.nickName = "wjl"
-        mainDataServer.loginUser.firstchar = "wjl1";
+        mainDataServer.loginUser.nickName = "我"
+        mainDataServer.loginUser.firstchar = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3";
         mainDataServer.loginUser.portraitUri = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3"
 
         // mainServer.user.getInfo(mainDataServer.loginUser.id).success(function(rep) {

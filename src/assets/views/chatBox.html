@@ -5,9 +5,9 @@
       <div class="clientHd"></div>
       <div class="title_wrap">
         <a class="phone_return" ng-show="$parent.showState.isPhone" ng-click="back()"><span class="backArrow">
-            <</span>返回 </a>
+            </span>返回 </a>
         <div class="title">
-          <a class="title_name chat_title" ng-click="tofriendinfo()">{{currentConversation.title}}</a>
+          <a class="title_name chat_title" ng-click="tofriendinfo()">企业用户</a>
           <span class="title_count "></span>
           <i class="Presence Presence--stacked Presence--chatBox" ng-show="currentConversation.targetType==4"></i>
         </div>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <!-- content -->
-    <div id="Messages" ng-class="{messagesload:messagesloading}">
+    <div id="Messages" ng-class="{messagesload:messagesoading}">
       <conversation-item ng-repeat="conversationitem in conversationServer.conversationMessageListShow" item='conversationitem'>
 
       </conversation-item>

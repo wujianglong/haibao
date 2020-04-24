@@ -454,7 +454,7 @@ mainServer.factory("mainDataServer", ["$q", "RongIMSDKServer", "mainServer", fun
                               var obj = webimutil.ChineseCharacter.convertToABC("企业用户");
                               var f = webimutil.ChineseCharacter.getPortraitChar("wjl");
                               conv.setpinying({ pinyin: obj.pinyin, everychar: obj.first, firstchar: f });
-                              conv.imgSrc = "wjl1"
+                              conv.imgSrc = "http://7xogjk.com1.z0.glb.clouddn.com/Fj5qqhBzlcmqf35GFF_xmmLyI8o3"
 
                               var _friend = new webimmodel.Friend({
                                   id: id,
